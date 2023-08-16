@@ -1,5 +1,6 @@
 #![feature(try_blocks)]
 
+use clap::CommandFactory;
 use crate::args::Args;
 use clap::Parser;
 use anyhow::Result;
@@ -28,7 +29,10 @@ async fn main() -> Result<()> {
             ().into_ok()
         }
 
-        _ => todo!()
+        _ => {
+            Args::command().print_help();
+            ().into_ok()
+        }
     }?;
     //println!("{:?}", args);
     ().into_ok()
