@@ -62,7 +62,7 @@ impl Display for UserInfo {
         //f.write_fmt(format_args!("{:#?}\n", self))?;
 
         f.write_fmt(format_args!("{}", self.display_name.cyan()))?;
-        if self.is_vip.not() {
+        if self.is_vip {
             f.write_fmt(format_args!(" {}", " VIP ".on_blue()))?;
         }
         f.write_fmt(format_args!("\n{} Following {} Followers", self.following_count, self.followers_count))?;
