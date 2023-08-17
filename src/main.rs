@@ -1,5 +1,6 @@
 #![feature(try_blocks)]
 
+use std::ops::Not;
 use crate::args::Args;
 use crate::auth::session;
 use crate::infra::result::IntoResult;
@@ -42,9 +43,11 @@ async fn main() -> Result<()> {
             let pat = session::get_pat()?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
+
             ing_vec.iter().for_each(|(ing, comment_list)| {
                 println!("{}", ing);
-                comment_list.into_iter().for_each(|c| println!("{:?}", c));
+                comment_list.into_iter().for_each(|c| println!("{}", c));
+                println!();
             });
 
             ().into_ok()

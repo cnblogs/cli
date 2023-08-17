@@ -113,11 +113,29 @@ impl Display for IngEntry {
         f.write_fmt(format_args!("{}", create_time.dimmed()))?;
         if self.is_lucky {
             let star_text = ing_star_icon_to_text(&self.icons);
-            f.write_fmt(format_args!(" {}⭐", star_text.yellow()))?;
+            f.write_fmt(format_args!(" {}", star_text.yellow()))?;
+            f.write_fmt(format_args!("{}", "⭐".blink()))?;
         }
         f.write_fmt(format_args!("\n  {}", self.user_name.cyan()))?;
         f.write_fmt(format_args!(" {}", self.content))?;
         f.write_fmt(format_args!(" {}", self.id))?;
         ().into_ok()
+    }
+}
+
+impl Display for IngCommentEntry {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        //f.write_fmt(format_args!("{:#?}\n", self))?;
+
+        let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))
+            .map(|dt| dt.format("%m-%d %H:%M").to_string())
+            .unwrap();
+
+        //f.write_fmt(format_args!("\n│{}", create_time.dimmed()))?;
+        f.write_fmt(format_args!("    │ {}", self.user_name.blue()))?;
+        f.write_fmt(format_args!(" {}", self.content.dimmed()))?;
+        /*        f.write_fmt(format_args!("    {}", self.content))?;
+                f.write_fmt(format_args!("    {}", self.id))?;
+        */        ().into_ok()
     }
 }
