@@ -6,6 +6,7 @@ use anyhow::{anyhow, Result};
 use colored::Colorize;
 use serde_json::Value;
 use crate::infra::result::IntoResult;
+use crate::user::User;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct UserInfo {
@@ -35,13 +36,13 @@ pub struct UserInfo {
     joined: String,
 }
 
-impl UserInfo {
-    pub async fn get(pat: &str) -> Result<UserInfo> {
+impl User {
+    pub async fn get_info(&self) -> Result<UserInfo> {
         let url = openapi!("/users");
 
         let client = reqwest::Client::new().get(url);
 
-        let req = setup_auth(client, pat);
+        let req = setup_auth(client, &self.pat);
 
         let resp = req.send().await?;
         let code = resp.status();

@@ -7,6 +7,7 @@ use anyhow::Result;
 use tokio;
 use crate::auth::session;
 use crate::infra::result::IntoResult;
+use crate::user::User;
 
 mod args;
 mod auth;
@@ -25,7 +26,7 @@ async fn main() -> Result<()> {
             session::logout(),
         Args { user_info: true, .. } => {
             let pat = session::get_pat()?;
-            let user_info = user::info::UserInfo::get(&pat).await?;
+            let user_info = User::new(pat).get_info().await?;
             println!("{}", user_info);
             ().into_ok()
         }
