@@ -6,7 +6,7 @@ pub struct Args {
     /// Login with your personal access token (PAT)
     /// PAT will be saved in ~/.cnbrc
     /// You can create PAT in https://account.cnblogs.com/tokens
-    #[arg(long = "login")]
+    #[arg(long)]
     #[arg(value_name = "PAT")]
     #[arg(verbatim_doc_comment)]
     pub login: Option<String>,
@@ -17,23 +17,26 @@ pub struct Args {
     pub logout: bool,
 
     /// Show user info
-    #[arg(long = "user-info")]
+    #[arg(long)]
     #[arg(short = 'u')]
     #[arg(verbatim_doc_comment)]
     pub user_info: bool,
 
+    /// Show ing list, order by time in DESC
+    /// <LENGTH> should in range [0,100]
+    /// If <LENGTH> greater than 100, it will be set to 100
+    #[arg(long)]
+    #[arg(short = 'i')]
+    #[arg(value_name = "LENGTH")]
+    #[arg(verbatim_doc_comment)]
+    #[arg(num_args = 0..=1)]
+    #[arg(default_missing_value = "8")]
+    pub ing_list: Option<usize>,
     /*    /// Show post details
         /// You should also specify the ID of post via option --id
         #[arg(long)]
         #[arg(verbatim_doc_comment)]
         pub show_post: Option<String>,
-
-        /// Show ing list, order by time in DESC
-        /// <LENGTH> should in range [0,20]
-        #[arg(long)]
-        #[arg(short = 'i')]
-        #[arg(verbatim_doc_comment)]
-        pub list_ing: Option<usize>,
 
         /// Publish ing with specific content
         /// The privilege of ing is public
