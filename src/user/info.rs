@@ -1,12 +1,13 @@
-use std::fmt::{Display, Formatter};
-use serde::{Deserialize, Serialize};
 use crate::infra::http::setup_auth;
+use crate::infra::result::IntoResult;
 use crate::openapi;
+use crate::user::User;
 use anyhow::{anyhow, Result};
 use colored::Colorize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use crate::infra::result::IntoResult;
-use crate::user::User;
+use std::fmt::{Display, Formatter};
+use std::ops::Not;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct UserInfo {
@@ -48,13 +49,13 @@ impl User {
         let code = resp.status();
         let body = resp.text().await?;
 
-        if code.is_success() {
-            let val: Value = serde_json::from_str(&body)?;
-            let user_info = serde_json::from_value::<UserInfo>(val)?;
-            user_info.into_ok()
-        } else {
+        if code.is_success().not() {
             anyhow!("{}: {}", code, body).into_err()?
         }
+
+        let val: Value = serde_json::from_str(&body)?;
+        let user_info = serde_json::from_value::<UserInfo>(val)?;
+        user_info.into_ok()
     }
 }
 
@@ -66,10 +67,16 @@ impl Display for UserInfo {
         if self.is_vip {
             f.write_fmt(format_args!(" {}", " VIP ".on_blue()))?;
         }
-        f.write_fmt(format_args!("\n{} Following {} Followers", self.following_count, self.followers_count))?;
+        f.write_fmt(format_args!(
+            "\n{} Following {} Followers",
+            self.following_count, self.followers_count
+        ))?;
         f.write_fmt(format_args!("\nID     {}", self.blog_id))?;
         f.write_fmt(format_args!("\nJoined {}", self.joined))?;
-        f.write_fmt(format_args!("\nBlog   https://www.cnblogs.com/{}", self.blog_app))?;
+        f.write_fmt(format_args!(
+            "\nBlog   https://www.cnblogs.com/{}",
+            self.blog_app
+        ))?;
         ().into_ok()
     }
 }
