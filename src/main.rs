@@ -13,6 +13,7 @@ mod auth;
 mod infra;
 mod user;
 mod api_base;
+//mod ing;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -30,7 +31,7 @@ async fn main() -> Result<()> {
         }
 
         _ => {
-            Args::command().print_help();
+            Args::command().print_help()?;
             ().into_ok()
         }
     }?;

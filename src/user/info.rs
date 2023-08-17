@@ -1,6 +1,4 @@
-use std::arch::asm;
 use std::fmt::{Display, Formatter};
-use std::ops::Not;
 use serde::{Deserialize, Serialize};
 use crate::infra::http::setup_auth;
 use crate::openapi;
@@ -33,6 +31,8 @@ pub struct UserInfo {
     followers_count: usize,
     #[serde(rename = "IsVip")]
     is_vip: bool,
+    #[serde(rename = "Joined")]
+    joined: String,
 }
 
 impl UserInfo {
@@ -67,8 +67,8 @@ impl Display for UserInfo {
         }
         f.write_fmt(format_args!("\n{} Following {} Followers", self.following_count, self.followers_count))?;
         f.write_fmt(format_args!("\nID     {}", self.blog_id))?;
+        f.write_fmt(format_args!("\nJoined {}", self.joined))?;
         f.write_fmt(format_args!("\nBlog   https://www.cnblogs.com/{}", self.blog_app))?;
-        f.write_fmt(format_args!("\nJoined {}", self.seniority))?;
         ().into_ok()
     }
 }
