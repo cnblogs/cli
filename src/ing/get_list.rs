@@ -96,9 +96,7 @@ impl Ing {
         futures::future::join_all(iter)
             .await
             .into_iter()
-            .map(|(a, b)| {
-                (a, b.unwrap())
-            })
+            .map(|(a, b)| (a, b.unwrap()))
             .collect::<Vec<_>>()
             .into_ok()
     }

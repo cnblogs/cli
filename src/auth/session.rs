@@ -1,11 +1,10 @@
-use std::fs;
-use std::fs::{File, metadata, remove_file};
-use std::hash::Hash;
-use std::io::Write;
-use std::path::{Path, PathBuf};
+use crate::infra::result::IntoResult;
 use anyhow::{anyhow, Result};
 use home::home_dir;
-use crate::infra::result::IntoResult;
+use std::fs;
+use std::fs::{metadata, remove_file, File};
+use std::io::Write;
+use std::path::{Path, PathBuf};
 
 fn remove_pat(path: &Path) -> Result<()> {
     if metadata(path).is_ok() {
@@ -21,7 +20,7 @@ fn save_pat(pat: &str, path: &Path) -> Result<()> {
 }
 
 fn get_cfg_path() -> Result<PathBuf> {
-    let mut home = home_dir().ok_or(anyhow!("Can not get home dir"))?;
+    let home = home_dir().ok_or(anyhow!("Can not get home dir"))?;
     home.join(".cnbrc").into_ok()
 }
 

@@ -42,12 +42,10 @@ async fn main() -> Result<()> {
             let pat = session::get_pat()?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
-            ing_vec
-                .iter()
-                .for_each(|(ing, comment_list)| {
-                    println!("{}", ing);
-                    comment_list.into_iter().for_each(|c| println!("{:?}", c));
-                });
+            ing_vec.iter().for_each(|(ing, comment_list)| {
+                println!("{}", ing);
+                comment_list.into_iter().for_each(|c| println!("{:?}", c));
+            });
 
             ().into_ok()
         }
