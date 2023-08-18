@@ -1,9 +1,9 @@
-use std::ops::Not;
+use crate::infra::result::IntoResult;
 use anyhow::bail;
 use anyhow::Result;
 use reqwest::header::AUTHORIZATION;
 use reqwest::{RequestBuilder, Response};
-use crate::infra::result::IntoResult;
+use std::ops::Not;
 
 pub const APPLICATION_JSON: &str = "application/json";
 pub const APPLICATION_X3WFU: &str = "application/x-www-form-urlencoded";

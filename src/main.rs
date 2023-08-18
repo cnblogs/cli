@@ -9,7 +9,6 @@ use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
 use colored::Colorize;
-use tokio;
 
 mod api_base;
 mod args;
@@ -26,7 +25,7 @@ async fn main() -> Result<()> {
         Args {
             login: Some(ref pat),
             ..
-        } => session::login(&pat),
+        } => session::login(pat),
         Args { logout: true, .. } => session::logout(),
         Args {
             user_info: true, ..
@@ -47,7 +46,7 @@ async fn main() -> Result<()> {
 
             ing_vec.iter().for_each(|(ing, comment_list)| {
                 println!("{}", ing);
-                comment_list.into_iter().for_each(|c| println!("{}", c));
+                comment_list.iter().for_each(|c| println!("{}", c));
                 println!();
             });
 

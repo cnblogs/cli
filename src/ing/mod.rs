@@ -1,12 +1,9 @@
 mod comment;
 mod publish;
 use crate::infra::result::IntoResult;
-use anyhow::{anyhow, bail};
-use colored::{ColoredString, Colorize};
+use anyhow::bail;
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
-use std::fmt::Error;
 
 mod get_comment_list;
 mod get_list;
@@ -34,10 +31,10 @@ pub enum IngType {
 
 pub enum IngSendFrom {
     None = 0,
-    MS = 1,
+    Ms = 1,
     GTalk = 2,
-    QQ = 3,
-    SMS = 5,
+    Qq = 3,
+    Sms = 5,
     CellPhone = 6,
     Web = 8,
     Code = 9,
@@ -49,10 +46,10 @@ impl TryFrom<usize> for IngSendFrom {
     fn try_from(value: usize) -> Result<Self, Self::Error> {
         match value {
             0 => IngSendFrom::None,
-            1 => IngSendFrom::MS,
+            1 => IngSendFrom::Ms,
             2 => IngSendFrom::GTalk,
-            3 => IngSendFrom::QQ,
-            5 => IngSendFrom::SMS,
+            3 => IngSendFrom::Qq,
+            5 => IngSendFrom::Sms,
             6 => IngSendFrom::CellPhone,
             8 => IngSendFrom::Web,
             9 => IngSendFrom::Code,

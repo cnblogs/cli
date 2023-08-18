@@ -1,5 +1,5 @@
 use crate::infra::http::{setup_auth, APPLICATION_JSON};
-use crate::infra::result::{IntoResult, ResultExt};
+use crate::infra::result::IntoResult;
 use crate::ing::Ing;
 use crate::openapi;
 use anyhow::Result;

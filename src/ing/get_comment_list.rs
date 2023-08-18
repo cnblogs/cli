@@ -1,9 +1,9 @@
 use crate::infra::http::setup_auth;
-use crate::infra::result::{HomoResult, IntoResult, ResultExt};
+use crate::infra::result::IntoResult;
 use crate::ing::get_list::IngCommentEntry;
 use crate::ing::Ing;
 use crate::openapi;
-use anyhow::{anyhow, bail, Result};
+use anyhow::{bail, Result};
 use serde_json::Value;
 
 impl Ing {

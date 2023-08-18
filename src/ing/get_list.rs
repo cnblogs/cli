@@ -1,17 +1,16 @@
 use crate::infra::http::setup_auth;
-use crate::infra::result::{HomoResult, IntoResult, ResultExt};
-use crate::ing::{ing_star_tag_to_text, Ing, IngSendFrom, IngType, get_ing_at_user_tag_text, rm_ing_at_user_tag, fmt_content};
+use crate::infra::result::IntoResult;
+use crate::ing::{
+    fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, Ing, IngType,
+};
 use crate::openapi;
-use anyhow::{anyhow, bail, Result};
+use anyhow::{bail, Result};
 use chrono::prelude::*;
-use clap::builder::Str;
 use colored::Colorize;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt::{Display, Formatter};
 use std::ops::Not;
-use serde_json::Value::Array;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngEntry {
@@ -120,7 +119,11 @@ impl Display for IngEntry {
         f.write_fmt(format_args!("\n  {}", self.user_name.cyan()))?;
         let content = fmt_content(&self.content);
         f.write_fmt(format_args!(" {}", content))?;
-        f.write_fmt(format_args!(" {}{}", "#".dimmed(), self.id.to_string().dimmed()))?;
+        f.write_fmt(format_args!(
+            " {}{}",
+            "#".dimmed(),
+            self.id.to_string().dimmed()
+        ))?;
         ().into_ok()
     }
 }
@@ -129,6 +132,7 @@ impl Display for IngCommentEntry {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         //f.write_fmt(format_args!("{:#?}\n", self))?;
 
+        // TODO: use create_time
         let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))
             .map(|dt| dt.format("%m-%d %H:%M").to_string())
             .unwrap();
@@ -136,7 +140,11 @@ impl Display for IngCommentEntry {
         f.write_fmt(format_args!("    │ {}", self.user_name.blue()))?;
         let at_user = get_ing_at_user_tag_text(&self.content);
         if at_user.is_empty().not() {
-            f.write_fmt(format_args!(" {}{}", "@".bright_black(), at_user.bright_black()))?;
+            f.write_fmt(format_args!(
+                " {}{}",
+                "@".bright_black(),
+                at_user.bright_black()
+            ))?;
         }
         let content = rm_ing_at_user_tag(&self.content);
         let content = fmt_content(&content);
