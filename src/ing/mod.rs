@@ -1,10 +1,9 @@
 /*mod comment;
 mod r#pub;
 */
-use crate::infra::option::IntoOption;
 use crate::infra::result::IntoResult;
 use anyhow::{anyhow, bail};
-use colored::Colorize;
+use colored::{ColoredString, Colorize};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -60,15 +59,51 @@ impl TryFrom<usize> for IngSendFrom {
             9 => IngSendFrom::Code,
             u => bail!("Unknown value of ing source: {}", u),
         }
-        .into_ok()
+            .into_ok()
     }
 }
 
-pub fn ing_star_icon_to_text(icon: &str) -> String {
+pub fn ing_star_tag_to_text(tag: &str) -> String {
     lazy_static! {
-        static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]".*>"#).unwrap();
+        static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]"(\n|.)*>"#).unwrap();
     }
-    let caps = REGEX.captures(icon).unwrap();
-    let star_text = caps.get(1).unwrap().as_str();
-    star_text.to_string()
+    let caps = REGEX.captures(tag).expect(tag);
+    let text = caps.get(1).unwrap().as_str();
+    text.to_string()
+}
+
+pub fn fmt_content(content: &str) -> String {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(
+            r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>"#
+        ).unwrap();
+    }
+    if let Some(caps) = REGEX.captures(content) {
+        let at_user = caps.get(1).unwrap().as_str();
+        REGEX.replace(content, at_user).to_string()
+    } else {
+        content.to_string()
+    }
+}
+
+pub fn rm_ing_at_user_tag(text: &str) -> String {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(
+            r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>："#
+        ).unwrap();
+    }
+    REGEX.replace(text, "".to_string()).to_string()
+}
+
+pub fn get_ing_at_user_tag_text(text: &str) -> String {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(
+            r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#
+        ).unwrap();
+    }
+    if let Some(caps) = REGEX.captures(text) {
+        caps.get(1).unwrap().as_str().to_string()
+    } else {
+        "".to_string()
+    }
 }

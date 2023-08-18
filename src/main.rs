@@ -1,6 +1,5 @@
 #![feature(try_blocks)]
 
-use std::ops::Not;
 use crate::args::Args;
 use crate::auth::session;
 use crate::infra::result::IntoResult;
