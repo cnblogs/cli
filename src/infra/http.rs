@@ -1,5 +1,9 @@
+use std::ops::Not;
+use anyhow::bail;
+use anyhow::Result;
 use reqwest::header::AUTHORIZATION;
-use reqwest::RequestBuilder;
+use reqwest::{RequestBuilder, Response};
+use crate::infra::result::IntoResult;
 
 pub const APPLICATION_JSON: &str = "application/json";
 pub const APPLICATION_X3WFU: &str = "application/x-www-form-urlencoded";
@@ -34,4 +38,26 @@ pub fn cons_query_string(queries: Vec<(impl ToString, impl ToString)>) -> String
             format!("{}={}", s_k, s_v)
         })
         .fold("".to_string(), |acc, q| format!("{acc}&{q}"))
+}
+
+pub async fn unit_or_err(resp: Response) -> Result<()> {
+    let code = resp.status();
+    let body = resp.text().await?;
+
+    if code.is_success().not() {
+        bail!("{}: {}", code, body);
+    }
+
+    Ok(())
+}
+
+pub async fn body_or_err(resp: Response) -> Result<String> {
+    let code = resp.status();
+    let body = resp.text().await?;
+
+    if code.is_success() {
+        body.into_ok()
+    } else {
+        bail!("{}: {}", code, body)
+    }
 }

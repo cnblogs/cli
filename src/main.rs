@@ -8,6 +8,7 @@ use crate::user::User;
 use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
+use colored::Colorize;
 use tokio;
 
 mod api_base;
@@ -48,6 +49,21 @@ async fn main() -> Result<()> {
                 comment_list.into_iter().for_each(|c| println!("{}", c));
                 println!();
             });
+
+            ().into_ok()
+        }
+        Args {
+            pub_ing: Some(content),
+            ..
+        } => {
+            let pat = session::get_pat()?;
+            let result = Ing::new(pat).r#pub(&content).await;
+
+            if result.is_ok() {
+                println!("{}: {}", "Published".green(), content);
+            } else {
+                println!("{}: {}", "Error".red(), result.unwrap_err());
+            }
 
             ().into_ok()
         }

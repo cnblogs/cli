@@ -1,6 +1,6 @@
 /*mod comment;
-mod r#pub;
 */
+mod r#pub;
 use crate::infra::result::IntoResult;
 use anyhow::{anyhow, bail};
 use colored::{ColoredString, Colorize};
