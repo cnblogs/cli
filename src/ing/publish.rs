@@ -1,12 +1,12 @@
-use std::ops::Not;
-use crate::infra::http::{setup_auth, APPLICATION_JSON, unit_or_err};
+use crate::infra::http::{setup_auth, unit_or_err, APPLICATION_JSON};
 use crate::infra::result::{IntoResult, ResultExt};
-use crate::{openapi};
+use crate::ing::Ing;
+use crate::openapi;
 use anyhow::{bail, Result};
 use reqwest::header::CONTENT_TYPE;
-use serde_json::{json, Value};
 use serde::{Deserialize, Serialize};
-use crate::ing::Ing;
+use serde_json::{json, Value};
+use std::ops::Not;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct IngPubErr {
@@ -15,14 +15,14 @@ struct IngPubErr {
 }
 
 impl Ing {
-    pub async fn r#pub(&self, content: &str) -> Result<()> {
+    pub async fn publish(&self, content: String) -> Result<()> {
         let url = openapi!("/statuses");
 
         let body = json!({
             "content": content,
             "isPrivate": false,
         })
-            .to_string();
+        .to_string();
 
         let client = reqwest::Client::new().post(url);
 

@@ -1,6 +1,5 @@
-/*mod comment;
-*/
-mod r#pub;
+mod comment;
+mod publish;
 use crate::infra::result::IntoResult;
 use anyhow::{anyhow, bail};
 use colored::{ColoredString, Colorize};
@@ -59,7 +58,7 @@ impl TryFrom<usize> for IngSendFrom {
             9 => IngSendFrom::Code,
             u => bail!("Unknown value of ing source: {}", u),
         }
-            .into_ok()
+        .into_ok()
     }
 }
 
@@ -74,9 +73,8 @@ pub fn ing_star_tag_to_text(tag: &str) -> String {
 
 pub fn fmt_content(content: &str) -> String {
     lazy_static! {
-        static ref REGEX: Regex = Regex::new(
-            r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>"#
-        ).unwrap();
+        static ref REGEX: Regex =
+            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>"#).unwrap();
     }
     if let Some(caps) = REGEX.captures(content) {
         let at_user = caps.get(1).unwrap().as_str();
@@ -88,18 +86,16 @@ pub fn fmt_content(content: &str) -> String {
 
 pub fn rm_ing_at_user_tag(text: &str) -> String {
     lazy_static! {
-        static ref REGEX: Regex = Regex::new(
-            r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>："#
-        ).unwrap();
+        static ref REGEX: Regex =
+            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>："#).unwrap();
     }
     REGEX.replace(text, "".to_string()).to_string()
 }
 
 pub fn get_ing_at_user_tag_text(text: &str) -> String {
     lazy_static! {
-        static ref REGEX: Regex = Regex::new(
-            r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#
-        ).unwrap();
+        static ref REGEX: Regex =
+            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#).unwrap();
     }
     if let Some(caps) = REGEX.captures(text) {
         caps.get(1).unwrap().as_str().to_string()

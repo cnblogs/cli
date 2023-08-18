@@ -21,6 +21,7 @@ mod user;
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Args = Args::parse();
+
     match args {
         Args {
             login: Some(ref pat),
@@ -57,10 +58,26 @@ async fn main() -> Result<()> {
             ..
         } => {
             let pat = session::get_pat()?;
-            let result = Ing::new(pat).r#pub(&content).await;
+            let result = Ing::new(pat).publish(content.clone()).await;
 
             if result.is_ok() {
                 println!("{}: {}", "Published".green(), content);
+            } else {
+                println!("{}: {}", "Error".red(), result.unwrap_err());
+            }
+
+            ().into_ok()
+        }
+        Args {
+            id: Some(id),
+            comment_ing: Some(content),
+            ..
+        } => {
+            let pat = session::get_pat()?;
+            let result = Ing::new(pat).comment(id, content.clone(), None, None).await;
+
+            if result.is_ok() {
+                println!("{}: {}", "Commented".green(), content);
             } else {
                 println!("{}: {}", "Error".red(), result.unwrap_err());
             }
