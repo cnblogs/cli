@@ -35,23 +35,27 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Publish ing with specific content
+    /// The visibility of ing is public
     #[arg(long)]
     #[arg(value_name = "CONTENT")]
     pub pub_ing: Option<String>,
 
-    /*    /// Show post details
+    #[arg(verbatim_doc_comment)]
+    /// Comment ing with specific content
+    /// You should also specify the id of ing via option --id
+    #[arg(long)]
+    #[arg(value_name = "CONTENT")]
+    pub comment_ing: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Provide ID required by other options
+    #[arg(long)]
+    pub id: Option<usize>,
+    /*
+        /// Show post details
         /// You should also specify the ID of post via option --id
         #[arg(long)]
         #[arg(verbatim_doc_comment)]
         pub show_post: Option<String>,
-
-
-        /// Comment ing with specific content
-        #[arg(long)]
-        #[arg(num_args = 2)]
-        #[arg(value_names = ["ING_ID", "COMMENT"])]
-        #[arg(verbatim_doc_comment)]
-        pub comment_ing: Option<Vec<String>>,
-
     */
 }
