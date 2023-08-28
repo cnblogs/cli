@@ -1,4 +1,4 @@
-use crate::infra::http::{setup_auth, APPLICATION_JSON};
+use crate::infra::http::{setup_auth};
 use crate::infra::result::IntoResult;
 use crate::ing::Ing;
 use crate::openapi;
@@ -7,6 +7,7 @@ use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::ops::Not;
+use mime::APPLICATION_JSON;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct IngPubErr {
@@ -22,13 +23,17 @@ impl Ing {
             "content": content,
             "isPrivate": false,
         })
-        .to_string();
+            .to_string();
 
-        let client = reqwest::Client::new().post(url);
+        let client = reqwest::Client::new();
 
-        let req = setup_auth(client, &self.pat)
-            .header(CONTENT_TYPE, APPLICATION_JSON)
-            .body(body);
+        let req = {
+            let req = client
+                .post(url)
+                .header(CONTENT_TYPE, APPLICATION_JSON.to_string())
+                .body(body);
+            setup_auth(req, &self.pat)
+        };
 
         let resp = req.send().await?;
         let code = resp.status();

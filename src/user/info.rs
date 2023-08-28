@@ -41,9 +41,12 @@ impl User {
     pub async fn get_info(&self) -> Result<UserInfo> {
         let url = openapi!("/users");
 
-        let client = reqwest::Client::new().get(url);
+        let client = reqwest::Client::new();
 
-        let req = setup_auth(client, &self.pat);
+        let req = {
+            let req = client.get(url);
+            setup_auth(req, &self.pat)
+        };
 
         let resp = req.send().await?;
         let code = resp.status();

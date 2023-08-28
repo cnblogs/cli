@@ -242,6 +242,7 @@ dependencies = [
  "getrandom",
  "home",
  "lazy_static",
+ "mime",
  "rand",
  "regex",
  "reqwest",

@@ -1,8 +1,9 @@
-use crate::infra::http::{setup_auth, APPLICATION_JSON};
+use crate::infra::http::{setup_auth};
 use crate::infra::result::IntoResult;
 use crate::ing::Ing;
 use crate::openapi;
 use anyhow::Result;
+use mime::APPLICATION_JSON;
 use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 
@@ -26,17 +27,21 @@ impl Ing {
     ) -> Result<()> {
         let url = openapi!("/statuses/{}/comments", ing_id);
 
-        let client = reqwest::Client::new().post(url);
+        let client = reqwest::Client::new();
 
-        let body = Body {
-            reply_to,
-            parent_comment_id,
-            content,
+        let req = {
+            let req = client.post(url)
+                .header(CONTENT_TYPE, APPLICATION_JSON.to_string());
+            let body = Body {
+                reply_to,
+                parent_comment_id,
+                content,
+            };
+            let body = serde_json::to_string(&body)?;
+            let req = req.body(body);
+            setup_auth(req, &self.pat)
         };
-        let req = setup_auth(client, &self.pat).header(CONTENT_TYPE, APPLICATION_JSON);
 
-        let body = serde_json::to_string(&body)?;
-        let req = req.body(body);
         req.send().await?;
 
         ().into_ok()

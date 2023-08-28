@@ -73,10 +73,13 @@ impl Ing {
     ) -> Result<Vec<(IngEntry, Vec<IngCommentEntry>)>> {
         let url = openapi!("/statuses/@{}", ing_type as usize);
 
-        let client = reqwest::Client::new().get(url);
+        let client = reqwest::Client::new();
 
-        let queries = vec![("pageIndex", page_index), ("pageSize", page_size)];
-        let req = setup_auth(client, &self.pat).query(&queries);
+        let req = {
+            let req = client.get(url);
+            let queries = vec![("pageIndex", page_index), ("pageSize", page_size)];
+            setup_auth(req, &self.pat).query(&queries)
+        };
 
         let resp = req.send().await?;
 
