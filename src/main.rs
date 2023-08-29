@@ -19,7 +19,7 @@ pub mod infra;
 pub mod ing;
 pub mod user;
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<()> {
     let args: Args = Args::parse();
 
