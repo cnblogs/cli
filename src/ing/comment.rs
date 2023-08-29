@@ -1,4 +1,4 @@
-use crate::infra::http::{setup_auth};
+use crate::infra::http::setup_auth;
 use crate::infra::result::IntoResult;
 use crate::ing::Ing;
 use crate::openapi;
@@ -30,7 +30,8 @@ impl Ing {
         let client = reqwest::Client::new();
 
         let req = {
-            let req = client.post(url)
+            let req = client
+                .post(url)
                 .header(CONTENT_TYPE, APPLICATION_JSON.to_string());
             let body = Body {
                 reply_to,

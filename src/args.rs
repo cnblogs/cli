@@ -51,11 +51,11 @@ pub struct Args {
     /// Provide ID required by other options
     #[arg(long)]
     pub id: Option<usize>,
-    /*
-        /// Show post details
-        /// You should also specify the ID of post via option --id
-        #[arg(long)]
-        #[arg(verbatim_doc_comment)]
-        pub show_post: Option<String>,
-    */
+
+    #[arg(verbatim_doc_comment)]
+    /// Run with specific PAT
+    /// Your PAT in ~/.cnbrc will be ignored in this execution if it exists
+    #[arg(long)]
+    #[arg(value_name = "PAT")]
+    pub with_pat: Option<String>,
 }

@@ -1,13 +1,13 @@
-use crate::infra::http::{setup_auth};
+use crate::infra::http::setup_auth;
 use crate::infra::result::IntoResult;
 use crate::ing::Ing;
 use crate::openapi;
 use anyhow::{bail, Result};
+use mime::APPLICATION_JSON;
 use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::ops::Not;
-use mime::APPLICATION_JSON;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct IngPubErr {
@@ -23,7 +23,7 @@ impl Ing {
             "content": content,
             "isPrivate": false,
         })
-            .to_string();
+        .to_string();
 
         let client = reqwest::Client::new();
 

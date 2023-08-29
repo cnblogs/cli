@@ -5,10 +5,11 @@ use crate::auth::session;
 use crate::infra::result::IntoResult;
 use crate::ing::{Ing, IngType};
 use crate::user::User;
-use anyhow::Result;
+use anyhow::{ Result};
 use clap::CommandFactory;
 use clap::Parser;
 use colored::Colorize;
+use crate::infra::option::OptionExt;
 
 mod api_base;
 mod args;
@@ -28,19 +29,22 @@ async fn main() -> Result<()> {
         } => session::login(pat),
         Args { logout: true, .. } => session::logout(),
         Args {
-            user_info: true, ..
+            user_info: true,
+            with_pat,
+            ..
         } => {
-            let pat = session::get_pat()?;
+            let pat = with_pat.bind_result(session::get_pat)?;
             let user_info = User::new(pat).get_info().await?;
             println!("{}", user_info);
             ().into_ok()
         }
         Args {
             ing_list: Some(length),
+            with_pat,
             ..
         } => {
             let length = length.min(100);
-            let pat = session::get_pat()?;
+            let pat = with_pat.bind_result(session::get_pat)?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
 
@@ -54,9 +58,10 @@ async fn main() -> Result<()> {
         }
         Args {
             pub_ing: Some(content),
+            with_pat,
             ..
         } => {
-            let pat = session::get_pat()?;
+            let pat = with_pat.bind_result(session::get_pat)?;
             let result = Ing::new(pat).publish(content.clone()).await;
 
             if result.is_ok() {
@@ -70,9 +75,10 @@ async fn main() -> Result<()> {
         Args {
             id: Some(id),
             comment_ing: Some(content),
+            with_pat,
             ..
         } => {
-            let pat = session::get_pat()?;
+            let pat = with_pat.bind_result(session::get_pat)?;
             let result = Ing::new(pat).comment(id, content.clone(), None, None).await;
 
             if result.is_ok() {
