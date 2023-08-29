@@ -60,4 +60,16 @@ pub struct Args {
     #[arg(long)]
     #[arg(value_name = "PAT")]
     pub with_pat: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Show title and content of a specific post
+    /// You should also specify the id of post via option --id
+    #[arg(long)]
+    pub show_post: bool,
+
+    #[arg(verbatim_doc_comment)]
+    /// Show metadata of a specific post
+    /// You should also specify the id of post via option --id
+    #[arg(long)]
+    pub show_post_meta: bool,
 }

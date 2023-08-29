@@ -135,7 +135,7 @@ impl Display for IngCommentEntry {
         //f.write_fmt(format_args!("{:#?}\n", self))?;
 
         // TODO: use create_time
-        let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))
+        let _create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))
             .map(|dt| dt.format("%m-%d %H:%M").to_string())
             .unwrap();
 

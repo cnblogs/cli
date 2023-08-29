@@ -6,6 +6,7 @@ use crate::args::Args;
 use crate::auth::session;
 use crate::infra::result::IntoResult;
 use crate::ing::{Ing, IngType};
+use crate::post::Post;
 use crate::user::User;
 use anyhow::Result;
 use clap::CommandFactory;
@@ -17,6 +18,7 @@ pub mod args;
 pub mod auth;
 pub mod infra;
 pub mod ing;
+pub mod post;
 pub mod user;
 
 #[tokio::main(flavor = "multi_thread")]
@@ -67,6 +69,22 @@ async fn main() -> Result<()> {
             }
 
             ().into_ok()
+        }
+        _ if let Some(pair) = parser::show_post(&args) => {
+            let (pat, id) = pair?;
+
+            let post_entry = Post::new(pat).get_post(id).await?;
+
+            post_entry.display_title_body();
+
+            ().into_ok()
+        }
+        _ if let Some(pair) = parser::show_post_meta(&args) => {
+            let (pat, id) = pair?;
+
+            let post_entry = Post::new(pat).get_post(id).await?;
+
+            post_entry.display_meta()
         }
 
         _ => {
