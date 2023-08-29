@@ -116,7 +116,7 @@ impl Display for IngEntry {
         if self.is_lucky {
             let star_text = ing_star_tag_to_text(&self.icons);
             f.write_fmt(format_args!(" {}", star_text.yellow()))?;
-            f.write_fmt(format_args!("{}", "⭐".blink()))?;
+            f.write_fmt(format_args!("{}", "⭐"))?;
         }
         f.write_fmt(format_args!("\n  {}", self.user_name.cyan()))?;
         let content = fmt_content(&self.content);
