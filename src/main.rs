@@ -12,6 +12,7 @@ use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
 use colored::Colorize;
+use crate::args::parser::no_option;
 
 pub mod api_base;
 pub mod args;
@@ -87,8 +88,13 @@ async fn main() -> Result<()> {
             post_entry.display_meta()
         }
 
-        _ => {
+        _ if no_option(&args) => {
             Args::command().print_help()?;
+            ().into_ok()
+        }
+
+        _ => {
+            println!("Invalid usage, try 'cnb --help' for more information.");
             ().into_ok()
         }
     }?;

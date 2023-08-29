@@ -3,6 +3,24 @@ use crate::auth::session;
 use crate::infra::option::{IntoOption, OptionExt};
 use anyhow::Result;
 
+pub fn no_option(args: &Args) -> bool {
+    matches!(
+        args,
+        Args {
+            login: None,
+            logout: false,
+            user_info: false,
+            list_ing: None,
+            pub_ing: None,
+            comment_ing: None,
+            id: None,
+            with_pat: None,
+            show_post: false,
+            show_post_meta: false,
+        }
+    )
+}
+
 pub fn user_info(args: &Args) -> Option<Result<String>> {
     match args {
         Args {
