@@ -1,11 +1,11 @@
 use crate::infra::http::setup_auth;
+use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
 use crate::user::User;
 use anyhow::{anyhow, Result};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::fmt::{Display, Formatter};
 use std::ops::Not;
 
@@ -56,8 +56,7 @@ impl User {
             anyhow!("{}: {}", code, body).into_err()?
         }
 
-        let val: Value = serde_json::from_str(&body)?;
-        let user_info = serde_json::from_value::<UserInfo>(val)?;
+        let user_info = json::deserialize::<UserInfo>(&body)?;
         user_info.into_ok()
     }
 }

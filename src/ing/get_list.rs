@@ -1,4 +1,5 @@
 use crate::infra::http::setup_auth;
+use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::ing::{
     fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, Ing, IngType,
@@ -8,7 +9,6 @@ use anyhow::{bail, Result};
 use chrono::prelude::*;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::fmt::{Display, Formatter};
 use std::ops::Not;
 
@@ -90,8 +90,7 @@ impl Ing {
             bail!("{}: {}", code, body)
         }
 
-        let val: Value = serde_json::from_str(&body)?;
-        let ing_entry_vec = serde_json::from_value::<Vec<IngEntry>>(val)?;
+        let ing_entry_vec = json::deserialize::<Vec<IngEntry>>(&body)?;
         let iter = ing_entry_vec.into_iter().map(|entry| async move {
             let id = entry.id;
             (entry, self.get_comment_list(id).await)

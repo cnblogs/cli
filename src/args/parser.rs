@@ -17,7 +17,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
         } => with_pat.clone().bind_result(session::get_pat),
         _ => return None,
     }
-        .into_some()
+    .into_some()
 }
 
 pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
@@ -37,7 +37,7 @@ pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
             .map(|pat| (pat, content)),
         _ => return None,
     }
-        .into_some()
+    .into_some()
 }
 
 pub fn login(args: &Args) -> Option<&String> {
@@ -54,7 +54,7 @@ pub fn login(args: &Args) -> Option<&String> {
         } => pat,
         _ => return None,
     }
-        .into_some()
+    .into_some()
 }
 
 pub fn logout(args: &Args) -> bool {
@@ -90,7 +90,7 @@ pub fn ing_list(args: &Args) -> Option<Result<(String, usize)>> {
             .map(|pat| (pat, (*length).min(100))),
         _ => return None,
     }
-        .into_some()
+    .into_some()
 }
 
 pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
@@ -110,5 +110,5 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
             .map(|pat| (pat, content, *id)),
         _ => return None,
     }
-        .into_some()
+    .into_some()
 }
