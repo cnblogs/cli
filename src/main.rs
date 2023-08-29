@@ -34,7 +34,7 @@ async fn main() -> Result<()> {
             println!("{}", user_info);
             ().into_ok()
         }
-        _ if let Some(pair) = parser::ing_list(&args) => {
+        _ if let Some(pair) = parser::list_ing(&args) => {
             let (pat, length) = pair?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;

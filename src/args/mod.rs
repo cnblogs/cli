@@ -33,7 +33,7 @@ pub struct Args {
     #[arg(value_name = "LENGTH")]
     #[arg(num_args = 0..=1)]
     #[arg(default_missing_value = "8")]
-    pub ing_list: Option<usize>,
+    pub list_ing: Option<usize>,
 
     #[arg(verbatim_doc_comment)]
     /// Publish ing with specific content

@@ -27,7 +27,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
             login: None,
             logout: false,
             user_info: true,
-            ing_list: None,
+            list_ing: None,
             pub_ing: None,
             comment_ing: None,
             id: None,
@@ -46,7 +46,7 @@ pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
             login: None,
             logout: false,
             user_info: false,
-            ing_list: None,
+            list_ing: None,
             pub_ing: Some(content),
             comment_ing: None,
             id: None,
@@ -68,7 +68,7 @@ pub fn login(args: &Args) -> Option<&String> {
             login: Some(pat),
             logout: false,
             user_info: false,
-            ing_list: None,
+            list_ing: None,
             pub_ing: None,
             comment_ing: None,
             id: None,
@@ -88,7 +88,7 @@ pub fn logout(args: &Args) -> bool {
             login: None,
             logout: true,
             user_info: false,
-            ing_list: None,
+            list_ing: None,
             pub_ing: None,
             comment_ing: None,
             id: None,
@@ -99,13 +99,13 @@ pub fn logout(args: &Args) -> bool {
     )
 }
 
-pub fn ing_list(args: &Args) -> Option<Result<(String, usize)>> {
+pub fn list_ing(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
             login: None,
             logout: false,
             user_info: false,
-            ing_list: Some(length),
+            list_ing: Some(length),
             pub_ing: None,
             comment_ing: None,
             id: None,
@@ -127,7 +127,7 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
             login: None,
             logout: false,
             user_info: false,
-            ing_list: None,
+            list_ing: None,
             pub_ing: None,
             comment_ing: Some(content),
             id: Some(id),
@@ -149,7 +149,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
             login: None,
             logout: false,
             user_info: false,
-            ing_list: None,
+            list_ing: None,
             pub_ing: None,
             comment_ing: None,
             id: Some(id),
@@ -171,7 +171,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
             login: None,
             logout: false,
             user_info: false,
-            ing_list: None,
+            list_ing: None,
             pub_ing: None,
             comment_ing: None,
             id: Some(id),
