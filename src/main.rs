@@ -1,50 +1,44 @@
 #![feature(try_blocks)]
+#![feature(if_let_guard)]
 
 use crate::args::Args;
+use crate::args_parse::ing_list::parse_ing_list;
+use crate::args_parse::login::parse_login;
+use crate::args_parse::logout::parse_logout;
+use crate::args_parse::pub_ing::parse_pub_ing;
+use crate::args_parse::user_info::parse_user_info;
 use crate::auth::session;
 use crate::infra::result::IntoResult;
 use crate::ing::{Ing, IngType};
 use crate::user::User;
-use anyhow::{ Result};
+use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
 use colored::Colorize;
-use crate::infra::option::OptionExt;
+use crate::args_parse::comment_ing::parse_comment_ing;
 
-mod api_base;
-mod args;
-mod auth;
-mod infra;
-mod ing;
-mod user;
+pub mod api_base;
+pub mod args;
+pub mod args_parse;
+pub mod auth;
+pub mod infra;
+pub mod ing;
+pub mod user;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Args = Args::parse();
 
     match args {
-        Args {
-            login: Some(ref pat),
-            ..
-        } => session::login(pat),
-        Args { logout: true, .. } => session::logout(),
-        Args {
-            user_info: true,
-            with_pat,
-            ..
-        } => {
-            let pat = with_pat.bind_result(session::get_pat)?;
-            let user_info = User::new(pat).get_info().await?;
+        _ if let Some(pat) = parse_login(&args) => session::login(pat),
+        _ if parse_logout(&args) => session::logout(),
+        _ if let Some(pat) = parse_user_info(&args) => {
+            let user_info = User::new(pat?).get_info().await?;
             println!("{}", user_info);
             ().into_ok()
         }
-        Args {
-            ing_list: Some(length),
-            with_pat,
-            ..
-        } => {
-            let length = length.min(100);
-            let pat = with_pat.bind_result(session::get_pat)?;
+        _ if let Some(pair) = parse_ing_list(&args) => {
+            let (pat, length) = pair?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
 
@@ -56,12 +50,8 @@ async fn main() -> Result<()> {
 
             ().into_ok()
         }
-        Args {
-            pub_ing: Some(content),
-            with_pat,
-            ..
-        } => {
-            let pat = with_pat.bind_result(session::get_pat)?;
+        _ if let Some(pair) = parse_pub_ing(&args) => {
+            let (pat, content) = pair?;
             let result = Ing::new(pat).publish(content.clone()).await;
 
             if result.is_ok() {
@@ -72,13 +62,8 @@ async fn main() -> Result<()> {
 
             ().into_ok()
         }
-        Args {
-            id: Some(id),
-            comment_ing: Some(content),
-            with_pat,
-            ..
-        } => {
-            let pat = with_pat.bind_result(session::get_pat)?;
+        _ if let Some(triple) = parse_comment_ing(&args) => {
+            let (pat, content, id) = triple?;
             let result = Ing::new(pat).comment(id, content.clone(), None, None).await;
 
             if result.is_ok() {
