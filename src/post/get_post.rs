@@ -117,18 +117,22 @@ impl PostEntry {
     }
 
     pub fn display_meta(&self) -> Result<()> {
-        if self.is_pinned {
-            print!("{} ", " Pinned ".on_blue());
-        }
         println!("{}", self.title.cyan().bold());
-        if self.is_published {
-            println!("{}", "Published".green());
-        } else {
-            println!("{}", "Draft".yellow());
-        }
+        {
+            print!("Status");
+            if self.is_published {
+                print!(" {}", "Published".green());
+            } else {
+                print!(" {}", "Draft".yellow());
+            }
+            if self.is_pinned {
+                print!(" {}", "Pinned".blue());
+            }
+            println!()
+        };
         if let Some(body) = &self.body {
             let words_count = words_count::count(body).words;
-            println!("Words: {}", words_count);
+            println!("Words  {}", words_count);
         }
         if let Some(tags) = &self.tags {
             if let Some(tags_text) = tags
@@ -136,14 +140,15 @@ impl PostEntry {
                 .into_iter()
                 .reduce(|acc, tag| format!("{}, {}", acc, tag))
             {
-                println!("Tags: {}", tags_text);
+                println!("Tags   {}", tags_text);
             }
         }
         let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))?;
-        println!("Create: {}", create_time.format("%Y/%m/%d %H:%M"));
+        println!("Create {}", create_time.format("%Y/%m/%d %H:%M"));
         let modify_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))?;
-        println!("Modify: {}", modify_time.format("%Y/%m/%d %H:%M"));
-        println!("Link: https:{}", self.url);
+        println!("Modify {}", modify_time.format("%Y/%m/%d %H:%M"));
+        println!("Link   https:{}", self.url);
+
         ().into_ok()
     }
 }
