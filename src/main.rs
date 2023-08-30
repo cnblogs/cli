@@ -2,6 +2,7 @@
 #![feature(if_let_guard)]
 
 use crate::args::parser;
+use crate::args::parser::no_option;
 use crate::args::Args;
 use crate::auth::session;
 use crate::infra::result::IntoResult;
@@ -12,7 +13,6 @@ use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
 use colored::Colorize;
-use crate::args::parser::no_option;
 
 pub mod api_base;
 pub mod args;
@@ -86,6 +86,22 @@ async fn main() -> Result<()> {
             let post_entry = Post::new(pat).get_post(id).await?;
 
             post_entry.display_meta()
+        }
+        _ if let Some(pair) = parser::list_post(&args) => {
+            let (pat, length) = pair?;
+            let entry_vec = Post::new(pat).get_post_meta_list(1, length).await?;
+
+            entry_vec.iter().for_each(|entry| {
+                print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());
+                print!(" {}", entry.title.cyan().bold());
+                if entry.is_published {
+                    println!(" {}", "Published".green());
+                } else {
+                    println!(" {}", "Draft".yellow());
+                }
+            });
+
+            ().into_ok()
         }
 
         _ if no_option(&args) => {

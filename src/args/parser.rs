@@ -17,6 +17,7 @@ pub fn no_option(args: &Args) -> bool {
             with_pat: None,
             show_post: false,
             show_post_meta: false,
+            list_post: None
         }
     )
 }
@@ -34,6 +35,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
             with_pat,
             show_post: false,
             show_post_meta: false,
+            list_post: None,
         } => with_pat.clone().bind_result(session::get_pat),
         _ => return None,
     }
@@ -53,6 +55,7 @@ pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
             with_pat,
             show_post: false,
             show_post_meta: false,
+            list_post: None,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -75,6 +78,7 @@ pub fn login(args: &Args) -> Option<&String> {
             with_pat: None,
             show_post: false,
             show_post_meta: false,
+            list_post: None,
         } => pat,
         _ => return None,
     }
@@ -95,6 +99,7 @@ pub fn logout(args: &Args) -> bool {
             with_pat: None,
             show_post: false,
             show_post_meta: false,
+            list_post: None
         }
     )
 }
@@ -112,6 +117,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize)>> {
             with_pat,
             show_post: false,
             show_post_meta: false,
+            list_post: None,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -134,6 +140,7 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
             with_pat,
             show_post: false,
             show_post_meta: false,
+            list_post: None,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -156,6 +163,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
             with_pat,
             show_post: true,
             show_post_meta: false,
+            list_post: None,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -178,6 +186,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
             with_pat,
             show_post: false,
             show_post_meta: true,
+            list_post: None,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -185,4 +194,27 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
         _ => return None,
     }
     .into_some()
+}
+
+pub fn list_post(args: &Args) -> Option<Result<(String, usize)>> {
+    match args {
+        Args {
+            login: None,
+            logout: false,
+            user_info: false,
+            list_ing: None,
+            pub_ing: None,
+            comment_ing: None,
+            id: None,
+            with_pat,
+            show_post: false,
+            show_post_meta: false,
+            list_post: Some(length),
+        } => with_pat
+            .clone()
+            .bind_result(session::get_pat)
+            .map(|pat| (pat, (*length).min(100))),
+        _ => return None,
+    }
+        .into_some()
 }

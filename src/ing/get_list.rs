@@ -122,7 +122,7 @@ impl Display for IngEntry {
         let content = fmt_content(&self.content);
         f.write_fmt(format_args!(" {}", content))?;
         f.write_fmt(format_args!(
-            " {}{}",
+            " {} {}",
             "#".dimmed(),
             self.id.to_string().dimmed()
         ))?;

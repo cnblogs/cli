@@ -72,4 +72,15 @@ pub struct Args {
     /// You should also specify the id of post via option --id
     #[arg(long)]
     pub show_post_meta: bool,
+
+    #[arg(verbatim_doc_comment)]
+    /// Show post list, order by time in DESC
+    /// <LENGTH> should in range [0,100]
+    /// If <LENGTH> greater than 100, it will be set to 100
+    #[arg(long)]
+    #[arg(short = 'p')]
+    #[arg(value_name = "LENGTH")]
+    #[arg(num_args = 0..=1)]
+    #[arg(default_missing_value = "8")]
+    pub list_post: Option<usize>,
 }
