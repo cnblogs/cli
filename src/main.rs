@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
             ().into_ok()
         }
         _ if let Some(pair) = parser::list_ing(&args) => {
-            let (pat, length, rev) = pair?;
+            let (pat, _, length, rev) = pair?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
             display::list_ing(&ing_vec, rev);
@@ -69,7 +69,7 @@ async fn main() -> Result<()> {
             display::show_post_meta(&entry)
         }
         _ if let Some(pair) = parser::list_post(&args) => {
-            let (pat, length, rev) = pair?;
+            let (pat, _, length, rev) = pair?;
             let entry_vec = Post::new(pat).get_meta_list(1, length).await?;
             display::list_post(&entry_vec, rev);
             ().into_ok()

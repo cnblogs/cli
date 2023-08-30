@@ -88,4 +88,11 @@ pub struct Args {
     /// Reverse list output, such as --list-ing
     #[arg(long)]
     pub rev: bool,
+
+    #[arg(verbatim_doc_comment)]
+    /// Skip items while request list, such as --list-ing
+    #[arg(long)]
+    #[arg(value_name = "LENGTH")]
+    #[arg(default_value = "0")]
+    pub skip: usize,
 }
