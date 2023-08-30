@@ -63,6 +63,11 @@ pub struct IngCommentEntry {
 }
 
 impl Ing {
+    // TODO: stream-like API
+    pub async fn get_list_v2(&self, _skip: usize, _take: usize, _ing_type: IngType) {
+        todo!()
+    }
+
     pub async fn get_list(
         &self,
         page_index: usize,

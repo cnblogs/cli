@@ -1,5 +1,6 @@
 #![feature(try_blocks)]
 #![feature(if_let_guard)]
+#![feature(let_chains)]
 
 use crate::api::auth::session;
 use crate::api::ing::{Ing, IngType};

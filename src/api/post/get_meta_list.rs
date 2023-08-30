@@ -3,6 +3,7 @@ use crate::api::post::Post;
 use crate::blog_backend;
 use crate::infra::http::{cons_query_string, setup_auth};
 use crate::infra::json;
+use crate::infra::option::IntoOption;
 use crate::infra::result::IntoResult;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
@@ -28,9 +29,16 @@ impl Post {
 
         let client = reqwest::Client::new();
 
-        let mut meta_list = vec![];
+        // total_count is used for patch the buggy blog backend API
+        // If index is greater than the max page index, API will still return the last page
+        let mut total_count = None;
+
+        let mut entry_vec = vec![];
 
         for i in (skip + 1)..=(skip + take) {
+            if let Some(count) = total_count && count == i {
+                break;
+            }
             let req = {
                 let url = {
                     let query = vec![('t', 1), ('p', i), ('s', 1)];
@@ -55,13 +63,19 @@ impl Post {
                 struct Body {
                     #[serde(rename = "postList")]
                     pub list: Vec<PostEntry>,
+                    #[serde(rename = "postsCount")]
+                    pub total_count: usize,
                 }
                 json::deserialize::<Body>(&body)?
             };
 
-            meta_list.append(&mut body.list)
+            if total_count.is_none() {
+                total_count = body.total_count.into_some();
+            }
+
+            entry_vec.append(&mut body.list)
         }
 
-        meta_list.into_ok()
+        entry_vec.into_ok()
     }
 }
