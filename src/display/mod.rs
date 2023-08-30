@@ -1,10 +1,12 @@
 use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::ing::{fmt_content, get_ing_at_user_tag_text, rm_ing_at_user_tag};
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use chrono::DateTime;
 use colored::Colorize;
+use std::ops::Not;
 use std::path::PathBuf;
 
 pub fn login(cfg_path: &PathBuf) {
@@ -20,14 +22,33 @@ pub fn user_info(user_info: &UserInfo) {
 }
 
 pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
-    let iter: Box<dyn Iterator<Item = _>> = if rev {
+    let iter: Box<dyn Iterator<Item=&(IngEntry, Vec<IngCommentEntry>)>> = if rev {
         Box::new(ing_list.iter().rev())
     } else {
         Box::new(ing_list.iter())
     };
     iter.for_each(|(ing, comment_list)| {
         println!("{}", ing);
-        comment_list.iter().for_each(|c| println!("{}", c));
+        let len = comment_list.len();
+        if len != 0 {
+            let max_i = len - 1;
+            comment_list.iter().enumerate().for_each(|(i, entry)| {
+                if i != max_i {
+                    print!("    │ {}", entry.user_name.blue());
+                } else {
+                    print!("    └ {}", entry.user_name.blue());
+                }
+                let at_user = get_ing_at_user_tag_text(&entry.content);
+                if at_user.is_empty().not() {
+                    print!(" {}{}", "@".bright_black(), at_user.bright_black());
+                }
+                let content = {
+                    let content = rm_ing_at_user_tag(&entry.content);
+                    fmt_content(&content)
+                };
+                println!(" {}", content.dimmed());
+            });
+        }
         println!();
     });
 }
@@ -90,7 +111,7 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
 }
 
 pub fn list_post(entry_list: &[PostEntry], rev: bool) {
-    let iter: Box<dyn Iterator<Item = _>> = if rev {
+    let iter: Box<dyn Iterator<Item=_>> = if rev {
         Box::new(entry_list.iter().rev())
     } else {
         Box::new(entry_list.iter())

@@ -1,6 +1,4 @@
-use crate::api::ing::{
-    fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, Ing, IngType,
-};
+use crate::api::ing::{fmt_content, ing_star_tag_to_text, Ing, IngType};
 use crate::infra::http::setup_auth;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
@@ -15,53 +13,53 @@ use std::ops::Not;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngEntry {
     #[serde(rename = "Id")]
-    id: usize,
+    pub id: usize,
     #[serde(rename = "Content")]
-    content: String,
+    pub content: String,
     #[serde(rename = "IsPrivate")]
-    is_private: bool,
+    pub is_private: bool,
     #[serde(rename = "IsLucky")]
-    is_lucky: bool,
+    pub is_lucky: bool,
     #[serde(rename = "CommentCount")]
-    comment_count: usize,
+    pub comment_count: usize,
     #[serde(rename = "DateAdded")]
-    create_time: String,
+    pub create_time: String,
     #[serde(rename = "UserAlias")]
-    user_alias: String,
+    pub user_alias: String,
     #[serde(rename = "UserDisplayName")]
-    user_name: String,
+    pub user_name: String,
     #[serde(rename = "UserIconUrl")]
-    user_icon_url: String,
+    pub user_icon_url: String,
     #[serde(rename = "UserId")]
-    user_id: usize,
+    pub user_id: usize,
     #[serde(rename = "UserGuid")]
-    user_guid: String,
+    pub user_guid: String,
     #[serde(rename = "SendFrom")]
-    send_from: usize,
+    pub send_from: usize,
     #[serde(rename = "Icons")]
-    icons: String,
+    pub icons: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngCommentEntry {
     #[serde(rename = "Id")]
-    id: usize,
+    pub id: usize,
     #[serde(rename = "Content")]
-    content: String,
+    pub content: String,
     #[serde(rename = "DateAdded")]
-    create_time: String,
+    pub create_time: String,
     #[serde(rename = "StatusId")]
-    status_id: usize,
+    pub status_id: usize,
     #[serde(rename = "UserAlias")]
-    user_alias: String,
+    pub user_alias: String,
     #[serde(rename = "UserDisplayName")]
-    user_name: String,
+    pub user_name: String,
     #[serde(rename = "UserIconUrl")]
-    user_icon_url: String,
+    pub user_icon_url: String,
     #[serde(rename = "UserId")]
-    user_id: usize,
+    pub user_id: usize,
     #[serde(rename = "UserGuid")]
-    user_guid: String,
+    pub user_guid: String,
 }
 
 impl Ing {
@@ -118,40 +116,14 @@ impl Display for IngEntry {
             f.write_fmt(format_args!(" {}", star_text.yellow()))?;
             f.write_fmt(format_args!("{}", "⭐"))?;
         }
-        f.write_fmt(format_args!("\n  {}", self.user_name.cyan()))?;
-        let content = fmt_content(&self.content);
-        f.write_fmt(format_args!(" {}", content))?;
         f.write_fmt(format_args!(
             " {} {}",
             "#".dimmed(),
             self.id.to_string().dimmed()
         ))?;
-        ().into_ok()
-    }
-}
-
-impl Display for IngCommentEntry {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        //f.write_fmt(format_args!("{:#?}\n", self))?;
-
-        // TODO: use create_time
-        let _create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))
-            .map(|dt| dt.format("%m-%d %H:%M").to_string())
-            .unwrap();
-
-        f.write_fmt(format_args!("    │ {}", self.user_name.blue()))?;
-        let at_user = get_ing_at_user_tag_text(&self.content);
-        if at_user.is_empty().not() {
-            f.write_fmt(format_args!(
-                " {}{}",
-                "@".bright_black(),
-                at_user.bright_black()
-            ))?;
-        }
-        let content = rm_ing_at_user_tag(&self.content);
-        let content = fmt_content(&content);
-        f.write_fmt(format_args!(" {}", content.dimmed()))?;
-
+        f.write_fmt(format_args!("\n  {}", self.user_name.cyan()))?;
+        let content = fmt_content(&self.content);
+        f.write_fmt(format_args!(" {}", content))?;
         ().into_ok()
     }
 }
