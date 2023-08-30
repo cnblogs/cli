@@ -81,11 +81,10 @@ pub struct PostEntry {
 
 impl Post {
     pub async fn get_one(&self, id: usize) -> Result<PostEntry> {
-        let url = blog_backend!("/posts/{}", id);
-
         let client = reqwest::Client::new();
 
         let req = {
+            let url = blog_backend!("/posts/{}", id);
             let req = client.get(url);
             setup_auth(req, &self.pat)
         };

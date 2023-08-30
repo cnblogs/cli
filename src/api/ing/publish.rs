@@ -17,8 +17,6 @@ struct IngPubErr {
 
 impl Ing {
     pub async fn publish(&self, content: &str) -> Result<()> {
-        let url = openapi!("/statuses");
-
         let body = json!({
             "content": content,
             "isPrivate": false,
@@ -28,6 +26,7 @@ impl Ing {
         let client = reqwest::Client::new();
 
         let req = {
+            let url = openapi!("/statuses");
             let req = client
                 .post(url)
                 .header(CONTENT_TYPE, APPLICATION_JSON.to_string())

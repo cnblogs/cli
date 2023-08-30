@@ -69,11 +69,10 @@ impl Ing {
         page_size: usize,
         ing_type: IngType,
     ) -> Result<Vec<(IngEntry, Vec<IngCommentEntry>)>> {
-        let url = openapi!("/statuses/@{}", ing_type as usize);
-
         let client = reqwest::Client::new();
 
         let req = {
+            let url = openapi!("/statuses/@{}", ing_type as usize);
             let req = client.get(url);
             let queries = vec![("pageIndex", page_index), ("pageSize", page_size)];
             setup_auth(req, &self.pat).query(&queries)

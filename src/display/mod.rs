@@ -22,7 +22,7 @@ pub fn user_info(user_info: &UserInfo) {
 }
 
 pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
-    let iter: Box<dyn Iterator<Item=&(IngEntry, Vec<IngCommentEntry>)>> = if rev {
+    let iter: Box<dyn Iterator<Item = &(IngEntry, Vec<IngCommentEntry>)>> = if rev {
         Box::new(ing_list.iter().rev())
     } else {
         Box::new(ing_list.iter())
@@ -111,7 +111,7 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
 }
 
 pub fn list_post(entry_list: &[PostEntry], rev: bool) {
-    let iter: Box<dyn Iterator<Item=_>> = if rev {
+    let iter: Box<dyn Iterator<Item = &PostEntry>> = if rev {
         Box::new(entry_list.iter().rev())
     } else {
         Box::new(entry_list.iter())

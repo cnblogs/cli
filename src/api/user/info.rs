@@ -39,11 +39,10 @@ pub struct UserInfo {
 
 impl User {
     pub async fn get_info(&self) -> Result<UserInfo> {
-        let url = openapi!("/users");
-
         let client = reqwest::Client::new();
 
         let req = {
+            let url = openapi!("/users");
             let req = client.get(url);
             setup_auth(req, &self.pat)
         };

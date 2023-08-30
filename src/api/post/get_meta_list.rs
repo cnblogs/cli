@@ -56,7 +56,6 @@ impl Post {
                     #[serde(rename = "postList")]
                     pub list: Vec<PostEntry>,
                 }
-
                 json::deserialize::<Body>(&body)?
             };
 

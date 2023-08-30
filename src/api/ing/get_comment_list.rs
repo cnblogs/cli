@@ -8,11 +8,10 @@ use anyhow::{bail, Result};
 
 impl Ing {
     pub async fn get_comment_list(&self, ing_id: usize) -> Result<Vec<IngCommentEntry>> {
-        let url = openapi!("/statuses/{}/comments", ing_id);
-
         let client = reqwest::Client::new();
 
         let req = {
+            let url = openapi!("/statuses/{}/comments", ing_id);
             let req = client.get(url);
             setup_auth(req, &self.pat)
         };
