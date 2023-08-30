@@ -74,7 +74,7 @@ async fn main() -> Result<()> {
         _ if let Some(pair) = parser::show_post(&args) => {
             let (pat, id) = pair?;
 
-            let post_entry = Post::new(pat).get_post(id).await?;
+            let post_entry = Post::new(pat).get_one(id).await?;
 
             post_entry.display_title_body();
 
@@ -83,13 +83,13 @@ async fn main() -> Result<()> {
         _ if let Some(pair) = parser::show_post_meta(&args) => {
             let (pat, id) = pair?;
 
-            let post_entry = Post::new(pat).get_post(id).await?;
+            let post_entry = Post::new(pat).get_one(id).await?;
 
             post_entry.display_meta()
         }
         _ if let Some(pair) = parser::list_post(&args) => {
             let (pat, length) = pair?;
-            let entry_vec = Post::new(pat).get_post_meta_list(1, length).await?;
+            let entry_vec = Post::new(pat).get_meta_list(1, length).await?;
 
             entry_vec.iter().for_each(|entry| {
                 print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());

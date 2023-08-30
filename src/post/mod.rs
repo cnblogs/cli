@@ -1,5 +1,5 @@
-pub mod get_post;
-mod get_post_meta_list;
+pub mod get_one;
+mod get_meta_list;
 
 pub struct Post {
     pat: String,

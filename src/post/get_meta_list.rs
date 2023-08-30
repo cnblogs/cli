@@ -2,7 +2,7 @@ use crate::blog_backend;
 use crate::infra::http::{cons_query_string, setup_auth};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
-use crate::post::get_post::PostEntry;
+use crate::post::get_one::PostEntry;
 use crate::post::Post;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ Fields only available over blog_backend!("/posts/list?{}", query):
 */
 
 impl Post {
-    pub async fn get_post_meta_list(&self, skip: usize, take: usize) -> Result<Vec<PostEntry>> {
+    pub async fn get_meta_list(&self, skip: usize, take: usize) -> Result<Vec<PostEntry>> {
         // WRN:
         // This impl has low performance but robust
         // Current API of blog backend is buggy

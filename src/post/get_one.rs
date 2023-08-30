@@ -82,7 +82,7 @@ pub struct PostEntry {
 }
 
 impl Post {
-    pub async fn get_post(&self, id: usize) -> Result<PostEntry> {
+    pub async fn get_one(&self, id: usize) -> Result<PostEntry> {
         let url = blog_backend!("/posts/{}", id);
 
         let client = reqwest::Client::new();
