@@ -126,7 +126,7 @@ impl PostEntry {
                 print!(" {}", "Draft".yellow());
             }
             if self.is_pinned {
-                print!(" {}", "Pinned".blue());
+                print!(" {}", "Pinned".magenta());
             }
             println!()
         };

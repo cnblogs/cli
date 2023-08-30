@@ -95,10 +95,14 @@ async fn main() -> Result<()> {
                 print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());
                 print!(" {}", entry.title.cyan().bold());
                 if entry.is_published {
-                    println!(" {}", "Published".green());
+                    print!(" {}", "Pub".green());
                 } else {
-                    println!(" {}", "Draft".yellow());
+                    print!(" {}", "Dft".yellow());
                 }
+                if entry.is_pinned {
+                    print!(" {}", "Pin".magenta());
+                }
+                println!()
             });
 
             ().into_ok()
