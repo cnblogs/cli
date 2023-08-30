@@ -84,6 +84,10 @@ async fn main() -> Result<()> {
             ().into_ok()
         }
     }?;
-    //println!("{:?}", args);
+
+    if args.debug {
+        println!("{:#?}", args);
+    }
+
     ().into_ok()
 }

@@ -95,4 +95,11 @@ pub struct Args {
     #[arg(value_name = "LENGTH")]
     #[arg(default_value = "0")]
     pub skip: usize,
+
+    #[arg(verbatim_doc_comment)]
+    /// Execute in debug mode, this will print some messages for developer
+    /// THIS OPTION IS UNSTABLE FOREVER, any output from it maybe change in the future
+    /// You should NEVER rely on the output while you turn this option on
+    #[arg(long)]
+    pub debug: bool,
 }
