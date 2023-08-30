@@ -1,11 +1,11 @@
 use crate::infra::result::IntoResult;
-use crate::ing::get_list::{IngCommentEntry, IngEntry};
-use crate::post::get_one::PostEntry;
-use crate::user::info::UserInfo;
 use anyhow::Result;
 use chrono::DateTime;
 use colored::Colorize;
 use std::path::PathBuf;
+use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::post::get_one::PostEntry;
+use crate::api::user::info::UserInfo;
 
 pub fn login(cfg_path: &PathBuf) {
     println!("PAT was saved in {:?}", cfg_path);

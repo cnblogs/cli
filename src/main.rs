@@ -4,23 +4,19 @@
 use crate::args::parser;
 use crate::args::parser::no_option;
 use crate::args::Args;
-use crate::auth::session;
 use crate::infra::result::IntoResult;
-use crate::ing::{Ing, IngType};
-use crate::post::Post;
-use crate::user::User;
 use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
+use crate::api::auth::session;
+use crate::api::ing::{Ing, IngType};
+use crate::api::post::Post;
+use crate::api::user::User;
 
-pub mod api_base;
 pub mod args;
-pub mod auth;
 pub mod display;
 pub mod infra;
-pub mod ing;
-pub mod post;
-pub mod user;
+pub mod api;
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<()> {

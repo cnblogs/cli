@@ -2,11 +2,11 @@ use crate::blog_backend;
 use crate::infra::http::{cons_query_string, setup_auth};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
-use crate::post::get_one::PostEntry;
-use crate::post::Post;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 use std::ops::Not;
+use crate::api::post::get_one::PostEntry;
+use crate::api::post::Post;
 
 /*
 Fields only available over blog_backend!("/posts/list?{}", query):

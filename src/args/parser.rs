@@ -1,7 +1,7 @@
 use crate::args::Args;
-use crate::auth::session;
 use crate::infra::option::{IntoOption, OptionExt};
 use anyhow::Result;
+use crate::api::auth::session;
 
 pub fn no_option(args: &Args) -> bool {
     matches!(

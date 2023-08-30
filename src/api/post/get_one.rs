@@ -2,9 +2,9 @@ use crate::blog_backend;
 use crate::infra::http::{body_or_err, setup_auth};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
-use crate::post::Post;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use crate::api::post::Post;
 
 /*
 Fields only available over blog_backend!("/posts/{}", id):

@@ -1,9 +1,6 @@
 use crate::infra::http::setup_auth;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
-use crate::ing::{
-    fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, Ing, IngType,
-};
 use crate::openapi;
 use anyhow::{bail, Result};
 use chrono::prelude::*;
@@ -11,6 +8,7 @@ use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::ops::Not;
+use crate::api::ing::{fmt_content, get_ing_at_user_tag_text, Ing, ing_star_tag_to_text, IngType, rm_ing_at_user_tag};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngEntry {
