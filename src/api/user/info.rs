@@ -1,3 +1,4 @@
+use crate::api::user::User;
 use crate::infra::http::setup_auth;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
@@ -7,7 +8,6 @@ use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::ops::Not;
-use crate::api::user::User;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserInfo {

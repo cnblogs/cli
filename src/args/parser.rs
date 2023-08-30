@@ -1,7 +1,7 @@
+use crate::api::auth::session;
 use crate::args::Args;
 use crate::infra::option::{IntoOption, OptionExt};
 use anyhow::Result;
-use crate::api::auth::session;
 
 pub fn no_option(args: &Args) -> bool {
     matches!(
@@ -17,7 +17,8 @@ pub fn no_option(args: &Args) -> bool {
             with_pat: None,
             show_post: false,
             show_post_meta: false,
-            list_post: None
+            list_post: None,
+            rev: false
         }
     )
 }
@@ -36,6 +37,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
             show_post: false,
             show_post_meta: false,
             list_post: None,
+            rev: false,
         } => with_pat.clone().bind_result(session::get_pat),
         _ => return None,
     }
@@ -56,6 +58,7 @@ pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
             show_post: false,
             show_post_meta: false,
             list_post: None,
+            rev: false,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -79,6 +82,7 @@ pub fn login(args: &Args) -> Option<&String> {
             show_post: false,
             show_post_meta: false,
             list_post: None,
+            rev: false,
         } => pat,
         _ => return None,
     }
@@ -99,12 +103,13 @@ pub fn logout(args: &Args) -> bool {
             with_pat: None,
             show_post: false,
             show_post_meta: false,
-            list_post: None
+            list_post: None,
+            rev: false
         }
     )
 }
 
-pub fn list_ing(args: &Args) -> Option<Result<(String, usize)>> {
+pub fn list_ing(args: &Args) -> Option<Result<(String, usize, bool)>> {
     match args {
         Args {
             login: None,
@@ -118,10 +123,11 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize)>> {
             show_post: false,
             show_post_meta: false,
             list_post: None,
+            rev,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
-            .map(|pat| (pat, (*length).min(100))),
+            .map(|pat| (pat, (*length).min(100), *rev)),
         _ => return None,
     }
     .into_some()
@@ -141,6 +147,7 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
             show_post: false,
             show_post_meta: false,
             list_post: None,
+            rev: false,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -164,6 +171,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
             show_post: true,
             show_post_meta: false,
             list_post: None,
+            rev: false,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -187,6 +195,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
             show_post: false,
             show_post_meta: true,
             list_post: None,
+            rev: false,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
@@ -196,7 +205,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
     .into_some()
 }
 
-pub fn list_post(args: &Args) -> Option<Result<(String, usize)>> {
+pub fn list_post(args: &Args) -> Option<Result<(String, usize, bool)>> {
     match args {
         Args {
             login: None,
@@ -210,10 +219,11 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize)>> {
             show_post: false,
             show_post_meta: false,
             list_post: Some(length),
+            rev,
         } => with_pat
             .clone()
             .bind_result(session::get_pat)
-            .map(|pat| (pat, (*length).min(100))),
+            .map(|pat| (pat, (*length).min(100), *rev)),
         _ => return None,
     }
     .into_some()

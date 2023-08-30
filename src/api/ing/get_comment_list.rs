@@ -1,10 +1,10 @@
+use crate::api::ing::get_list::IngCommentEntry;
+use crate::api::ing::Ing;
 use crate::infra::http::setup_auth;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
 use anyhow::{bail, Result};
-use crate::api::ing::get_list::IngCommentEntry;
-use crate::api::ing::Ing;
 
 impl Ing {
     pub async fn get_comment_list(&self, ing_id: usize) -> Result<Vec<IngCommentEntry>> {

@@ -1,6 +1,10 @@
 #![feature(try_blocks)]
 #![feature(if_let_guard)]
 
+use crate::api::auth::session;
+use crate::api::ing::{Ing, IngType};
+use crate::api::post::Post;
+use crate::api::user::User;
 use crate::args::parser;
 use crate::args::parser::no_option;
 use crate::args::Args;
@@ -8,15 +12,11 @@ use crate::infra::result::IntoResult;
 use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
-use crate::api::auth::session;
-use crate::api::ing::{Ing, IngType};
-use crate::api::post::Post;
-use crate::api::user::User;
 
+pub mod api;
 pub mod args;
 pub mod display;
 pub mod infra;
-pub mod api;
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<()> {
@@ -39,10 +39,10 @@ async fn main() -> Result<()> {
             ().into_ok()
         }
         _ if let Some(pair) = parser::list_ing(&args) => {
-            let (pat, length) = pair?;
+            let (pat, length, rev) = pair?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
-            display::list_ing(&ing_vec);
+            display::list_ing(&ing_vec, rev);
             ().into_ok()
         }
         _ if let Some(pair) = parser::pub_ing(&args) => {
@@ -54,7 +54,7 @@ async fn main() -> Result<()> {
         _ if let Some(triple) = parser::comment_ing(&args) => {
             let (pat, content, id) = triple?;
             let result = Ing::new(pat).comment(id, content.clone(), None, None).await;
-            display::comment_ing(&result.map(|_|content));
+            display::comment_ing(&result.map(|_| content));
             ().into_ok()
         }
         _ if let Some(pair) = parser::show_post(&args) => {
@@ -69,9 +69,9 @@ async fn main() -> Result<()> {
             display::show_post_meta(&entry)
         }
         _ if let Some(pair) = parser::list_post(&args) => {
-            let (pat, length) = pair?;
+            let (pat, length, rev) = pair?;
             let entry_vec = Post::new(pat).get_meta_list(1, length).await?;
-            display::list_post(&entry_vec);
+            display::list_post(&entry_vec, rev);
             ().into_ok()
         }
 

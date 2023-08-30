@@ -1,3 +1,4 @@
+use crate::api::ing::Ing;
 use crate::infra::http::setup_auth;
 use crate::infra::result::IntoResult;
 use crate::openapi;
@@ -5,7 +6,6 @@ use anyhow::Result;
 use mime::APPLICATION_JSON;
 use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
-use crate::api::ing::Ing;
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]

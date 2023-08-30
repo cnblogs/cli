@@ -1,11 +1,11 @@
+use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::post::get_one::PostEntry;
+use crate::api::user::info::UserInfo;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use chrono::DateTime;
 use colored::Colorize;
 use std::path::PathBuf;
-use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
-use crate::api::post::get_one::PostEntry;
-use crate::api::user::info::UserInfo;
 
 pub fn login(cfg_path: &PathBuf) {
     println!("PAT was saved in {:?}", cfg_path);
@@ -19,8 +19,13 @@ pub fn user_info(user_info: &UserInfo) {
     println!("{}", user_info);
 }
 
-pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)]) {
-    ing_list.iter().for_each(|(ing, comment_list)| {
+pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
+    let iter: Box<dyn Iterator<Item = _>> = if rev {
+        Box::new(ing_list.iter().rev())
+    } else {
+        Box::new(ing_list.iter())
+    };
+    iter.for_each(|(ing, comment_list)| {
         println!("{}", ing);
         comment_list.iter().for_each(|c| println!("{}", c));
         println!();
@@ -84,8 +89,13 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
     ().into_ok()
 }
 
-pub fn list_post(entry_list: &[PostEntry]) {
-    entry_list.iter().for_each(|entry| {
+pub fn list_post(entry_list: &[PostEntry], rev: bool) {
+    let iter: Box<dyn Iterator<Item = _>> = if rev {
+        Box::new(entry_list.iter().rev())
+    } else {
+        Box::new(entry_list.iter())
+    };
+    iter.for_each(|entry| {
         print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());
         print!(" {}", entry.title.cyan().bold());
         if entry.is_published {

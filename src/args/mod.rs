@@ -83,4 +83,9 @@ pub struct Args {
     #[arg(num_args = 0..=1)]
     #[arg(default_missing_value = "8")]
     pub list_post: Option<usize>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Reverse list output, such as --list-ing
+    #[arg(long)]
+    pub rev: bool,
 }

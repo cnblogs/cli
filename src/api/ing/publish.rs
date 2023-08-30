@@ -1,3 +1,4 @@
+use crate::api::ing::Ing;
 use crate::infra::http::setup_auth;
 use crate::infra::result::IntoResult;
 use crate::openapi;
@@ -7,7 +8,6 @@ use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::ops::Not;
-use crate::api::ing::Ing;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct IngPubErr {
