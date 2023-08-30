@@ -4,8 +4,6 @@ use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::post::Post;
 use anyhow::Result;
-use chrono::DateTime;
-use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
 /*
@@ -105,50 +103,5 @@ impl Post {
         };
 
         body.entry.into_ok()
-    }
-}
-
-impl PostEntry {
-    pub fn display_title_body(&self) {
-        println!("{}\n", self.title.cyan().bold());
-        if let Some(body) = &self.body {
-            println!("{}", body);
-        }
-    }
-
-    pub fn display_meta(&self) -> Result<()> {
-        println!("{}", self.title.cyan().bold());
-        {
-            print!("Status");
-            if self.is_published {
-                print!(" {}", "Published".green());
-            } else {
-                print!(" {}", "Draft".yellow());
-            }
-            if self.is_pinned {
-                print!(" {}", "Pinned".magenta());
-            }
-            println!()
-        };
-        if let Some(body) = &self.body {
-            let words_count = words_count::count(body).words;
-            println!("Words  {}", words_count);
-        }
-        if let Some(tags) = &self.tags {
-            if let Some(tags_text) = tags
-                .clone()
-                .into_iter()
-                .reduce(|acc, tag| format!("{}, {}", acc, tag))
-            {
-                println!("Tags   {}", tags_text);
-            }
-        }
-        let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))?;
-        println!("Create {}", create_time.format("%Y/%m/%d %H:%M"));
-        let modify_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))?;
-        println!("Modify {}", modify_time.format("%Y/%m/%d %H:%M"));
-        println!("Link   https:{}", self.url);
-
-        ().into_ok()
     }
 }

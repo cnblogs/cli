@@ -16,7 +16,7 @@ struct IngPubErr {
 }
 
 impl Ing {
-    pub async fn publish(&self, content: String) -> Result<()> {
+    pub async fn publish(&self, content: &str) -> Result<()> {
         let url = openapi!("/statuses");
 
         let body = json!({

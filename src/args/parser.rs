@@ -216,5 +216,5 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize)>> {
             .map(|pat| (pat, (*length).min(100))),
         _ => return None,
     }
-        .into_some()
+    .into_some()
 }

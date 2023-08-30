@@ -24,25 +24,23 @@ fn get_cfg_path() -> Result<PathBuf> {
     home.join(".cnbrc").into_ok()
 }
 
-pub fn login(pat: &str) -> Result<()> {
+pub fn login(pat: &str) -> Result<PathBuf> {
     let cfg_path = get_cfg_path()?;
     let cfg_path = cfg_path.as_path();
 
     remove_pat(cfg_path)?;
     save_pat(pat, cfg_path)?;
-    println!("PAT was saved in {:?}", cfg_path);
 
-    ().into_ok()
+    cfg_path.to_owned().into_ok()
 }
 
-pub fn logout() -> Result<()> {
+pub fn logout() -> Result<PathBuf> {
     let cfg_path = get_cfg_path()?;
     let cfg_path = cfg_path.as_path();
 
     remove_pat(cfg_path)?;
-    println!("{:?} was removed", cfg_path);
 
-    ().into_ok()
+    cfg_path.to_owned().into_ok()
 }
 
 pub fn get_pat() -> Result<String> {

@@ -12,11 +12,11 @@ use crate::user::User;
 use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
-use colored::Colorize;
 
 pub mod api_base;
 pub mod args;
 pub mod auth;
+pub mod display;
 pub mod infra;
 pub mod ing;
 pub mod post;
@@ -27,84 +27,55 @@ async fn main() -> Result<()> {
     let args: Args = Args::parse();
 
     match args {
-        _ if let Some(pat) = parser::login(&args) => session::login(pat),
-        _ if parser::logout(&args) => session::logout(),
+        _ if let Some(pat) = parser::login(&args) => {
+            let cfg_path = session::login(pat)?;
+            display::login(&cfg_path);
+            ().into_ok()
+        }
+        _ if parser::logout(&args) => {
+            let cfg_path = session::logout()?;
+            display::logout(&cfg_path);
+            ().into_ok()
+        }
         _ if let Some(pat) = parser::user_info(&args) => {
             let user_info = User::new(pat?).get_info().await?;
-            println!("{}", user_info);
+            display::user_info(&user_info);
             ().into_ok()
         }
         _ if let Some(pair) = parser::list_ing(&args) => {
             let (pat, length) = pair?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
-
-            ing_vec.iter().for_each(|(ing, comment_list)| {
-                println!("{}", ing);
-                comment_list.iter().for_each(|c| println!("{}", c));
-                println!();
-            });
-
+            display::list_ing(&ing_vec);
             ().into_ok()
         }
         _ if let Some(pair) = parser::pub_ing(&args) => {
             let (pat, content) = pair?;
-            let result = Ing::new(pat).publish(content.clone()).await;
-
-            if result.is_ok() {
-                println!("{}: {}", "Published".green(), content);
-            } else {
-                println!("{}: {}", "Error".red(), result.unwrap_err());
-            }
-
+            let result = Ing::new(pat).publish(content).await;
+            display::pub_ing(&result.map(|_| content));
             ().into_ok()
         }
         _ if let Some(triple) = parser::comment_ing(&args) => {
             let (pat, content, id) = triple?;
             let result = Ing::new(pat).comment(id, content.clone(), None, None).await;
-
-            if result.is_ok() {
-                println!("{}: {}", "Commented".green(), content);
-            } else {
-                println!("{}: {}", "Error".red(), result.unwrap_err());
-            }
-
+            display::comment_ing(&result.map(|_|content));
             ().into_ok()
         }
         _ if let Some(pair) = parser::show_post(&args) => {
             let (pat, id) = pair?;
-
-            let post_entry = Post::new(pat).get_one(id).await?;
-
-            post_entry.display_title_body();
-
+            let entry = Post::new(pat).get_one(id).await?;
+            display::show_post(&entry);
             ().into_ok()
         }
         _ if let Some(pair) = parser::show_post_meta(&args) => {
             let (pat, id) = pair?;
-
-            let post_entry = Post::new(pat).get_one(id).await?;
-
-            post_entry.display_meta()
+            let entry = Post::new(pat).get_one(id).await?;
+            display::show_post_meta(&entry)
         }
         _ if let Some(pair) = parser::list_post(&args) => {
             let (pat, length) = pair?;
             let entry_vec = Post::new(pat).get_meta_list(1, length).await?;
-
-            entry_vec.iter().for_each(|entry| {
-                print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());
-                print!(" {}", entry.title.cyan().bold());
-                if entry.is_published {
-                    print!(" {}", "Pub".green());
-                } else {
-                    print!(" {}", "Dft".yellow());
-                }
-                if entry.is_pinned {
-                    print!(" {}", "Pin".magenta());
-                }
-                println!()
-            });
-
+            display::list_post(&entry_vec);
             ().into_ok()
         }
 
@@ -112,7 +83,6 @@ async fn main() -> Result<()> {
             Args::command().print_help()?;
             ().into_ok()
         }
-
         _ => {
             println!("Invalid usage, try 'cnb --help' for more information.");
             ().into_ok()

@@ -5,8 +5,8 @@ use anyhow::bail;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-mod get_comment_list;
-mod get_list;
+pub mod get_comment_list;
+pub mod get_list;
 
 pub struct Ing {
     pat: String,
