@@ -73,7 +73,7 @@ async fn main() -> Result<()> {
             Args::command().print_help()?;
         }
         _ => {
-            println!("Invalid usage, try 'cnb --help' for more information.");
+            println!("Invalid usage, follow '--help' for more information.");
         }
     }.into_ok::<anyhow::Error>()?;
 

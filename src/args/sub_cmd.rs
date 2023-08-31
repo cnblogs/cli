@@ -29,7 +29,7 @@ pub struct Ing {
     /// <LENGTH> should in range [0,100]
     /// If <LENGTH> greater than 100, it will be set to 100
     #[arg(long)]
-    #[arg(short = 'i')]
+    #[arg(short = 'l')]
     #[arg(value_name = "LENGTH")]
     #[arg(num_args = 0..=1)]
     #[arg(default_missing_value = "8")]
@@ -40,6 +40,7 @@ pub struct Ing {
     /// The visibility of ing is public
     /// This option has the alias --pub
     #[arg(long)]
+    #[arg(short = 'p')]
     #[arg(alias = "pub")]
     #[arg(value_name = "CONTENT")]
     pub publish: Option<String>,
@@ -48,6 +49,7 @@ pub struct Ing {
     /// Comment ing with specific content
     /// You should also specify the id of ing via option --id
     #[arg(long)]
+    #[arg(short = 'c')]
     #[arg(value_name = "CONTENT")]
     pub comment: Option<String>,
 }
