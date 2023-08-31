@@ -1,23 +1,15 @@
 use crate::api::auth::session;
-use crate::args::Args;
+use crate::args::{sub_cmd, Args, SubCmds};
 use crate::infra::option::{IntoOption, OptionExt};
 use anyhow::Result;
 
-pub fn no_option(args: &Args) -> bool {
+pub fn no_operation(args: &Args) -> bool {
     matches!(
         args,
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command: None,
             id: None,
             with_pat: None,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -28,17 +20,14 @@ pub fn no_option(args: &Args) -> bool {
 pub fn user_info(args: &Args) -> Option<Result<String>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: true,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command:
+                Some(SubCmds::User(sub_cmd::User {
+                    login: None,
+                    logout: false,
+                    info: true,
+                })),
             id: None,
             with_pat,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -48,20 +37,17 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
     .into_some()
 }
 
-pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
+pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: Some(content),
-            comment_ing: None,
+            command:
+                Some(SubCmds::Ing(sub_cmd::Ing {
+                    list: None,
+                    publish: Some(content),
+                    comment: None,
+                })),
             id: None,
             with_pat,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -77,17 +63,14 @@ pub fn pub_ing(args: &Args) -> Option<Result<(String, &String)>> {
 pub fn login(args: &Args) -> Option<&String> {
     match args {
         Args {
-            login: Some(pat),
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command:
+                Some(SubCmds::User(sub_cmd::User {
+                    login: Some(pat),
+                    logout: false,
+                    info: false,
+                })),
             id: None,
             with_pat: None,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -101,17 +84,13 @@ pub fn logout(args: &Args) -> bool {
     matches!(
         args,
         Args {
-            login: None,
-            logout: true,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command: Some(SubCmds::User(sub_cmd::User {
+                login: None,
+                logout: true,
+                info: false,
+            })),
             id: None,
             with_pat: None,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -122,17 +101,14 @@ pub fn logout(args: &Args) -> bool {
 pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: Some(length),
-            pub_ing: None,
-            comment_ing: None,
+            command:
+                Some(SubCmds::Ing(sub_cmd::Ing {
+                    list: Some(length),
+                    publish: None,
+                    comment: None,
+                })),
             id: None,
             with_pat,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev,
             skip,
             debug: _debug,
@@ -148,17 +124,14 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
 pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: Some(content),
+            command:
+                Some(SubCmds::Ing(sub_cmd::Ing {
+                    list: None,
+                    publish: None,
+                    comment: Some(content),
+                })),
             id: Some(id),
             with_pat,
-            show_post: false,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -174,17 +147,14 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
 pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command:
+                Some(SubCmds::Post(sub_cmd::Post {
+                    show: true,
+                    show_meta: false,
+                    list: None,
+                })),
             id: Some(id),
             with_pat,
-            show_post: true,
-            show_post_meta: false,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -200,17 +170,14 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
 pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command:
+                Some(SubCmds::Post(sub_cmd::Post {
+                    show: false,
+                    show_meta: true,
+                    list: None,
+                })),
             id: Some(id),
             with_pat,
-            show_post: false,
-            show_post_meta: true,
-            list_post: None,
             rev: false,
             skip: 0,
             debug: _debug,
@@ -226,17 +193,14 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
 pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
     match args {
         Args {
-            login: None,
-            logout: false,
-            user_info: false,
-            list_ing: None,
-            pub_ing: None,
-            comment_ing: None,
+            command:
+                Some(SubCmds::Post(sub_cmd::Post {
+                    show: false,
+                    show_meta: false,
+                    list: Some(length),
+                })),
             id: None,
             with_pat,
-            show_post: false,
-            show_post_meta: false,
-            list_post: Some(length),
             rev,
             skip,
             debug: _debug,

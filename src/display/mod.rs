@@ -53,7 +53,7 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
     });
 }
 
-pub fn pub_ing(result: &Result<&String>) {
+pub fn publish_ing(result: &Result<&String>) {
     match result {
         Ok(content) => println!("{}: {}", "Published".green(), content),
         Err(e) => println!("{}: {}", "Error".red(), e),
