@@ -51,9 +51,12 @@ pub struct Args {
 #[derive(Subcommand, Debug)]
 pub enum SubCmds {
     /// User operations
+    #[clap(visible_alias = "u")]
     User(sub_cmd::User),
     /// Ing operations
+    #[clap(visible_alias = "i")]
     Ing(sub_cmd::Ing),
     /// Post operations
+    #[clap(visible_alias = "p")]
     Post(sub_cmd::Post),
 }
