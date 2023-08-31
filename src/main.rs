@@ -72,8 +72,8 @@ async fn main() -> Result<()> {
             display::show_post_meta(&entry)
         }
         _ if let Some(pair) = parser::list_post(&args) => {
-            let (pat, _, length, rev) = pair?;
-            let entry_vec = Post::new(pat).get_meta_list(1, length).await?;
+            let (pat, skip, take, rev) = pair?;
+            let entry_vec = Post::new(pat).get_meta_list(skip, take).await?;
             display::list_post(&entry_vec, rev);
             ().into_ok()
         }
