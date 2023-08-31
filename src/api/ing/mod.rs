@@ -1,5 +1,5 @@
-mod comment;
-mod publish;
+pub mod comment;
+pub mod publish;
 
 use crate::infra::result::IntoResult;
 use anyhow::bail;

@@ -3,7 +3,6 @@ use crate::api::post::Post;
 use crate::blog_backend;
 use crate::infra::http::{body_or_err, cons_query_string, setup_auth};
 use crate::infra::json;
-use crate::infra::option::IntoOption;
 use crate::infra::result::IntoResult;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
@@ -30,14 +29,15 @@ impl Post {
 
         // total_count is used for patch the buggy blog backend API
         // If index is greater than the max page index, API will still return the last page
-        let mut total_count = None;
+        let total_count = self.get_count().await?;
 
         let mut entry_vec = vec![];
 
         for i in (skip + 1)..=(skip + take) {
-            if let Some(count) = total_count && count == i {
+            if i > total_count {
                 break;
             }
+
             let req = {
                 let url = {
                     let query = vec![('t', 1), ('p', i), ('s', 1)];
@@ -61,10 +61,6 @@ impl Post {
                     pub total_count: usize,
                 }
                 let mut body = json::deserialize::<Body>(&json)?;
-
-                if total_count.is_none() {
-                    total_count = body.total_count.into_some();
-                }
 
                 body.list.pop().ok_or(anyhow!("No item in response list"))
             }?;
