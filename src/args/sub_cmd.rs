@@ -38,10 +38,9 @@ pub struct Ing {
     #[arg(verbatim_doc_comment)]
     /// Publish ing with specific content
     /// The visibility of ing is public
-    /// This option has the alias --pub
     #[arg(long)]
     #[arg(short = 'p')]
-    #[arg(alias = "pub")]
+    #[arg(visible_alias = "pub")]
     #[arg(value_name = "CONTENT")]
     pub publish: Option<String>,
 
