@@ -1,6 +1,8 @@
 #![feature(try_blocks)]
 #![feature(if_let_guard)]
 #![feature(let_chains)]
+#![feature(type_name_of_val)]
+#![feature(iterator_try_collect)]
 
 use crate::api::auth::session;
 use crate::api::ing::{Ing, IngType};
@@ -40,9 +42,9 @@ async fn main() -> Result<()> {
             ().into_ok()
         }
         _ if let Some(pair) = parser::list_ing(&args) => {
-            let (pat, _, length, rev) = pair?;
+            let (pat, skip, take, rev) = pair?;
             let ing_type = IngType::Public;
-            let ing_vec = Ing::new(pat).get_list(1, length, ing_type).await?;
+            let ing_vec = Ing::new(pat).get_list(skip, take, &ing_type).await?;
             display::list_ing(&ing_vec, rev);
             ().into_ok()
         }

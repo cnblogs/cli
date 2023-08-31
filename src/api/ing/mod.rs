@@ -1,5 +1,6 @@
 mod comment;
 mod publish;
+
 use crate::infra::result::IntoResult;
 use anyhow::bail;
 use lazy_static::lazy_static;
@@ -18,6 +19,7 @@ impl Ing {
     }
 }
 
+#[derive(Clone, Debug)]
 pub enum IngType {
     Following = 1,
     Myself = 4,
@@ -29,6 +31,7 @@ pub enum IngType {
     Mention = 14,
 }
 
+#[derive(Clone, Debug)]
 pub enum IngSendFrom {
     None = 0,
     Ms = 1,
