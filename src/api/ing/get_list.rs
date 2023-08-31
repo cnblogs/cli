@@ -70,7 +70,7 @@ impl Ing {
     ) -> Result<Vec<(IngEntry, Vec<IngCommentEntry>)>> {
         let client = &reqwest::Client::new();
 
-        let range = (skip + 1)..(skip + take);
+        let range = (skip + 1)..=(skip + take);
         let fut_iter = range.map(|i| async move {
             let req = {
                 let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
