@@ -86,7 +86,7 @@ impl Ing {
             let entry_with_comment = {
                 let entry = json::deserialize::<Vec<IngEntry>>(&body)?
                     .pop()
-                    .ok_or(anyhow!("No item in response"))?;
+                    .ok_or(anyhow!("No item in response list"))?;
 
                 let id = entry.id;
                 (entry, self.get_comment_list(id).await?)

@@ -1,10 +1,10 @@
 use crate::api::ing::get_list::IngCommentEntry;
 use crate::api::ing::Ing;
-use crate::infra::http::setup_auth;
+use crate::infra::http::{body_or_err, setup_auth};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
-use anyhow::{bail, Result};
+use anyhow::Result;
 
 impl Ing {
     pub async fn get_comment_list(&self, ing_id: usize) -> Result<Vec<IngCommentEntry>> {
@@ -17,14 +17,11 @@ impl Ing {
         };
         let resp = req.send().await?;
 
-        let code = resp.status();
-        let body = resp.text().await?;
+        let entry_vec = {
+            let body = body_or_err(resp).await?;
+            json::deserialize::<Vec<IngCommentEntry>>(&body)?
+        };
 
-        if code.is_success() {
-            let ing_entry_vec = json::deserialize::<Vec<IngCommentEntry>>(&body)?;
-            ing_entry_vec.into_ok()
-        } else {
-            bail!("{}: {}", code, body)
-        }
+        entry_vec.into_ok()
     }
 }

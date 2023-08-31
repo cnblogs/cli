@@ -1,13 +1,12 @@
 use crate::api::post::get_one::PostEntry;
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{cons_query_string, setup_auth};
+use crate::infra::http::{body_or_err, cons_query_string, setup_auth};
 use crate::infra::json;
 use crate::infra::option::IntoOption;
 use crate::infra::result::IntoResult;
-use anyhow::{bail, Result};
+use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
-use std::ops::Not;
 
 /*
 Fields only available over blog_backend!("/posts/list?{}", query):
@@ -49,16 +48,11 @@ impl Post {
                 let req = client.get(url);
                 setup_auth(req, &self.pat)
             };
+
             let resp = req.send().await?;
 
-            let code = resp.status();
-            let body = resp.text().await?;
-
-            if code.is_success().not() {
-                bail!("{}: {}", code, body)
-            }
-
-            let mut body = {
+            let entry = {
+                let json = body_or_err(resp).await?;
                 #[derive(Serialize, Deserialize, Debug)]
                 struct Body {
                     #[serde(rename = "postList")]
@@ -66,14 +60,16 @@ impl Post {
                     #[serde(rename = "postsCount")]
                     pub total_count: usize,
                 }
-                json::deserialize::<Body>(&body)?
-            };
+                let mut body = json::deserialize::<Body>(&json)?;
 
-            if total_count.is_none() {
-                total_count = body.total_count.into_some();
-            }
+                if total_count.is_none() {
+                    total_count = body.total_count.into_some();
+                }
 
-            entry_vec.append(&mut body.list)
+                body.list.pop().ok_or(anyhow!("No item in response list"))
+            }?;
+
+            entry_vec.push(entry)
         }
 
         entry_vec.into_ok()

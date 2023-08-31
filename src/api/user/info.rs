@@ -1,13 +1,12 @@
 use crate::api::user::User;
-use crate::infra::http::setup_auth;
+use crate::infra::http::{body_or_err, setup_auth};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
-use std::ops::Not;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserInfo {
@@ -48,14 +47,12 @@ impl User {
         };
 
         let resp = req.send().await?;
-        let code = resp.status();
-        let body = resp.text().await?;
 
-        if code.is_success().not() {
-            anyhow!("{}: {}", code, body).into_err()?
-        }
+        let user_info = {
+            let json = body_or_err(resp).await?;
+            json::deserialize::<UserInfo>(&json)?
+        };
 
-        let user_info = json::deserialize::<UserInfo>(&body)?;
         user_info.into_ok()
     }
 }

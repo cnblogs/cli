@@ -90,17 +90,18 @@ impl Post {
         };
 
         let resp = req.send().await?;
-        let json = body_or_err(resp).await?;
 
-        let body = {
+        let entry = {
+            let json = body_or_err(resp).await?;
             #[derive(Serialize, Deserialize, Debug)]
             struct Body {
                 #[serde(rename = "blogPost")]
                 pub entry: PostEntry,
             }
-            json::deserialize::<Body>(&json)?
+            let body = json::deserialize::<Body>(&json)?;
+            body.entry
         };
 
-        body.entry.into_ok()
+        entry.into_ok()
     }
 }
