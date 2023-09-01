@@ -2,6 +2,7 @@ use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::Style;
+use crate::infra::result::IntoResult;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -25,20 +26,26 @@ pub fn logout(style: &Style, cfg_path: &PathBuf) {
     }
 }
 
-pub fn user_info(style: &Style, user_info: &UserInfo) {
+pub fn user_info(style: &Style, user_info: &UserInfo) -> Result<()> {
     match style {
         Style::Colorful => colorful::user_info(user_info),
         Style::Normal => normal::user_info(user_info),
-        Style::Json => json::user_info(user_info).unwrap(),
-    }
+        Style::Json => return json::user_info(user_info),
+    };
+    ().into_ok()
 }
 
-pub fn list_ing(style: &Style, ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
+pub fn list_ing(
+    style: &Style,
+    ing_list: &[(IngEntry, Vec<IngCommentEntry>)],
+    rev: bool,
+) -> Result<()> {
     match style {
         Style::Colorful => colorful::list_ing(ing_list, rev),
         Style::Normal => normal::list_ing(ing_list, rev),
-        Style::Json => json::list_ing(ing_list, rev).unwrap(),
-    }
+        Style::Json => return json::list_ing(ing_list, rev),
+    };
+    ().into_ok()
 }
 
 pub fn publish_ing(style: &Style, result: &Result<&String>) {

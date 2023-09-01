@@ -1,13 +1,10 @@
-use crate::api::ing::{fmt_content, ing_star_tag_to_text, Ing, IngType};
+use crate::api::ing::{Ing, IngType};
 use crate::infra::http::{body_or_err, setup_auth};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
 use anyhow::{anyhow, Result};
-use chrono::prelude::*;
-use colored::Colorize;
 use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngEntry {

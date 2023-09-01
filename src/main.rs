@@ -42,36 +42,36 @@ async fn main() -> Result<()> {
         }
         _ if let Some(pat) = parser::user_info(&args) => {
             let user_info = User::new(pat?).get_info().await?;
-            display::user_info(style, &user_info);
+            return display::user_info(style, &user_info)
         }
-        _ if let Some(pair) = parser::list_ing(&args) => {
-            let (pat, skip, take, rev) = pair?;
+        _ if let Some(r) = parser::list_ing(&args) => {
+            let (pat, skip, take, rev) = r?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(skip, take, &ing_type).await?;
-            display::list_ing(style, &ing_vec, rev);
+            return display::list_ing(style, &ing_vec, rev)
         }
-        _ if let Some(pair) = parser::publish_ing(&args) => {
-            let (pat, content) = pair?;
+        _ if let Some(r) = parser::publish_ing(&args) => {
+            let (pat, content) = r?;
             let result = Ing::new(pat).publish(content).await;
             display::publish_ing(style, &result.map(|_| content));
         }
-        _ if let Some(triple) = parser::comment_ing(&args) => {
-            let (pat, content, id) = triple?;
+        _ if let Some(r) = parser::comment_ing(&args) => {
+            let (pat, content, id) = r?;
             let result = Ing::new(pat).comment(id, content.clone(), None, None).await;
             display::comment_ing(style, &result.map(|_| content));
         }
-        _ if let Some(pair) = parser::show_post(&args) => {
-            let (pat, id) = pair?;
+        _ if let Some(r) = parser::show_post(&args) => {
+            let (pat, id) = r?;
             let entry = Post::new(pat).get_one(id).await?;
             display::show_post(style, &entry);
         }
-        _ if let Some(pair) = parser::show_post_meta(&args) => {
-            let (pat, id) = pair?;
+        _ if let Some(r) = parser::show_post_meta(&args) => {
+            let (pat, id) = r?;
             let entry = Post::new(pat).get_one(id).await?;
             display::show_post_meta(style, &entry)?;
         }
-        _ if let Some(pair) = parser::list_post(&args) => {
-            let (pat, skip, take, rev) = pair?;
+        _ if let Some(r) = parser::list_post(&args) => {
+            let (pat, skip, take, rev) = r?;
             let (entry_vec, total_count) = Post::new(pat).get_meta_list(skip, take).await?;
             display::list_post(style, &entry_vec, total_count, rev);
         }
