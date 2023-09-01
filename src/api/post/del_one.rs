@@ -4,7 +4,7 @@ use crate::infra::http::{setup_auth, unit_or_err};
 use anyhow::Result;
 
 impl Post {
-    pub(crate) async fn del_one(&self, id: usize) -> Result<()> {
+    pub async fn del_one(&self, id: usize) -> Result<()> {
         let client = reqwest::Client::new();
 
         let req = {

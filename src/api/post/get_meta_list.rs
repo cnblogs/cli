@@ -24,20 +24,14 @@ impl Post {
         // This impl has low performance but robust
         // Current API of blog backend is buggy
         // It's not worth to design a more efficient impl
-
-        let client = reqwest::Client::new();
+        let client = &reqwest::Client::new();
 
         // total_count is used for patch the buggy blog backend API
         // If index is greater than the max page index, API will still return the last page
         let total_count = self.get_count().await?;
 
-        let mut entry_vec = vec![];
-
-        for i in (skip + 1)..=(skip + take) {
-            if i > total_count {
-                break;
-            }
-
+        let range = (skip + 1)..=(skip + take).min(total_count);
+        let fut_iter = range.map(|i| async move {
             let req = {
                 let url = {
                     let query = vec![('t', 1), ('p', i), ('s', 1)];
@@ -51,7 +45,8 @@ impl Post {
 
             let resp = req.send().await?;
 
-            let entry = {
+            // entry
+            {
                 let json = body_or_err(resp).await?;
                 #[derive(Serialize, Deserialize, Debug)]
                 struct Body {
@@ -63,11 +58,14 @@ impl Post {
                 let mut body = json::deserialize::<Body>(&json)?;
 
                 body.list.pop().ok_or(anyhow!("No item in response list"))
-            }?;
+            }
+        });
 
-            entry_vec.push(entry)
-        }
+        let vec = futures::future::join_all(fut_iter)
+            .await
+            .into_iter()
+            .collect::<Result<Vec<_>>>();
 
-        (entry_vec, total_count).into_ok()
+        (vec?, total_count).into_ok()
     }
 }
