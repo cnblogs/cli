@@ -31,7 +31,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
             rev: false,
             skip: 0,
             ..
-        } => with_pat.clone().bind_result(session::get_pat),
+        } => with_pat.clone().or_eval_result(session::get_pat),
         _ => return None,
     }
     .into_some()
@@ -53,7 +53,7 @@ pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
             ..
         } => with_pat
             .clone()
-            .bind_result(session::get_pat)
+            .or_eval_result(session::get_pat)
             .map(|pat| (pat, content)),
         _ => return None,
     }
@@ -114,7 +114,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
             ..
         } => with_pat
             .clone()
-            .bind_result(session::get_pat)
+            .or_eval_result(session::get_pat)
             .map(|pat| (pat, *skip, (*length).min(100), *rev)),
         _ => return None,
     }
@@ -137,7 +137,7 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
             ..
         } => with_pat
             .clone()
-            .bind_result(session::get_pat)
+            .or_eval_result(session::get_pat)
             .map(|pat| (pat, content, *id)),
         _ => return None,
     }
@@ -160,7 +160,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
             ..
         } => with_pat
             .clone()
-            .bind_result(session::get_pat)
+            .or_eval_result(session::get_pat)
             .map(|pat| (pat, *id)),
         _ => return None,
     }
@@ -183,7 +183,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
             ..
         } => with_pat
             .clone()
-            .bind_result(session::get_pat)
+            .or_eval_result(session::get_pat)
             .map(|pat| (pat, *id)),
         _ => return None,
     }
@@ -206,7 +206,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
             ..
         } => with_pat
             .clone()
-            .bind_result(session::get_pat)
+            .or_eval_result(session::get_pat)
             .map(|pat| (pat, *skip, (*length).min(100), *rev)),
         _ => return None,
     }

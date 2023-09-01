@@ -29,7 +29,15 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) -> Res
     } else {
         Box::new(ing_list.iter())
     };
-    let vec = iter.into_iter().collect::<Vec<_>>();
+    let vec = iter
+        .into_iter()
+        .map(|(entry, comment_list)| {
+            json!({
+                "entry": entry,
+                "comment_list": comment_list
+            })
+        })
+        .collect::<Vec<_>>();
     let json = json::serialize(vec)?;
     print!("{}", json);
     ().into_ok()
