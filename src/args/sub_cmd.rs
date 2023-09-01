@@ -84,7 +84,6 @@ pub struct Post {
     /// Delete post
     /// You should also specify the id of post via option --id
     #[arg(long)]
-    #[arg(short = 'd')]
     #[arg(visible_alias = "del")]
-    pub delete: bool,
+    pub delete: bool
 }
