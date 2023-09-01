@@ -1,132 +1,82 @@
 use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
-use crate::api::ing::{fmt_content, get_ing_at_user_tag_text, rm_ing_at_user_tag};
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
-use crate::infra::result::IntoResult;
+use crate::args::Style;
 use anyhow::Result;
-use chrono::DateTime;
-use colored::Colorize;
-use std::ops::Not;
 use std::path::PathBuf;
 
-pub fn login(cfg_path: &PathBuf) {
-    println!("PAT was saved in {:?}", cfg_path);
-}
+mod colorful;
+mod json;
+mod normal;
 
-pub fn logout(cfg_path: &PathBuf) {
-    println!("{:?} was removed", cfg_path);
-}
-
-pub fn user_info(user_info: &UserInfo) {
-    println!("{}", user_info);
-}
-
-pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
-    let iter: Box<dyn Iterator<Item = &(IngEntry, Vec<IngCommentEntry>)>> = if rev {
-        Box::new(ing_list.iter().rev())
-    } else {
-        Box::new(ing_list.iter())
-    };
-    iter.for_each(|(ing, comment_list)| {
-        println!("{}", ing);
-        let len = comment_list.len();
-        if len != 0 {
-            let max_i = len - 1;
-            comment_list.iter().enumerate().for_each(|(i, entry)| {
-                if i != max_i {
-                    print!("    │ {}", entry.user_name.blue());
-                } else {
-                    print!("    └ {}", entry.user_name.blue());
-                }
-                let at_user = get_ing_at_user_tag_text(&entry.content);
-                if at_user.is_empty().not() {
-                    print!(" {}{}", "@".bright_black(), at_user.bright_black());
-                }
-                let content = {
-                    let content = rm_ing_at_user_tag(&entry.content);
-                    fmt_content(&content)
-                };
-                println!(" {}", content.dimmed());
-            });
-        }
-        println!();
-    });
-}
-
-pub fn publish_ing(result: &Result<&String>) {
-    match result {
-        Ok(content) => println!("{}: {}", "Published".green(), content),
-        Err(e) => println!("{}: {}", "Error".red(), e),
+pub fn login(style: &Style, cfg_path: &PathBuf) {
+    match style {
+        Style::Colorful => colorful::login(cfg_path),
+        Style::Normal => normal::login(cfg_path),
+        Style::Json => json::login(cfg_path),
     }
 }
 
-pub fn comment_ing(result: &Result<&String>) {
-    match result {
-        Ok(content) => println!("{}: {}", "Commented".green(), content),
-        Err(e) => println!("{}: {}", "Error".red(), e),
+pub fn logout(style: &Style, cfg_path: &PathBuf) {
+    match style {
+        Style::Colorful => colorful::logout(cfg_path),
+        Style::Normal => normal::logout(cfg_path),
+        Style::Json => json::logout(cfg_path),
     }
 }
 
-pub fn show_post(entry: &PostEntry) {
-    println!("{}\n", entry.title.cyan().bold());
-    if let Some(body) = &entry.body {
-        println!("{}", body);
+pub fn user_info(style: &Style, user_info: &UserInfo) {
+    match style {
+        Style::Colorful => colorful::user_info(user_info),
+        Style::Normal => normal::user_info(user_info),
+        Style::Json => json::user_info(user_info).unwrap(),
     }
 }
 
-pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
-    println!("{}", entry.title.cyan().bold());
-    {
-        print!("Status");
-        if entry.is_published {
-            print!(" {}", "Published".green());
-        } else {
-            print!(" {}", "Draft".yellow());
-        }
-        if entry.is_pinned {
-            print!(" {}", "Pinned".magenta());
-        }
-        println!()
-    };
-    if let Some(body) = &entry.body {
-        let words_count = words_count::count(body).words;
-        println!("Words  {}", words_count);
+pub fn list_ing(style: &Style, ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
+    match style {
+        Style::Colorful => colorful::list_ing(ing_list, rev),
+        Style::Normal => normal::list_ing(ing_list, rev),
+        Style::Json => json::list_ing(ing_list, rev).unwrap(),
     }
-    if let Some(tags) = &entry.tags {
-        if let Some(tags_text) = tags
-            .clone()
-            .into_iter()
-            .reduce(|acc, tag| format!("{}, {}", acc, tag))
-        {
-            println!("Tags   {}", tags_text);
-        }
-    }
-    let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time))?;
-    println!("Create {}", create_time.format("%Y/%m/%d %H:%M"));
-    let modify_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time))?;
-    println!("Modify {}", modify_time.format("%Y/%m/%d %H:%M"));
-    println!("Link   https:{}", entry.url);
-
-    ().into_ok()
 }
 
-pub fn list_post(entry_list: &[PostEntry], rev: bool) {
-    let iter: Box<dyn Iterator<Item = &PostEntry>> = if rev {
-        Box::new(entry_list.iter().rev())
-    } else {
-        Box::new(entry_list.iter())
-    };
-    iter.for_each(|entry| {
-        print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());
-        print!(" {}", entry.title.cyan().bold());
-        if entry.is_published {
-            print!(" {}", "Pub".green());
-        } else {
-            print!(" {}", "Dft".yellow());
-        }
-        if entry.is_pinned {
-            print!(" {}", "Pin".magenta());
-        }
-        println!()
-    });
+pub fn publish_ing(style: &Style, result: &Result<&String>) {
+    match style {
+        Style::Colorful => colorful::publish_ing(result),
+        Style::Normal => normal::publish_ing(result),
+        Style::Json => json::publish_ing(result),
+    }
+}
+
+pub fn comment_ing(style: &Style, result: &Result<&String>) {
+    match style {
+        Style::Colorful => colorful::comment_ing(result),
+        Style::Normal => normal::comment_ing(result),
+        Style::Json => json::comment_ing(result),
+    }
+}
+
+pub fn show_post(style: &Style, entry: &PostEntry) {
+    match style {
+        Style::Colorful => colorful::show_post(entry),
+        Style::Normal => normal::show_post(entry),
+        Style::Json => json::show_post(entry),
+    }
+}
+
+pub fn show_post_meta(style: &Style, entry: &PostEntry) -> Result<()> {
+    match style {
+        Style::Colorful => colorful::show_post_meta(entry),
+        Style::Normal => normal::show_post_meta(entry),
+        Style::Json => json::show_post_meta(entry),
+    }
+}
+
+pub fn list_post(style: &Style, entry_list: &[PostEntry], total_count: usize, rev: bool) {
+    match style {
+        Style::Colorful => colorful::list_post(entry_list, total_count, rev),
+        Style::Normal => normal::list_post(entry_list, total_count, rev),
+        Style::Json => json::list_post(entry_list, total_count, rev),
+    }
 }

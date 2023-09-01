@@ -1,10 +1,30 @@
 pub mod parser;
 pub mod sub_cmd;
 
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[derive(Debug, Subcommand)]
+pub enum SubCmds {
+    /// User operations
+    #[clap(visible_alias = "u")]
+    User(sub_cmd::User),
+    /// Ing operations
+    #[clap(visible_alias = "i")]
+    Ing(sub_cmd::Ing),
+    /// Post operations
+    #[clap(visible_alias = "p")]
+    Post(sub_cmd::Post),
+}
+
+#[derive(Clone, Debug, Parser, ValueEnum)]
+pub enum Style {
+    Colorful,
+    Normal,
+    Json,
+}
+
+#[derive(Debug, Parser)]
+#[command(author, about, long_about = None, version)]
 pub struct Args {
     #[command(subcommand)]
     command: Option<SubCmds>,
@@ -45,18 +65,15 @@ pub struct Args {
     /// THIS OPTION IS UNSTABLE FOREVER and any output from it may change in the future
     /// You should NEVER rely on the output while you turn this option on
     #[arg(long)]
+    #[clap(visible_alias = "dbg")]
     pub debug: bool,
-}
 
-#[derive(Subcommand, Debug)]
-pub enum SubCmds {
-    /// User operations
-    #[clap(visible_alias = "u")]
-    User(sub_cmd::User),
-    /// Ing operations
-    #[clap(visible_alias = "i")]
-    Ing(sub_cmd::Ing),
-    /// Post operations
-    #[clap(visible_alias = "p")]
-    Post(sub_cmd::Post),
+    #[arg(verbatim_doc_comment)]
+    /// Config style of output
+    #[arg(long)]
+    #[arg(value_enum)]
+    #[arg(hide_possible_values = true)]
+    #[arg(value_name = "NAME")]
+    #[arg(default_value = "colorful")]
+    pub style: Style,
 }

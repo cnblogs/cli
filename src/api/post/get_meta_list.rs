@@ -19,7 +19,7 @@ Fields only available over blog_backend!("/posts/list?{}", query):
 */
 
 impl Post {
-    pub async fn get_meta_list(&self, skip: usize, take: usize) -> Result<Vec<PostEntry>> {
+    pub async fn get_meta_list(&self, skip: usize, take: usize) -> Result<(Vec<PostEntry>, usize)> {
         // WRN:
         // This impl has low performance but robust
         // Current API of blog backend is buggy
@@ -68,6 +68,6 @@ impl Post {
             entry_vec.push(entry)
         }
 
-        entry_vec.into_ok()
+        (entry_vec, total_count).into_ok()
     }
 }

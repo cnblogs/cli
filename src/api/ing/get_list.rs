@@ -101,29 +101,3 @@ impl Ing {
             .collect()
     }
 }
-
-impl Display for IngEntry {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        //f.write_fmt(format_args!("{:#?}\n", self))?;
-
-        let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", self.create_time))
-            .map(|dt| dt.format("%m-%d %H:%M").to_string())
-            .unwrap();
-
-        f.write_fmt(format_args!("{}", create_time.dimmed()))?;
-        if self.is_lucky {
-            let star_text = ing_star_tag_to_text(&self.icons);
-            f.write_fmt(format_args!(" {}", star_text.yellow()))?;
-            f.write_fmt(format_args!("{}", "⭐"))?;
-        }
-        f.write_fmt(format_args!(
-            " {} {}",
-            "#".dimmed(),
-            self.id.to_string().dimmed()
-        ))?;
-        f.write_fmt(format_args!("\n  {}", self.user_name.cyan()))?;
-        let content = fmt_content(&self.content);
-        f.write_fmt(format_args!(" {}", content))?;
-        ().into_ok()
-    }
-}
