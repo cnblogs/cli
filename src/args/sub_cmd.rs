@@ -79,4 +79,12 @@ pub struct Post {
     #[arg(num_args = 0..=1)]
     #[arg(default_missing_value = "8")]
     pub list: Option<usize>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Delete post
+    /// You should also specify the id of post via option --id
+    #[arg(long)]
+    #[arg(short = 'd')]
+    #[arg(visible_alias = "del")]
+    pub delete: bool,
 }

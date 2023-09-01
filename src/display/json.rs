@@ -99,3 +99,17 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     });
     print!("{}", json);
 }
+
+pub fn delete_post(result: &Result<usize>) {
+    let json = match result {
+        Ok(id) => json!({
+            "ok": true,
+            "msg": id
+        }),
+        Err(e) => json!({
+            "ok": false,
+            "msg": e.to_string()
+        }),
+    };
+    println!("{}", json)
+}

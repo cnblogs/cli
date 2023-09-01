@@ -42,13 +42,13 @@ async fn main() -> Result<()> {
         }
         _ if let Some(pat) = parser::user_info(&args) => {
             let user_info = User::new(pat?).get_info().await?;
-            return display::user_info(style, &user_info)
+            return display::user_info(style, &user_info);
         }
         _ if let Some(r) = parser::list_ing(&args) => {
             let (pat, skip, take, rev) = r?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(skip, take, &ing_type).await?;
-            return display::list_ing(style, &ing_vec, rev)
+            return display::list_ing(style, &ing_vec, rev);
         }
         _ if let Some(r) = parser::publish_ing(&args) => {
             let (pat, content) = r?;
@@ -74,6 +74,11 @@ async fn main() -> Result<()> {
             let (pat, skip, take, rev) = r?;
             let (entry_vec, total_count) = Post::new(pat).get_meta_list(skip, take).await?;
             display::list_post(style, &entry_vec, total_count, rev);
+        }
+        _ if let Some(r) = parser::delete_post(&args) => {
+            let (pat, id) = r?;
+            let result = Post::new(pat).del_one(id).await;
+            display::delete_post(style, &result.map(|_| id));
         }
 
         _ if no_operation(&args) => {

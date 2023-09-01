@@ -159,3 +159,10 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
         println!()
     });
 }
+
+pub fn delete_post(result: &Result<usize>) {
+    match result {
+        Ok(id) => println!("{}: {}", "Deleted".green(), id),
+        Err(e) => println!("{}: {}", "Error".red(), e),
+    }
+}

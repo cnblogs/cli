@@ -87,3 +87,11 @@ pub fn list_post(style: &Style, entry_list: &[PostEntry], total_count: usize, re
         Style::Json => json::list_post(entry_list, total_count, rev),
     }
 }
+
+pub fn delete_post(style: &Style, result: &Result<usize>) {
+    match style {
+        Style::Colorful => colorful::delete_post(result),
+        Style::Normal => normal::delete_post(result),
+        Style::Json => json::delete_post(result),
+    }
+}

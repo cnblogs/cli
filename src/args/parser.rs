@@ -152,6 +152,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
                     show: true,
                     show_meta: false,
                     list: None,
+                    delete: false,
                 })),
             id: Some(id),
             with_pat,
@@ -175,6 +176,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
                     show: false,
                     show_meta: true,
                     list: None,
+                    delete: false,
                 })),
             id: Some(id),
             with_pat,
@@ -198,6 +200,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
                     show: false,
                     show_meta: false,
                     list: Some(length),
+                    delete: false,
                 })),
             id: None,
             with_pat,
@@ -208,6 +211,30 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
             .clone()
             .or_eval_result(session::get_pat)
             .map(|pat| (pat, *skip, (*length).min(100), *rev)),
+        _ => return None,
+    }
+    .into_some()
+}
+
+pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
+    match args {
+        Args {
+            command:
+                Some(SubCmds::Post(sub_cmd::Post {
+                    show: false,
+                    show_meta: false,
+                    list: None,
+                    delete: true,
+                })),
+            id: Some(id),
+            with_pat,
+            rev: false,
+            skip: 0,
+            ..
+        } => with_pat
+            .clone()
+            .or_eval_result(session::get_pat)
+            .map(|pat| (pat, *id)),
         _ => return None,
     }
     .into_some()
