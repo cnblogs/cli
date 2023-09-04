@@ -1,6 +1,7 @@
 use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
+use crate::infra::iter::IteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
@@ -24,13 +25,9 @@ pub fn user_info(info: &UserInfo) -> Result<()> {
 }
 
 pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) -> Result<()> {
-    let iter: Box<dyn Iterator<Item = &(IngEntry, Vec<IngCommentEntry>)>> = if rev {
-        Box::new(ing_list.iter().rev())
-    } else {
-        Box::new(ing_list.iter())
-    };
-    let vec = iter
-        .into_iter()
+    let vec = ing_list
+        .iter()
+        .dyn_rev(rev)
         .map(|(entry, comment_list)| {
             json!({
                 "entry": entry,
@@ -86,12 +83,7 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
 }
 
 pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
-    let iter: Box<dyn Iterator<Item = &PostEntry>> = if rev {
-        Box::new(entry_list.iter().rev())
-    } else {
-        Box::new(entry_list.iter())
-    };
-    let vec = iter.into_iter().collect::<Vec<_>>();
+    let vec = entry_list.iter().dyn_rev(rev).collect::<Vec<_>>();
     let json = json!({
        "listed_count": vec.len(),
        "total_count": total_count,
@@ -115,12 +107,7 @@ pub fn delete_post(result: &Result<usize>) {
 }
 
 pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
-    let iter: Box<dyn Iterator<Item = &usize>> = if rev {
-        Box::new(id_list.iter().rev())
-    } else {
-        Box::new(id_list.iter())
-    };
-    let id_list = iter.into_iter().collect::<Vec<&usize>>();
+    let id_list = id_list.iter().dyn_rev(rev).collect::<Vec<&usize>>();
     let json = json!({
        "listed_count": id_list.len(),
        "total_count": total_count,
