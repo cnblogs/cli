@@ -166,3 +166,13 @@ pub fn delete_post(result: &Result<usize>) {
         Err(e) => println!("{}: {}", "Error".red(), e),
     }
 }
+
+pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
+    println!("{}/{}", id_list.len(), total_count);
+    let iter: Box<dyn Iterator<Item = &usize>> = if rev {
+        Box::new(id_list.iter().rev())
+    } else {
+        Box::new(id_list.iter())
+    };
+    iter.into_iter().for_each(|id| println!("# {}", id));
+}

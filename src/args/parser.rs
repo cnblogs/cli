@@ -153,6 +153,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
                     show_meta: false,
                     list: None,
                     delete: false,
+                    search: None,
                 })),
             id: Some(id),
             with_pat,
@@ -177,6 +178,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
                     show_meta: true,
                     list: None,
                     delete: false,
+                    search: None,
                 })),
             id: Some(id),
             with_pat,
@@ -201,6 +203,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
                     show_meta: false,
                     list: Some(length),
                     delete: false,
+                    search: None,
                 })),
             id: None,
             with_pat,
@@ -225,6 +228,7 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
                     show_meta: false,
                     list: None,
                     delete: true,
+                    search: None,
                 })),
             id: Some(id),
             with_pat,
@@ -235,6 +239,31 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
             .clone()
             .or_eval_result(session::get_pat)
             .map(|pat| (pat, *id)),
+        _ => return None,
+    }
+    .into_some()
+}
+
+pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, bool)>> {
+    match args {
+        Args {
+            command:
+                Some(SubCmds::Post(sub_cmd::Post {
+                    show: false,
+                    show_meta: false,
+                    list: None,
+                    delete: true,
+                    search: Some(keyword),
+                })),
+            id: None,
+            with_pat,
+            rev,
+            skip,
+            ..
+        } => with_pat
+            .clone()
+            .or_eval_result(session::get_pat)
+            .map(|pat| (pat, keyword, *skip, *rev)),
         _ => return None,
     }
     .into_some()

@@ -95,3 +95,11 @@ pub fn delete_post(style: &Style, result: &Result<usize>) {
         Style::Json => json::delete_post(result),
     }
 }
+
+pub fn search_post(style: &Style, id_list: &[usize], total_count: usize, rev: bool) {
+    match style {
+        Style::Colorful => colorful::search_post(id_list, total_count, rev),
+        Style::Normal => normal::search_post(id_list, total_count, rev),
+        Style::Json => json::search_post(id_list, total_count, rev),
+    }
+}

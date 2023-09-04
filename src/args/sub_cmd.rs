@@ -85,5 +85,13 @@ pub struct Post {
     /// You should also specify the id of post via option --id
     #[arg(long)]
     #[arg(visible_alias = "del")]
-    pub delete: bool
+    pub delete: bool,
+
+    // TODO
+    #[arg(verbatim_doc_comment)]
+    /// Search post by keyword and output the post id list that matches
+    /// Example: cnb post --search FOO
+    #[arg(long)]
+    #[arg(value_name = "KEYWORD")]
+    pub search: Option<String>,
 }

@@ -93,8 +93,8 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     };
     let vec = iter.into_iter().collect::<Vec<_>>();
     let json = json!({
-       "listed_count": total_count,
-       "total_count": vec.len(),
+       "listed_count": vec.len(),
+       "total_count": total_count,
        "entry_list": vec,
     });
     print!("{}", json);
@@ -112,4 +112,20 @@ pub fn delete_post(result: &Result<usize>) {
         }),
     };
     println!("{}", json)
+}
+
+pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
+    let iter: Box<dyn Iterator<Item = &usize>> = if rev {
+        Box::new(id_list.iter().rev())
+    } else {
+        Box::new(id_list.iter())
+    };
+    let id_list = iter.into_iter().collect::<Vec<&usize>>();
+    let json = json!({
+       "listed_count": id_list.len(),
+       "total_count": total_count,
+       "id_list": id_list,
+    });
+
+    println!("{}", json);
 }
