@@ -71,5 +71,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.gen-name.outputs.NAME }}
-          path: './target/${{ matrix.targets.target }}/debug/cnb${{ steps.gen-ext.outputs.EXT }}'
+          path: './target/${{ matrix.targets.target }}/release/cnb${{ steps.gen-ext.outputs.EXT }}'
           if-no-files-found: error
