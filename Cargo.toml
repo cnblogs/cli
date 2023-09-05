@@ -1,6 +1,9 @@
 [package]
 name = "cnb"
-version = "0.0.1"
+# WRN:
+# Version will be updated by CI while create a tag.
+# NERVER change this.
+version = "0.0.0-staging"
 edition = "2021"
 
 [profile.release]
