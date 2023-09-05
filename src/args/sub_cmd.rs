@@ -71,7 +71,6 @@ pub struct Post {
     #[arg(long)]
     #[arg(short = 'l')]
     #[arg(value_name = "LENGTH")]
-    #[arg(num_args = 0..=1)]
     #[arg(default_missing_value = "8")]
     pub list: bool,
 
