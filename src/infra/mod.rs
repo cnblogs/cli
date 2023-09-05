@@ -1,3 +1,4 @@
+pub mod fp;
 pub mod http;
 pub mod iter;
 pub mod json;

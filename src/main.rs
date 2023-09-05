@@ -10,6 +10,7 @@ use crate::api::post::Post;
 use crate::api::user::User;
 use crate::args::parser::no_operation;
 use crate::args::{parser, Args};
+use crate::infra::fp::currying::eq;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use clap::CommandFactory;
@@ -23,13 +24,18 @@ pub mod infra;
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<()> {
-    let args: Args = Args::parse();
+    let args_vec = env::args().collect::<Vec<_>>();
+    if args_vec.iter().any(eq(&"--debug".to_string())) {
+        dbg!(args_vec);
+    }
 
+    let args: Args = Args::parse();
     if args.debug {
-        dbg!(env::args().collect::<Vec<_>>());
         dbg!(&args);
     }
+
     let style = &args.style;
+    let rev = args.rev;
 
     match args {
         _ if let Some(pat) = parser::login(&args) => {
@@ -45,7 +51,7 @@ async fn main() -> Result<()> {
             return display::user_info(style, &user_info);
         }
         _ if let Some(r) = parser::list_ing(&args) => {
-            let (pat, skip, take, rev) = r?;
+            let (pat, skip, take) = r?;
             let ing_type = IngType::Public;
             let ing_vec = Ing::new(pat).get_list(skip, take, &ing_type).await?;
             return display::list_ing(style, &ing_vec, rev);
@@ -71,7 +77,7 @@ async fn main() -> Result<()> {
             display::show_post_meta(style, &entry)?;
         }
         _ if let Some(r) = parser::list_post(&args) => {
-            let (pat, skip, take, rev) = r?;
+            let (pat, skip, take) = r?;
             let (entry_vec, total_count) = Post::new(pat).get_meta_list(skip, take).await?;
             display::list_post(style, &entry_vec, total_count, rev);
         }
@@ -81,7 +87,7 @@ async fn main() -> Result<()> {
             display::delete_post(style, &result.map(|_| id));
         }
         _ if let Some(r) = parser::search_post(&args) => {
-            let (pat, kw, skip, take, rev) = r?;
+            let (pat, kw, skip, take) = r?;
             let (id_list, total_count) = Post::new(pat).search(skip, take, kw).await?;
             display::search_post(style, &id_list, total_count, rev);
         }

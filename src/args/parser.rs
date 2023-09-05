@@ -117,7 +117,7 @@ pub fn logout(args: &Args) -> bool {
     )
 }
 
-pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
+pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize)>> {
     match args {
         Args {
             command:
@@ -128,7 +128,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
                 })),
             id: None,
             with_pat,
-            rev,
+            rev: _,
             skip,
             take,
             debug: _,
@@ -136,7 +136,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            get_pat(with_pat).map(|pat| (pat, skip, take, *rev))
+            get_pat(with_pat).map(|pat| (pat, skip, take))
         }
         _ => return None,
     }
@@ -213,7 +213,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
     .into_some()
 }
 
-pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
+pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
     match args {
         Args {
             command:
@@ -226,7 +226,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
                 })),
             id: None,
             with_pat,
-            rev,
+            rev: _,
             skip,
             take,
             debug: _,
@@ -234,7 +234,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            get_pat(with_pat).map(|pat| (pat, skip, take, *rev))
+            get_pat(with_pat).map(|pat| (pat, skip, take))
         }
         _ => return None,
     }
@@ -265,7 +265,7 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
     .into_some()
 }
 
-pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize, bool)>> {
+pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)>> {
     match args {
         Args {
             command:
@@ -278,7 +278,7 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize,
                 })),
             id: None,
             with_pat,
-            rev,
+            rev: _,
             skip,
             take,
             debug: _,
@@ -286,7 +286,7 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            get_pat(with_pat).map(|pat| (pat, keyword, skip, take, *rev))
+            get_pat(with_pat).map(|pat| (pat, keyword, skip, take))
         }
         _ => return None,
     }
