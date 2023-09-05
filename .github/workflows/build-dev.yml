@@ -1,0 +1,87 @@
+name: Build / Development
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request_target:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  build-dev:
+    name: ${{ matrix.targets.target }}@${{ matrix.targets.os }}
+    runs-on: ${{ matrix.targets.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        targets: 
+          - { os: macos-12    , target: aarch64-apple-darwin     }
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { os: windows-2022, target: x86_64-pc-windows-msvc   }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+          toolchain: nightly-2023-06-09
+          components: rustfmt, clippy
+
+      - name: Add target
+        uses: ./.github/actions/add-target
+        with:
+          target: ${{ matrix.targets.target }}
+
+      - name: Setup rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Generate version
+        id: gen-version
+        shell: bash
+        run: echo 'VERSION=0.0.0-${{ github.sha }}' >> $GITHUB_OUTPUT
+
+      - name: Replace version
+        uses: ./.github/actions/replace-version
+        with:
+          version: ${{ steps.gen-version.outputs.VERSION }}
+
+      - name: Run lint
+        uses: ./.github/actions/lint
+
+      - name: Run test
+        uses: ./.github/actions/test
+
+      - name: Run build
+        uses: ./.github/actions/build
+        with:
+          target: ${{ matrix.targets.target }}
+          release: false
+
+      - name: Generate artifacts name
+        id: gen-name
+        shell: bash
+        run: echo 'NAME=${{ matrix.targets.target }}' >> $GITHUB_OUTPUT
+
+      - name: Generate binary extension
+        id: gen-ext
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo 'EXT=.exe' >> $GITHUB_OUTPUT
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.gen-name.outputs.NAME }}
+          path: './target/${{ matrix.targets.target }}/debug/cnb${{ steps.gen-ext.outputs.EXT }}'
+          if-no-files-found: error

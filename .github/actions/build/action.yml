@@ -1,0 +1,21 @@
+name: Build
+description: Build artifacts
+inputs:
+  release:
+    description: Build in release mode
+    required: true
+  target:
+    description: Build for the target triple
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Build debug
+      if: ${{ inputs.release == 'false' }}
+      shell: bash
+      run: cargo build --target ${{ inputs.target }}
+
+    - name: Build release
+      if: ${{ inputs.release == 'true' }}
+      shell: bash
+      run: cargo build --target ${{ inputs.target }} -r

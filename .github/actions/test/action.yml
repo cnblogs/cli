@@ -1,0 +1,12 @@
+name: Test
+description: Run tests
+runs:
+  using: composite
+  steps:
+    - name: Test debug
+      shell: bash
+      run: cargo test --verbose
+
+    - name: Test release
+      shell: bash
+      run: cargo test --verbose --release
