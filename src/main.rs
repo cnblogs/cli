@@ -81,9 +81,9 @@ async fn main() -> Result<()> {
             display::delete_post(style, &result.map(|_| id));
         }
         _ if let Some(r) = parser::search_post(&args) => {
-            let (pat, kw, skip, rev) = r?;
-            let (id_list, total_count) = Post::new(pat).search(skip, 10, kw).await?;
-            display::search_post(style, &id_list, total_count,rev);
+            let (pat, kw, skip, take, rev) = r?;
+            let (id_list, total_count) = Post::new(pat).search(skip, take, kw).await?;
+            display::search_post(style, &id_list, total_count, rev);
         }
 
         _ if no_operation(&args) => {

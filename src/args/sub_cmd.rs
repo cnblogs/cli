@@ -26,14 +26,9 @@ pub struct User {
 pub struct Ing {
     #[arg(verbatim_doc_comment)]
     /// Show ing list, order by time in DESC
-    /// <LENGTH> should in range [0,100]
-    /// If <LENGTH> greater than 100, it will be set to 100
     #[arg(long)]
     #[arg(short = 'l')]
-    #[arg(value_name = "LENGTH")]
-    #[arg(num_args = 0..=1)]
-    #[arg(default_missing_value = "8")]
-    pub list: Option<usize>,
+    pub list: bool,
 
     #[arg(verbatim_doc_comment)]
     /// Publish ing with specific content
@@ -78,7 +73,7 @@ pub struct Post {
     #[arg(value_name = "LENGTH")]
     #[arg(num_args = 0..=1)]
     #[arg(default_missing_value = "8")]
-    pub list: Option<usize>,
+    pub list: bool,
 
     #[arg(verbatim_doc_comment)]
     /// Delete post

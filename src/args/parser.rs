@@ -3,6 +3,18 @@ use crate::args::{sub_cmd, Args, SubCmds};
 use crate::infra::option::{IntoOption, OptionExt};
 use anyhow::Result;
 
+fn get_skip(skip: &Option<usize>) -> usize {
+    skip.unwrap_or(0)
+}
+
+fn get_take(take: &Option<usize>) -> usize {
+    take.unwrap_or(8).min(100)
+}
+
+fn get_pat(pat: &Option<String>) -> Result<String> {
+    pat.clone().or_eval_result(session::get_pat)
+}
+
 pub fn no_operation(args: &Args) -> bool {
     matches!(
         args,
@@ -11,8 +23,10 @@ pub fn no_operation(args: &Args) -> bool {
             id: None,
             with_pat: None,
             rev: false,
-            skip: 0,
-            ..
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
         }
     )
 }
@@ -29,9 +43,11 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
             id: None,
             with_pat,
             rev: false,
-            skip: 0,
-            ..
-        } => with_pat.clone().or_eval_result(session::get_pat),
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat),
         _ => return None,
     }
     .into_some()
@@ -42,19 +58,18 @@ pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
         Args {
             command:
                 Some(SubCmds::Ing(sub_cmd::Ing {
-                    list: None,
+                    list: false,
                     publish: Some(content),
                     comment: None,
                 })),
             id: None,
             with_pat,
             rev: false,
-            skip: 0,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, content)),
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat).map(|pat| (pat, content)),
         _ => return None,
     }
     .into_some()
@@ -72,8 +87,10 @@ pub fn login(args: &Args) -> Option<&String> {
             id: None,
             with_pat: None,
             rev: false,
-            skip: 0,
-            ..
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
         } => pat,
         _ => return None,
     }
@@ -92,8 +109,10 @@ pub fn logout(args: &Args) -> bool {
             id: None,
             with_pat: None,
             rev: false,
-            skip: 0,
-            ..
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
         }
     )
 }
@@ -103,7 +122,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
         Args {
             command:
                 Some(SubCmds::Ing(sub_cmd::Ing {
-                    list: Some(length),
+                    list: true,
                     publish: None,
                     comment: None,
                 })),
@@ -111,11 +130,14 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
             with_pat,
             rev,
             skip,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, *skip, (*length).min(100), *rev)),
+            take,
+            debug: _,
+            style: _,
+        } => {
+            let skip = get_skip(skip);
+            let take = get_take(take);
+            get_pat(with_pat).map(|pat| (pat, skip, take, *rev))
+        }
         _ => return None,
     }
     .into_some()
@@ -126,19 +148,18 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
         Args {
             command:
                 Some(SubCmds::Ing(sub_cmd::Ing {
-                    list: None,
+                    list: false,
                     publish: None,
                     comment: Some(content),
                 })),
             id: Some(id),
             with_pat,
             rev: false,
-            skip: 0,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, content, *id)),
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat).map(|pat| (pat, content, *id)),
         _ => return None,
     }
     .into_some()
@@ -151,19 +172,18 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
                 Some(SubCmds::Post(sub_cmd::Post {
                     show: true,
                     show_meta: false,
-                    list: None,
+                    list: false,
                     delete: false,
                     search: None,
                 })),
             id: Some(id),
             with_pat,
             rev: false,
-            skip: 0,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, *id)),
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat).map(|pat| (pat, *id)),
         _ => return None,
     }
     .into_some()
@@ -176,19 +196,18 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
                 Some(SubCmds::Post(sub_cmd::Post {
                     show: false,
                     show_meta: true,
-                    list: None,
+                    list: false,
                     delete: false,
                     search: None,
                 })),
             id: Some(id),
             with_pat,
             rev: false,
-            skip: 0,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, *id)),
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat).map(|pat| (pat, *id)),
         _ => return None,
     }
     .into_some()
@@ -201,7 +220,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
                 Some(SubCmds::Post(sub_cmd::Post {
                     show: false,
                     show_meta: false,
-                    list: Some(length),
+                    list: true,
                     delete: false,
                     search: None,
                 })),
@@ -209,11 +228,14 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize, bool)>> {
             with_pat,
             rev,
             skip,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, *skip, (*length).min(100), *rev)),
+            take,
+            debug: _,
+            style: _,
+        } => {
+            let skip = get_skip(skip);
+            let take = get_take(take);
+            get_pat(with_pat).map(|pat| (pat, skip, take, *rev))
+        }
         _ => return None,
     }
     .into_some()
@@ -226,32 +248,31 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
                 Some(SubCmds::Post(sub_cmd::Post {
                     show: false,
                     show_meta: false,
-                    list: None,
+                    list: false,
                     delete: true,
                     search: None,
                 })),
             id: Some(id),
             with_pat,
             rev: false,
-            skip: 0,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, *id)),
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat).map(|pat| (pat, *id)),
         _ => return None,
     }
     .into_some()
 }
 
-pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, bool)>> {
+pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize, bool)>> {
     match args {
         Args {
             command:
                 Some(SubCmds::Post(sub_cmd::Post {
                     show: false,
                     show_meta: false,
-                    list: None,
+                    list: false,
                     delete: true,
                     search: Some(keyword),
                 })),
@@ -259,11 +280,14 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, bool)>
             with_pat,
             rev,
             skip,
-            ..
-        } => with_pat
-            .clone()
-            .or_eval_result(session::get_pat)
-            .map(|pat| (pat, keyword, *skip, *rev)),
+            take,
+            debug: _,
+            style: _,
+        } => {
+            let skip = get_skip(skip);
+            let take = get_take(take);
+            get_pat(with_pat).map(|pat| (pat, keyword, skip, take, *rev))
+        }
         _ => return None,
     }
     .into_some()

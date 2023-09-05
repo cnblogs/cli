@@ -54,10 +54,23 @@ pub struct Args {
     /// Skip items while request list
     /// Example: cnb --skip 2 ing --list
     /// Use this option to save network I/O if some items of the list output are not needed
+    /// If this option is required but not specified, it will be set to 0
     #[arg(long)]
+    #[arg(short = 's')]
     #[arg(value_name = "LENGTH")]
-    #[arg(default_value = "0")]
-    pub skip: usize,
+    pub skip: Option<usize>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Take items while request list
+    /// Example: cnb --take 2 ing --list
+    /// Use this option to save network I/O if only a subset of the list output are required
+    /// <LENGTH> should be in the range [0,100]
+    /// If <LENGTH> is greater than 100, it will be set to 100
+    /// If this option is required but not specified, it will be set to 8
+    #[arg(long)]
+    #[arg(short = 't')]
+    #[arg(value_name = "LENGTH")]
+    pub take: Option<usize>,
 
     #[arg(verbatim_doc_comment)]
     /// Execute in debug mode, this will print some messages for the developer
