@@ -47,7 +47,6 @@ pub fn get_pat() -> Result<String> {
     let cfg_path = get_cfg_path()?;
     let cfg_path = cfg_path.as_path();
 
-    let err_msg = format!("Can not read {:?}, please login first.", cfg_path);
-    let pat = fs::read_to_string(cfg_path).expect(&err_msg);
-    pat.into_ok()
+    fs::read_to_string(cfg_path)
+        .map_err(|e| anyhow!("Can not read {:?}, please login first ({})", cfg_path, e))
 }
