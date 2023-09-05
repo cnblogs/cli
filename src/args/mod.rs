@@ -82,7 +82,7 @@ pub struct Args {
     pub debug: bool,
 
     #[arg(verbatim_doc_comment)]
-    /// Config style of output
+    /// Configure the output style
     #[arg(long)]
     #[arg(value_enum)]
     #[arg(hide_possible_values = true)]
