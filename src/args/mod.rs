@@ -1,20 +1,8 @@
+pub mod cmd;
 pub mod parser;
-pub mod sub_cmd;
 
-use clap::{Parser, Subcommand, ValueEnum};
-
-#[derive(Debug, Subcommand)]
-pub enum SubCmds {
-    /// User operations
-    #[clap(visible_alias = "u")]
-    User(sub_cmd::User),
-    /// Ing operations
-    #[clap(visible_alias = "i")]
-    Ing(sub_cmd::Ing),
-    /// Post operations
-    #[clap(visible_alias = "p")]
-    Post(sub_cmd::Post),
-}
+use crate::args::cmd::Cmd;
+use clap::{Parser, ValueEnum};
 
 #[derive(Clone, Debug, Parser, ValueEnum)]
 pub enum Style {
@@ -27,7 +15,7 @@ pub enum Style {
 #[command(author, about, long_about = None, version)]
 pub struct Args {
     #[command(subcommand)]
-    command: Option<SubCmds>,
+    command: Option<Cmd>,
 
     #[arg(verbatim_doc_comment)]
     /// Provide ID required by other options

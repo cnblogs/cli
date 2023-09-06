@@ -1,5 +1,5 @@
 use crate::api::auth::session;
-use crate::args::{sub_cmd, Args, SubCmds};
+use crate::args::{cmd, Args, Cmd};
 use crate::infra::option::{IntoOption, OptionExt};
 use anyhow::Result;
 
@@ -35,7 +35,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
     match args {
         Args {
             command:
-                Some(SubCmds::User(sub_cmd::User {
+                Some(Cmd::User(cmd::user::Opt {
                     login: None,
                     logout: false,
                     info: true,
@@ -57,7 +57,7 @@ pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Ing(sub_cmd::Ing {
+                Some(Cmd::Ing(cmd::ing::Opt {
                     list: false,
                     publish: Some(content),
                     comment: None,
@@ -79,7 +79,7 @@ pub fn login(args: &Args) -> Option<&String> {
     match args {
         Args {
             command:
-                Some(SubCmds::User(sub_cmd::User {
+                Some(Cmd::User(cmd::user::Opt {
                     login: Some(pat),
                     logout: false,
                     info: false,
@@ -101,7 +101,7 @@ pub fn logout(args: &Args) -> bool {
     matches!(
         args,
         Args {
-            command: Some(SubCmds::User(sub_cmd::User {
+            command: Some(Cmd::User(cmd::user::Opt {
                 login: None,
                 logout: true,
                 info: false,
@@ -121,7 +121,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Ing(sub_cmd::Ing {
+                Some(Cmd::Ing(cmd::ing::Opt {
                     list: true,
                     publish: None,
                     comment: None,
@@ -147,7 +147,7 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Ing(sub_cmd::Ing {
+                Some(Cmd::Ing(cmd::ing::Opt {
                     list: false,
                     publish: None,
                     comment: Some(content),
@@ -169,7 +169,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Post(sub_cmd::Post {
+                Some(Cmd::Post(cmd::post::Opt {
                     show: true,
                     show_meta: false,
                     list: false,
@@ -193,7 +193,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Post(sub_cmd::Post {
+                Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: true,
                     list: false,
@@ -217,7 +217,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Post(sub_cmd::Post {
+                Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: true,
@@ -245,7 +245,7 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
             command:
-                Some(SubCmds::Post(sub_cmd::Post {
+                Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: false,
@@ -269,7 +269,7 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)
     match args {
         Args {
             command:
-                Some(SubCmds::Post(sub_cmd::Post {
+                Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: false,
