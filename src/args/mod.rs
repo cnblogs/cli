@@ -25,7 +25,7 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Execute with specific PAT
-    /// Example: cnb --with-pat FOOBARBAZ post --list
+    /// Example: cnb --with-pat 'FOOBARBAZ' post --list
     /// Your PAT in ~/.cnbrc will be ignored in this execution if it exists
     /// Please login if you don't want to input PAT everytime, try 'cnb user --help' for more details
     #[arg(long)]

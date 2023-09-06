@@ -4,7 +4,7 @@ use clap::Parser;
 pub struct Opt {
     #[arg(verbatim_doc_comment)]
     /// Login with your personal access token (PAT)
-    /// Example: cnb user --login FOOBARBAZ
+    /// Example: cnb user --login 'FOOBARBAZ'
     /// PAT will be saved in ~/.cnbrc
     /// You can create PAT in https://account.cnblogs.com/tokens
     #[arg(long)]
