@@ -2,8 +2,6 @@ use crate::api::ing::Ing;
 use crate::infra::http::{setup_auth, unit_or_err};
 use crate::openapi;
 use anyhow::Result;
-use mime::APPLICATION_JSON;
-use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 
 impl Ing {
@@ -19,9 +17,7 @@ impl Ing {
         let req = {
             let url = openapi!("/statuses/{}/comments", ing_id);
             let req = {
-                let req = client
-                    .post(url)
-                    .header(CONTENT_TYPE, APPLICATION_JSON.to_string());
+                let req = client.post(url);
                 let body = {
                     #[serde_with::skip_serializing_none]
                     #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -32,14 +28,13 @@ impl Ing {
                         parent_comment_id: Option<usize>,
                         content: String,
                     }
-                    let body = Body {
+                    Body {
                         reply_to,
                         parent_comment_id,
                         content,
-                    };
-                    serde_json::to_string(&body)?
+                    }
                 };
-                req.body(body)
+                req.json(&body)
             };
             setup_auth(req, &self.pat)
         };

@@ -3,8 +3,6 @@ use crate::infra::http::setup_auth;
 use crate::infra::result::IntoResult;
 use crate::openapi;
 use anyhow::{bail, Result};
-use mime::APPLICATION_JSON;
-use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::ops::Not;
@@ -17,20 +15,16 @@ struct IngPubErr {
 
 impl Ing {
     pub async fn publish(&self, content: &str) -> Result<()> {
-        let body = json!({
-            "content": content,
-            "isPrivate": false,
-        })
-        .to_string();
-
         let client = reqwest::Client::new();
 
         let req = {
             let url = openapi!("/statuses");
-            let req = client
-                .post(url)
-                .header(CONTENT_TYPE, APPLICATION_JSON.to_string())
-                .body(body);
+            let body = json!({
+                "content": content,
+                "isPrivate": false,
+            });
+
+            let req = client.post(url).json(&body);
             setup_auth(req, &self.pat)
         };
 
