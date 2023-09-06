@@ -95,11 +95,11 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
 pub fn delete_post(result: &Result<usize>) {
     let json = match result {
         Ok(id) => json!({
-            "ok": true,
+            "is_ok": true,
             "msg": id
         }),
         Err(e) => json!({
-            "ok": false,
+            "is_ok": false,
             "msg": e.to_string()
         }),
     };
@@ -115,4 +115,18 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
     });
 
     println!("{}", json);
+}
+
+pub fn create_post(result: &Result<usize>) {
+    let json = match result {
+        Ok(id) => json!({
+            "is_ok": true,
+            "msg": id
+        }),
+        Err(e) => json!({
+            "is_ok": false,
+            "msg": e.to_string()
+        }),
+    };
+    println!("{}", json)
 }

@@ -41,4 +41,12 @@ pub struct Opt {
     #[arg(long)]
     #[arg(value_name = "KEYWORD")]
     pub search: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Create a post
+    /// Example: cnb post --create 'Title' 'Body'
+    /// The status of post is draft
+    #[arg(long)]
+    #[arg(value_names = ["TITLE","BODY"])]
+    pub create: Option<Vec<String>>,
 }

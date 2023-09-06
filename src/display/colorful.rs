@@ -155,8 +155,8 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
 
 pub fn delete_post(result: &Result<usize>) {
     match result {
-        Ok(id) => println!("{}: {}", "Deleted".green(), id),
-        Err(e) => println!("{}: {}", "Error".red(), e),
+        Ok(id) => println!("{}: {}", "Ok".green(), id),
+        Err(e) => println!("{}: {}", "Err".red(), e),
     }
 }
 
@@ -166,4 +166,11 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
         .iter()
         .dyn_rev(rev)
         .for_each(|id| println!("{}", id));
+}
+
+pub fn create_post(result: &Result<usize>) {
+    match result {
+        Ok(id) => println!("{}: {}", "Ok".green(), id),
+        Err(e) => println!("{}: {}", "Err".red(), e),
+    }
 }

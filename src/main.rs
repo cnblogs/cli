@@ -91,6 +91,11 @@ async fn main() -> Result<()> {
             let (id_list, total_count) = Post::new(pat).search(skip, take, kw).await?;
             display::search_post(style, &id_list, total_count, rev);
         }
+        _ if let Some(r) = parser::create_post(&args) => {
+            let (pat, title, body) = r?;
+            let id = Post::new(pat).create(title, body, false).await;
+            display::create_post(style, &id);
+        }
 
         _ if no_operation(&args) => {
             Args::command().print_help()?;

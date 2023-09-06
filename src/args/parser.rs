@@ -175,6 +175,7 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
                     list: false,
                     delete: false,
                     search: None,
+                    create: None,
                 })),
             id: Some(id),
             with_pat,
@@ -199,6 +200,7 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
                     list: false,
                     delete: false,
                     search: None,
+                    create: None,
                 })),
             id: Some(id),
             with_pat,
@@ -223,6 +225,7 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
                     list: true,
                     delete: false,
                     search: None,
+                    create: None,
                 })),
             id: None,
             with_pat,
@@ -251,6 +254,7 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
                     list: false,
                     delete: true,
                     search: None,
+                    create: None,
                 })),
             id: Some(id),
             with_pat,
@@ -275,6 +279,7 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)
                     list: false,
                     delete: false,
                     search: Some(keyword),
+                    create: None,
                 })),
             id: None,
             with_pat,
@@ -287,6 +292,35 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)
             let skip = get_skip(skip);
             let take = get_take(take);
             get_pat(with_pat).map(|pat| (pat, keyword, skip, take))
+        }
+        _ => return None,
+    }
+    .into_some()
+}
+
+pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String)>> {
+    match args {
+        Args {
+            command:
+                Some(Cmd::Post(cmd::post::Opt {
+                    show: false,
+                    show_meta: false,
+                    list: false,
+                    delete: false,
+                    search: None,
+                    create: Some(vec),
+                })),
+            id: None,
+            with_pat,
+            rev: _,
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } if vec.len() == 2 => {
+            let title = &vec[0];
+            let body = &vec[1];
+            get_pat(with_pat).map(|pat| (pat, title, body))
         }
         _ => return None,
     }

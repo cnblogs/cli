@@ -103,3 +103,11 @@ pub fn search_post(style: &Style, id_list: &[usize], total_count: usize, rev: bo
         Style::Json => json::search_post(id_list, total_count, rev),
     }
 }
+
+pub fn create_post(style: &Style, result: &Result<usize>) {
+    match style {
+        Style::Colorful => colorful::create_post(result),
+        Style::Normal => normal::create_post(result),
+        Style::Json => json::create_post(result),
+    }
+}

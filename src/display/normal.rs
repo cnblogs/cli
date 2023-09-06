@@ -165,3 +165,10 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
         .dyn_rev(rev)
         .for_each(|id| println!("{}", id));
 }
+
+pub fn create_post(result: &Result<usize>) {
+    match result {
+        Ok(id) => println!("Ok: {}", id),
+        Err(e) => println!("Err: {}", e),
+    }
+}
