@@ -1,8 +1,6 @@
 [package]
 name = "cnb"
-# WRN:
-# Version will be updated by CI while create a tag.
-# NERVER change this.
+# WRN: Version will be updated by CI while create a tag, NERVER change this.
 version = "0.0.0-staging"
 edition = "2021"
 
@@ -37,7 +35,7 @@ reqwest = { version = "0.11.16", features = ["json"] }
 tokio = { version = "1.29.1", features = ["full"] }
 futures = "0.3.28"
 
-clap = { version = "4.3.19", features = ["derive"] }
+clap = { version = "4.3.19", features = ["derive", "wrap_help"] }
 colored = "2.0.4"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
