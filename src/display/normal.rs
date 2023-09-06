@@ -163,5 +163,5 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
     id_list
         .iter()
         .dyn_rev(rev)
-        .for_each(|id| println!("# {}", id));
+        .for_each(|id| println!("{}", id));
 }

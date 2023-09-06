@@ -5,6 +5,7 @@ use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 impl Post {
     pub async fn search(
@@ -102,6 +103,8 @@ impl Post {
             .collect::<Result<Vec<_>>>()?
             .into_iter()
             .flatten()
+            .collect::<HashSet<_>>()
+            .into_iter()
             .collect::<Vec<_>>();
 
         (id_list, total_count).into_ok()

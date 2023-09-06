@@ -273,7 +273,7 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)
                     show: false,
                     show_meta: false,
                     list: false,
-                    delete: true,
+                    delete: false,
                     search: Some(keyword),
                 })),
             id: None,
