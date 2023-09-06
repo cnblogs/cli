@@ -70,8 +70,8 @@ pub struct Post {
     /// If <LENGTH> greater than 100, it will be set to 100
     #[arg(long)]
     #[arg(short = 'l')]
-    #[arg(value_name = "LENGTH")]
     #[arg(default_missing_value = "8")]
+    #[arg(value_name = "LENGTH")]
     pub list: bool,
 
     #[arg(verbatim_doc_comment)]
@@ -81,7 +81,6 @@ pub struct Post {
     #[arg(visible_alias = "del")]
     pub delete: bool,
 
-    // TODO
     #[arg(verbatim_doc_comment)]
     /// Search post by keyword and output the post id list that matches
     /// Example: cnb post --search FOO

@@ -79,15 +79,15 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
 
 pub fn publish_ing(result: &Result<&String>) {
     match result {
-        Ok(content) => println!("Published: {}", content),
-        Err(e) => println!("Error: {}", e),
+        Ok(content) => println!("Ok: {}", content),
+        Err(e) => println!("Err: {}", e),
     }
 }
 
 pub fn comment_ing(result: &Result<&String>) {
     match result {
-        Ok(content) => println!("Commented: {}", content),
-        Err(e) => println!("Error: {}", e),
+        Ok(content) => println!("Ok: {}", content),
+        Err(e) => println!("Err: {}", e),
     }
 }
 

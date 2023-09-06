@@ -43,11 +43,11 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) -> Res
 pub fn publish_ing(result: &Result<&String>) {
     let json = match result {
         Ok(content) => json!({
-            "ok": true,
+            "is_ok": true,
             "msg": content
         }),
         Err(e) => json!({
-            "ok": false,
+            "is_ok": false,
             "msg": e.to_string()
         }),
     };
@@ -57,11 +57,11 @@ pub fn publish_ing(result: &Result<&String>) {
 pub fn comment_ing(result: &Result<&String>) {
     let json = match result {
         Ok(content) => json!({
-            "ok": true,
+            "is_ok": true,
             "msg": content
         }),
         Err(e) => json!({
-            "ok": false,
+            "is_ok": false,
             "msg": e.to_string()
         }),
     };

@@ -20,7 +20,6 @@ pub fn logout(cfg_path: &PathBuf) {
     println!("{:?} was removed", cfg_path);
 }
 
-// TODO: impl variant types of ..Display trait
 pub fn user_info(info: &UserInfo) {
     print!("{}", info.display_name.cyan());
     if info.is_vip {
@@ -82,15 +81,15 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
 
 pub fn publish_ing(result: &Result<&String>) {
     match result {
-        Ok(content) => println!("{}: {}", "Published".green(), content),
-        Err(e) => println!("{}: {}", "Error".red(), e),
+        Ok(content) => println!("{}: {}", "Ok".green(), content),
+        Err(e) => println!("{}: {}", "Err".red(), e),
     }
 }
 
 pub fn comment_ing(result: &Result<&String>) {
     match result {
-        Ok(content) => println!("{}: {}", "Commented".green(), content),
-        Err(e) => println!("{}: {}", "Error".red(), e),
+        Ok(content) => println!("{}: {}", "Ok".green(), content),
+        Err(e) => println!("{}: {}", "Err".red(), e),
     }
 }
 

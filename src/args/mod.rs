@@ -86,7 +86,7 @@ pub struct Args {
     #[arg(long)]
     #[arg(value_enum)]
     #[arg(hide_possible_values = true)]
-    #[arg(value_name = "NAME")]
     #[arg(default_value = "colorful")]
+    #[arg(value_name = "NAME")]
     pub style: Style,
 }

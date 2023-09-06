@@ -46,7 +46,7 @@ pub async fn unit_or_err(resp: Response) -> Result<()> {
         bail!("{}: {}", code, body);
     }
 
-    Ok(())
+    ().into_ok()
 }
 
 pub async fn body_or_err(resp: Response) -> Result<String> {
