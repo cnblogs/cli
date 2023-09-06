@@ -3,7 +3,7 @@ description: Run tests
 runs:
   using: composite
   steps:
-    - name: Test debug
+    - name: Test dev
       shell: bash
       run: cargo test --verbose
 

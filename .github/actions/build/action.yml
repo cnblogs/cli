@@ -10,7 +10,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Build debug
+    - name: Build dev
       if: ${{ inputs.release == 'false' }}
       shell: bash
       run: cargo build --target ${{ inputs.target }}
