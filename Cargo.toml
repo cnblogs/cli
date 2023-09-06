@@ -6,6 +6,9 @@ name = "cnb"
 version = "0.0.0-staging"
 edition = "2021"
 
+[profile.dev]
+lto = true
+
 [profile.release]
 lto = true
 strip = true
