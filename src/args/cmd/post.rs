@@ -4,6 +4,7 @@ use clap::Parser;
 pub struct Opt {
     #[arg(verbatim_doc_comment)]
     /// Show title and content of a specific post
+    /// Example: cnb --id 114514 post --show
     /// You should also specify the id of post via option --id
     #[arg(long)]
     #[arg(short = 's')]
@@ -11,6 +12,7 @@ pub struct Opt {
 
     #[arg(verbatim_doc_comment)]
     /// Show metadata of a specific post
+    /// Example: cnb --id 114514 post --show-meta
     /// You should also specify the id of post via option --id
     #[arg(long)]
     #[arg(short = 'm')]
@@ -18,16 +20,16 @@ pub struct Opt {
 
     #[arg(verbatim_doc_comment)]
     /// Show post list, order by time in DESC
+    /// Example: cnb post --list
     /// <LENGTH> should in range [0,100]
     /// If <LENGTH> greater than 100, it will be set to 100
     #[arg(long)]
     #[arg(short = 'l')]
-    #[arg(default_missing_value = "8")]
-    #[arg(value_name = "LENGTH")]
     pub list: bool,
 
     #[arg(verbatim_doc_comment)]
     /// Delete post
+    /// Example: cnb --id 114514 post --delete
     /// You should also specify the id of post via option --id
     #[arg(long)]
     #[arg(visible_alias = "del")]
@@ -35,7 +37,7 @@ pub struct Opt {
 
     #[arg(verbatim_doc_comment)]
     /// Search post by keyword and output the post id list that matches
-    /// Example: cnb post --search FOO
+    /// Example: cnb post --search 'Hello world'
     #[arg(long)]
     #[arg(value_name = "KEYWORD")]
     pub search: Option<String>,
