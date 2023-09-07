@@ -50,17 +50,17 @@ pub fn list_ing(
 
 pub fn publish_ing(style: &Style, result: &Result<&String>) {
     match style {
-        Style::Colorful => colorful::publish_ing(result),
-        Style::Normal => normal::publish_ing(result),
-        Style::Json => json::publish_ing(result),
+        Style::Colorful => colorful::println_result(result),
+        Style::Normal => normal::println_result(result),
+        Style::Json => json::println_result(result),
     }
 }
 
 pub fn comment_ing(style: &Style, result: &Result<&String>) {
     match style {
-        Style::Colorful => colorful::comment_ing(result),
-        Style::Normal => normal::comment_ing(result),
-        Style::Json => json::comment_ing(result),
+        Style::Colorful => colorful::println_result(result),
+        Style::Normal => normal::println_result(result),
+        Style::Json => json::println_result(result),
     }
 }
 
@@ -90,9 +90,9 @@ pub fn list_post(style: &Style, entry_list: &[PostEntry], total_count: usize, re
 
 pub fn delete_post(style: &Style, result: &Result<usize>) {
     match style {
-        Style::Colorful => colorful::delete_post(result),
-        Style::Normal => normal::delete_post(result),
-        Style::Json => json::delete_post(result),
+        Style::Colorful => colorful::println_result(result),
+        Style::Normal => normal::println_result(result),
+        Style::Json => json::println_result(result),
     }
 }
 
@@ -106,8 +106,16 @@ pub fn search_post(style: &Style, id_list: &[usize], total_count: usize, rev: bo
 
 pub fn create_post(style: &Style, result: &Result<usize>) {
     match style {
-        Style::Colorful => colorful::create_post(result),
-        Style::Normal => normal::create_post(result),
-        Style::Json => json::create_post(result),
+        Style::Colorful => colorful::println_result(result),
+        Style::Normal => normal::println_result(result),
+        Style::Json => json::println_result(result),
+    }
+}
+
+pub fn update_post(style: &Style, result: &Result<usize>) {
+    match style {
+        Style::Colorful => colorful::println_result(result),
+        Style::Normal => normal::println_result(result),
+        Style::Json => json::println_result(result),
     }
 }

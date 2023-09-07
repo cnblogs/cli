@@ -15,7 +15,7 @@ pub enum Style {
 #[command(author, about, long_about = None, version)]
 pub struct Args {
     #[command(subcommand)]
-    command: Option<Cmd>,
+    cmd: Option<Cmd>,
 
     #[arg(verbatim_doc_comment)]
     /// Provide ID required by other options

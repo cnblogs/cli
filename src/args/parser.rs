@@ -19,7 +19,7 @@ pub fn no_operation(args: &Args) -> bool {
     matches!(
         args,
         Args {
-            command: None,
+            cmd: None,
             id: None,
             with_pat: None,
             rev: false,
@@ -34,7 +34,7 @@ pub fn no_operation(args: &Args) -> bool {
 pub fn user_info(args: &Args) -> Option<Result<String>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::User(cmd::user::Opt {
                     login: None,
                     logout: false,
@@ -56,7 +56,7 @@ pub fn user_info(args: &Args) -> Option<Result<String>> {
 pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
                     list: false,
                     publish: Some(content),
@@ -78,7 +78,7 @@ pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
 pub fn login(args: &Args) -> Option<&String> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::User(cmd::user::Opt {
                     login: Some(pat),
                     logout: false,
@@ -101,7 +101,7 @@ pub fn logout(args: &Args) -> bool {
     matches!(
         args,
         Args {
-            command: Some(Cmd::User(cmd::user::Opt {
+            cmd: Some(Cmd::User(cmd::user::Opt {
                 login: None,
                 logout: true,
                 info: false,
@@ -120,7 +120,7 @@ pub fn logout(args: &Args) -> bool {
 pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
                     list: true,
                     publish: None,
@@ -146,7 +146,7 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize)>> {
 pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
                     list: false,
                     publish: None,
@@ -168,14 +168,14 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
 pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Post(cmd::post::Opt {
                     show: true,
                     show_meta: false,
                     list: false,
                     delete: false,
                     search: None,
-                    create: None,
+                    cmd: None,
                 })),
             id: Some(id),
             with_pat,
@@ -193,14 +193,14 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
 pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: true,
                     list: false,
                     delete: false,
                     search: None,
-                    create: None,
+                    cmd: None,
                 })),
             id: Some(id),
             with_pat,
@@ -218,14 +218,14 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
 pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: true,
                     delete: false,
                     search: None,
-                    create: None,
+                    cmd: None,
                 })),
             id: None,
             with_pat,
@@ -247,14 +247,14 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
 pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: false,
                     delete: true,
                     search: None,
-                    create: None,
+                    cmd: None,
                 })),
             id: Some(id),
             with_pat,
@@ -272,14 +272,14 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
 pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: false,
                     delete: false,
                     search: Some(keyword),
-                    create: None,
+                    cmd: None,
                 })),
             id: None,
             with_pat,
@@ -298,17 +298,22 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)
     .into_some()
 }
 
-pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String)>> {
+pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String, bool)>> {
     match args {
         Args {
-            command:
+            cmd:
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
                     list: false,
                     delete: false,
                     search: None,
-                    create: Some(vec),
+                    cmd:
+                        Some(cmd::post::Cmd::Create {
+                            title,
+                            body,
+                            publish,
+                        }),
                 })),
             id: None,
             with_pat,
@@ -317,11 +322,49 @@ pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String)>> {
             take: None,
             debug: _,
             style: _,
-        } if vec.len() == 2 => {
-            let title = &vec[0];
-            let body = &vec[1];
-            get_pat(with_pat).map(|pat| (pat, title, body))
-        }
+        } => get_pat(with_pat).map(|pat| (pat, title, body, *publish)),
+        _ => return None,
+    }
+    .into_some()
+}
+
+// TODO
+#[allow(clippy::type_complexity)]
+pub fn update_post(
+    args: &Args,
+) -> Option<
+    Result<(
+        String,
+        usize,
+        &Option<String>,
+        &Option<String>,
+        &Option<bool>,
+    )>,
+> {
+    match args {
+        Args {
+            cmd:
+                Some(Cmd::Post(cmd::post::Opt {
+                    show: false,
+                    show_meta: false,
+                    list: false,
+                    delete: false,
+                    search: None,
+                    cmd:
+                        Some(cmd::post::Cmd::Update {
+                            title,
+                            body,
+                            publish,
+                        }),
+                })),
+            id: Some(id),
+            with_pat,
+            rev: _,
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+        } => get_pat(with_pat).map(|pat| (pat, *id, title, body, publish)),
         _ => return None,
     }
     .into_some()

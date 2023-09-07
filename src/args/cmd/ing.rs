@@ -22,7 +22,7 @@ pub struct Opt {
     #[arg(verbatim_doc_comment)]
     /// Comment ing with specific content
     /// Example: cnb --id 114514 ing --comment 'Hello world'
-    /// You should also specify the id of ing via option --id
+    /// You should also specify the id of the ing via --id
     #[arg(long)]
     #[arg(short = 'c')]
     #[arg(value_name = "CONTENT")]

@@ -8,6 +8,7 @@ use crate::infra::iter::IteratorExt;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use chrono::DateTime;
+use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
 
@@ -77,20 +78,6 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
         });
 }
 
-pub fn publish_ing(result: &Result<&String>) {
-    match result {
-        Ok(content) => println!("Ok: {}", content),
-        Err(e) => println!("Err: {}", e),
-    }
-}
-
-pub fn comment_ing(result: &Result<&String>) {
-    match result {
-        Ok(content) => println!("Ok: {}", content),
-        Err(e) => println!("Err: {}", e),
-    }
-}
-
 pub fn show_post(entry: &PostEntry) {
     println!("{}\n", entry.title);
     if let Some(body) = &entry.body {
@@ -151,24 +138,17 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     });
 }
 
-pub fn delete_post(result: &Result<usize>) {
-    match result {
-        Ok(id) => println!("Deleted: {}", id),
-        Err(e) => println!("Error: {}", e),
-    }
-}
-
 pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
     println!("{}/{}", id_list.len(), total_count);
     id_list
         .iter()
         .dyn_rev(rev)
-        .for_each(|id| println!("{}", id));
+        .for_each(|id| println!("# {}", id));
 }
 
-pub fn create_post(result: &Result<usize>) {
+pub fn println_result<T: Display>(result: &Result<T>) {
     match result {
-        Ok(id) => println!("Ok: {}", id),
-        Err(e) => println!("Err: {}", e),
+        Ok(t) => println!("{}: {}", "Ok", t),
+        Err(e) => println!("{}: {}", "Err", e),
     }
 }

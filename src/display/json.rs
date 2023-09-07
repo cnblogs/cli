@@ -5,7 +5,9 @@ use crate::infra::iter::IteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
+use serde::Serialize;
 use serde_json::json;
+use std::fmt::Display;
 use std::path::PathBuf;
 
 pub fn login(cfg_path: &PathBuf) {
@@ -40,34 +42,6 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) -> Res
     ().into_ok()
 }
 
-pub fn publish_ing(result: &Result<&String>) {
-    let json = match result {
-        Ok(content) => json!({
-            "is_ok": true,
-            "msg": content
-        }),
-        Err(e) => json!({
-            "is_ok": false,
-            "msg": e.to_string()
-        }),
-    };
-    println!("{}", json)
-}
-
-pub fn comment_ing(result: &Result<&String>) {
-    let json = match result {
-        Ok(content) => json!({
-            "is_ok": true,
-            "msg": content
-        }),
-        Err(e) => json!({
-            "is_ok": false,
-            "msg": e.to_string()
-        }),
-    };
-    println!("{}", json)
-}
-
 pub fn show_post(entry: &PostEntry) {
     let json = json!({
         "title": entry.title,
@@ -92,20 +66,6 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     print!("{}", json);
 }
 
-pub fn delete_post(result: &Result<usize>) {
-    let json = match result {
-        Ok(id) => json!({
-            "is_ok": true,
-            "msg": id
-        }),
-        Err(e) => json!({
-            "is_ok": false,
-            "msg": e.to_string()
-        }),
-    };
-    println!("{}", json)
-}
-
 pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
     let id_list = id_list.iter().dyn_rev(rev).collect::<Vec<&usize>>();
     let json = json!({
@@ -117,11 +77,11 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
     println!("{}", json);
 }
 
-pub fn create_post(result: &Result<usize>) {
+pub fn println_result<T: Display + Serialize>(result: &Result<T>) {
     let json = match result {
-        Ok(id) => json!({
+        Ok(t) => json!({
             "is_ok": true,
-            "msg": id
+            "msg": t
         }),
         Err(e) => json!({
             "is_ok": false,

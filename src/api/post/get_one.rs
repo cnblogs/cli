@@ -6,51 +6,7 @@ use crate::infra::result::IntoResult;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
-/*
-Fields only available over blog_backend!("/posts/{}", id):
-  postBody: string
-  categoryIds: []
-  collectionIds: []
-  inSiteCandidate: boolean
-  inSiteHome: boolean
-  siteCategoryId: null
-  blogTeamIds: []
-  displayOnHomePage: boolean
-  isAllowComments: boolean
-  includeInMainSyndication: boolean
-  isOnlyForRegisterUser: boolean
-  isUpdateDateAdded: boolean
-  description: string
-  featuredImage: null
-  tags: []
-  password: null
-  autoDesc: string
-  changePostType: boolean
-  blogId: number
-  author: string
-  removeScript: boolean
-  clientInfo: null
-  changeCreatedTime: boolean
-  canChangeCreatedTime: boolean
-  isContributeToImpressiveBugActivity: boolean
-  usingEditorId: null
-  sourceUrl: null
-
-Fields available over blog_backend!("/posts/{}", id) and blog_backend!("/posts/list?{}", query):
-  id: number
-  postType: PostType
-  accessPermission: AccessPermission
-  title: string
-  url: string
-  entryName: null
-  datePublished: string
-  dateUpdated: string
-  isMarkdown: boolean
-  isDraft: boolean
-  isPinned: boolean
-  isPublished: boolean
-*/
-
+// TODO: not elegant
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PostEntry {
     pub id: usize,
