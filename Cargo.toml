@@ -3,6 +3,11 @@ name = "cnb"
 # WRN: Version will be updated by CI while create a tag, NERVER change this.
 version = "0.0.0-staging"
 edition = "2021"
+description = "Cnblogs' command line tool"
+license = "MIT"
+repository = "https://github.com/cnblogs/cli"
+keywords = ["cli", "cnblogs", "blog"]
+categories = ["command-line-utilities"]
 
 [profile.dev]
 lto = true
