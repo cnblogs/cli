@@ -148,7 +148,7 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
 
 pub fn println_result<T: Display>(result: &Result<T>) {
     match result {
-        Ok(t) => println!("{}: {}", "Ok", t),
-        Err(e) => println!("{}: {}", "Err", e),
+        Ok(t) => println!("Ok: {}", t),
+        Err(e) => println!("Err: {}", e),
     }
 }
