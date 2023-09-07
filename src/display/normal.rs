@@ -47,10 +47,9 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
             print!("{}", create_time);
             if ing.is_lucky {
                 let star_text = ing_star_tag_to_text(&ing.icons);
-                print!(" {}", star_text);
-                print!("{}", "⭐");
+                print!(" {}⭐", star_text);
             }
-            println!(" {} {}", "#", ing.id.to_string());
+            println!(" # {}", ing.id.to_string());
             let content = fmt_content(&ing.content);
             println!("  {}: {}", ing.user_name, content);
 
@@ -65,7 +64,7 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
                     }
                     let at_user = get_ing_at_user_tag_text(&entry.content);
                     if at_user.is_empty().not() {
-                        print!(" {}{}", "@", at_user);
+                        print!(" @{}", at_user);
                     }
                     let content = {
                         let content = rm_ing_at_user_tag(&entry.content);
@@ -124,15 +123,15 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
 pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     println!("{}/{}", entry_list.len(), total_count);
     entry_list.iter().dyn_rev(rev).for_each(|entry| {
-        print!("{} {}", "#", entry.id.to_string());
+        print!("# {}", entry.id.to_string());
         print!(" {}", entry.title);
         if entry.is_published {
-            print!(" {}", "Pub");
+            print!(" Pub");
         } else {
-            print!(" {}", "Dft");
+            print!(" Dft");
         }
         if entry.is_pinned {
-            print!(" {}", "Pin");
+            print!(" Pin");
         }
         println!()
     });

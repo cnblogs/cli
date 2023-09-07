@@ -48,8 +48,7 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
             print!("{}", create_time.dimmed());
             if ing.is_lucky {
                 let star_text = ing_star_tag_to_text(&ing.icons);
-                print!(" {}", star_text.yellow());
-                print!("{}", "⭐");
+                print!(" {}⭐", star_text.yellow());
             }
             println!(" {} {}", "#".dimmed(), ing.id.to_string().dimmed());
             print!("  {}", ing.user_name.cyan());
