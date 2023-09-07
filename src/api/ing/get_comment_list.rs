@@ -1,6 +1,6 @@
 use crate::api::ing::get_list::IngCommentEntry;
 use crate::api::ing::Ing;
-use crate::infra::http::{body_or_err, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
@@ -12,8 +12,7 @@ impl Ing {
 
         let req = {
             let url = openapi!("/statuses/{}/comments", ing_id);
-            let req = client.get(url);
-            setup_auth(req, &self.pat)
+            client.get(url).pat_auth(&self.pat)
         };
         let resp = req.send().await?;
 

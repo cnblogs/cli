@@ -1,6 +1,6 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{setup_auth, unit_or_err};
+use crate::infra::http::{unit_or_err, RequestBuilderExt};
 use anyhow::Result;
 
 impl Post {
@@ -9,8 +9,7 @@ impl Post {
 
         let req = {
             let url = blog_backend!("/posts/{}", id);
-            let req = client.delete(url);
-            setup_auth(req, &self.pat)
+            client.delete(url).pat_auth(&self.pat)
         };
         let resp = req.send().await?;
 

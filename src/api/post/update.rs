@@ -1,11 +1,10 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 
 impl Post {
     pub async fn update(
@@ -34,20 +33,15 @@ impl Post {
                 json
             };
 
-            let req = client.post(url).json(&json);
-            setup_auth(req, &self.pat)
+            client.post(url).json(&json).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;
 
         let id = {
-            let json = body_or_err(resp).await?;
-            #[derive(Serialize, Deserialize, Debug)]
-            struct Body {
-                pub id: usize,
-            }
-            let body = json::deserialize::<Body>(&json)?;
-            body.id
+            let body = body_or_err(resp).await?;
+            let json = json::deserialize::<Value>(&body)?;
+            json["id"].as_u64().unwrap() as usize
         };
 
         id.into_ok()

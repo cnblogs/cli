@@ -1,6 +1,6 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use serde_json::Value;
@@ -61,8 +61,7 @@ impl Post {
 
         let req = {
             let url = blog_backend!("/posts/{}", id);
-            let req = client.get(url);
-            setup_auth(req, &self.pat)
+            client.get(url).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;

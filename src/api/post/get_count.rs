@@ -1,10 +1,10 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, cons_query_string, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 impl Post {
     pub async fn get_count(&self) -> Result<usize> {
@@ -12,27 +12,19 @@ impl Post {
 
         let req = {
             let url = {
-                let query = vec![('t', 1), ('p', 1), ('s', 1)];
-                let query = cons_query_string(query);
+                let query = vec![('t', 1), ('p', 1), ('s', 1)].into_query_string();
                 blog_backend!("/posts/list?{}", query)
             };
 
-            let req = client.get(url);
-            setup_auth(req, &self.pat)
+            client.get(url).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;
 
         let count = {
-            let json = body_or_err(resp).await?;
-            #[derive(Serialize, Deserialize, Debug)]
-            struct Body {
-                #[serde(rename = "postsCount")]
-                pub total_count: usize,
-            }
-            let body = json::deserialize::<Body>(&json)?;
-
-            body.total_count
+            let body = body_or_err(resp).await?;
+            let json = json::deserialize::<Value>(&body)?;
+            json["postsCount"].as_u64().unwrap() as usize
         };
 
         count.into_ok()

@@ -1,17 +1,8 @@
 use crate::api::ing::Ing;
-use crate::infra::http::setup_auth;
-use crate::infra::result::IntoResult;
+use crate::infra::http::{unit_or_err, RequestBuilderExt};
 use crate::openapi;
-use anyhow::{bail, Result};
-use serde::{Deserialize, Serialize};
+use anyhow::Result;
 use serde_json::json;
-use std::ops::Not;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-struct IngPubErr {
-    #[serde(rename = "Message")]
-    message: String,
-}
 
 impl Ing {
     pub async fn publish(&self, content: &str) -> Result<()> {
@@ -24,19 +15,11 @@ impl Ing {
                 "isPrivate": false,
             });
 
-            let req = client.post(url).json(&body);
-            setup_auth(req, &self.pat)
+            client.post(url).json(&body).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;
-        let code = resp.status();
 
-        if code.is_success().not() {
-            let body = resp.text().await?;
-            let err = serde_json::from_str::<IngPubErr>(&body)?;
-            bail!(err.message)
-        }
-
-        ().into_ok()
+        unit_or_err(resp).await
     }
 }

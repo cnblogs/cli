@@ -1,10 +1,11 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 // TODO: not elegant
 #[derive(Serialize, Deserialize, Debug)]
@@ -41,21 +42,15 @@ impl Post {
 
         let req = {
             let url = blog_backend!("/posts/{}", id);
-            let req = client.get(url);
-            setup_auth(req, &self.pat)
+            client.get(url).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;
 
         let entry = {
-            let json = body_or_err(resp).await?;
-            #[derive(Serialize, Deserialize, Debug)]
-            struct Body {
-                #[serde(rename = "blogPost")]
-                pub entry: PostEntry,
-            }
-            let body = json::deserialize::<Body>(&json)?;
-            body.entry
+            let body = body_or_err(resp).await?;
+            let json = json::deserialize::<Value>(&body)?["blogPost"].take();
+            serde_json::from_value::<PostEntry>(json)?
         };
 
         entry.into_ok()

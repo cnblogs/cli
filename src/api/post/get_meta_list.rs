@@ -1,11 +1,11 @@
 use crate::api::post::get_one::PostEntry;
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, cons_query_string, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
-use anyhow::{anyhow, Result};
-use serde::{Deserialize, Serialize};
+use anyhow::Result;
+use serde_json::Value;
 
 /*
 Fields only available over blog_backend!("/posts/list?{}", query):
@@ -34,31 +34,24 @@ impl Post {
         let fut_iter = range.map(|i| async move {
             let req = {
                 let url = {
-                    let query = vec![('t', 1), ('p', i), ('s', 1)];
-                    let query = cons_query_string(query);
+                    let query = vec![('t', 1), ('p', i), ('s', 1)].into_query_string();
                     blog_backend!("/posts/list?{}", query)
                 };
 
-                let req = client.get(url);
-                setup_auth(req, &self.pat)
+                client.get(url).pat_auth(&self.pat)
             };
 
             let resp = req.send().await?;
 
-            // entry
-            {
-                let json = body_or_err(resp).await?;
-                #[derive(Serialize, Deserialize, Debug)]
-                struct Body {
-                    #[serde(rename = "postList")]
-                    pub list: Vec<PostEntry>,
-                    #[serde(rename = "postsCount")]
-                    pub total_count: usize,
-                }
-                let mut body = json::deserialize::<Body>(&json)?;
+            let entry = {
+                let body = body_or_err(resp).await?;
+                let json = json::deserialize::<Value>(&body)?["postList"].take();
 
-                body.list.pop().ok_or(anyhow!("No item in response list"))
-            }
+                let [entry, ..] = serde_json::from_value::<[PostEntry; 1]>(json)?;
+                entry
+            };
+
+            entry.into_ok()
         });
 
         let vec = futures::future::join_all(fut_iter)

@@ -1,5 +1,5 @@
 use crate::api::user::User;
-use crate::infra::http::{body_or_err, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
@@ -40,8 +40,7 @@ impl User {
 
         let req = {
             let url = openapi!("/users");
-            let req = client.get(url);
-            setup_auth(req, &self.pat)
+            client.get(url).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;

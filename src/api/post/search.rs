@@ -1,10 +1,11 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, cons_query_string, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::collections::HashSet;
 
 impl Post {
@@ -20,18 +21,15 @@ impl Post {
         // If index is greater than the max page index, API will still return the last page
         let total_count = {
             let req = {
-                let query = {
-                    let query = vec![
-                        ("t", "1".to_string()),
-                        ("p", 1.to_string()),
-                        ("s", 1.to_string()),
-                        ("search", keyword.to_string()),
-                    ];
-                    cons_query_string(query)
-                };
+                let query = vec![
+                    ("t", "1".to_string()),
+                    ("p", 1.to_string()),
+                    ("s", 1.to_string()),
+                    ("search", keyword.to_string()),
+                ]
+                .into_query_string();
                 let url = blog_backend!("/posts/list?{}", query);
-                let req = client.get(url);
-                setup_auth(req, &self.pat)
+                client.get(url).pat_auth(&self.pat)
             };
             let resp = req.send().await?;
 
@@ -51,46 +49,33 @@ impl Post {
         let range = (skip + 1)..=(skip + take).min(total_count);
         let fut_iter = range.map(|i| async move {
             let req = {
-                let query = {
-                    let query = vec![
-                        ("t", "1".to_string()),
-                        ("p", i.to_string()),
-                        ("s", 1.to_string()),
-                        ("search", keyword.to_string()),
-                    ];
-                    cons_query_string(query)
-                };
+                let query = vec![
+                    ("t", "1".to_string()),
+                    ("p", i.to_string()),
+                    ("s", 1.to_string()),
+                    ("search", keyword.to_string()),
+                ]
+                .into_query_string();
                 let url = blog_backend!("/posts/list?{}", query);
-                let req = client.get(url);
-                setup_auth(req, &self.pat)
+                client.get(url).pat_auth(&self.pat)
             };
             let resp = req.send().await?;
 
             let id_list = {
-                #[derive(Serialize, Deserialize, Debug)]
-                struct Item {
-                    pub id: usize,
-                }
-
-                #[derive(Serialize, Deserialize, Debug)]
-                struct ZzkResult {
-                    #[serde(rename = "postIds")]
-                    pub id_list: Vec<usize>,
-                }
-
-                #[derive(Serialize, Deserialize, Debug)]
-                struct Body {
-                    #[serde(rename = "postList")]
-                    pub post_list: Vec<Item>,
-                    #[serde(rename = "zzkSearchResult")]
-                    pub zzk_result: ZzkResult,
-                }
                 let body = body_or_err(resp).await?;
-                let body = json::deserialize::<Body>(&body)?;
-                body.post_list
+                let mut json = json::deserialize::<Value>(&body)?;
+                let post_id_list = {
+                    let json = json["postList"].take();
+                    serde_json::from_value::<Vec<usize>>(json)
+                }?;
+                let zzk_post_id_list = {
+                    let json = json["zzkSearchResult"]["postIds"].take();
+                    serde_json::from_value::<Vec<usize>>(json)
+                }?;
+
+                post_id_list
                     .into_iter()
-                    .map(|it| it.id)
-                    .chain(body.zzk_result.id_list.into_iter())
+                    .chain(zzk_post_id_list.into_iter())
                     .collect::<Vec<usize>>()
             };
 

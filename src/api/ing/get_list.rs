@@ -1,9 +1,9 @@
 use crate::api::ing::{Ing, IngType};
-use crate::infra::http::{body_or_err, setup_auth};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -71,9 +71,8 @@ impl Ing {
         let fut_iter = range.map(|i| async move {
             let req = {
                 let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
-                let req = client.get(url);
                 let queries = vec![("pageIndex", i), ("pageSize", 1)];
-                setup_auth(req, &self.pat).query(&queries)
+                client.get(url).query(&queries).pat_auth(&self.pat)
             };
 
             let resp = req.send().await?;
@@ -81,9 +80,7 @@ impl Ing {
             let body = body_or_err(resp).await?;
 
             let entry_with_comment = {
-                let entry = json::deserialize::<Vec<IngEntry>>(&body)?
-                    .pop()
-                    .ok_or(anyhow!("No item in response list"))?;
+                let [entry, ..] = json::deserialize::<[IngEntry; 1]>(&body)?;
 
                 let id = entry.id;
                 (entry, self.get_comment_list(id).await?)
