@@ -2,7 +2,6 @@ use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::Style;
-use crate::infra::result::IntoResult;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -10,7 +9,7 @@ mod colorful;
 mod json;
 mod normal;
 
-pub fn login(style: &Style, cfg_path: &PathBuf) {
+pub fn login(style: &Style, cfg_path: &Result<PathBuf>) {
     match style {
         Style::Colorful => colorful::login(cfg_path),
         Style::Normal => normal::login(cfg_path),
@@ -18,7 +17,7 @@ pub fn login(style: &Style, cfg_path: &PathBuf) {
     }
 }
 
-pub fn logout(style: &Style, cfg_path: &PathBuf) {
+pub fn logout(style: &Style, cfg_path: &Result<PathBuf>) {
     match style {
         Style::Colorful => colorful::logout(cfg_path),
         Style::Normal => normal::logout(cfg_path),
@@ -26,26 +25,24 @@ pub fn logout(style: &Style, cfg_path: &PathBuf) {
     }
 }
 
-pub fn user_info(style: &Style, user_info: &UserInfo) -> Result<()> {
+pub fn user_info(style: &Style, user_info: &Result<UserInfo>) {
     match style {
         Style::Colorful => colorful::user_info(user_info),
         Style::Normal => normal::user_info(user_info),
-        Style::Json => return json::user_info(user_info),
-    };
-    ().into_ok()
+        Style::Json => json::user_info(user_info),
+    }
 }
 
 pub fn list_ing(
     style: &Style,
-    ing_list: &[(IngEntry, Vec<IngCommentEntry>)],
+    ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
     rev: bool,
-) -> Result<()> {
+) {
     match style {
         Style::Colorful => colorful::list_ing(ing_list, rev),
         Style::Normal => normal::list_ing(ing_list, rev),
-        Style::Json => return json::list_ing(ing_list, rev),
-    };
-    ().into_ok()
+        Style::Json => json::list_ing(ing_list, rev),
+    }
 }
 
 pub fn publish_ing(style: &Style, result: &Result<&String>) {
@@ -64,7 +61,7 @@ pub fn comment_ing(style: &Style, result: &Result<&String>) {
     }
 }
 
-pub fn show_post(style: &Style, entry: &PostEntry) {
+pub fn show_post(style: &Style, entry: &Result<PostEntry>) {
     match style {
         Style::Colorful => colorful::show_post(entry),
         Style::Normal => normal::show_post(entry),
@@ -72,7 +69,7 @@ pub fn show_post(style: &Style, entry: &PostEntry) {
     }
 }
 
-pub fn show_post_meta(style: &Style, entry: &PostEntry) -> Result<()> {
+pub fn show_post_meta(style: &Style, entry: &Result<PostEntry>) {
     match style {
         Style::Colorful => colorful::show_post_meta(entry),
         Style::Normal => normal::show_post_meta(entry),
@@ -80,11 +77,11 @@ pub fn show_post_meta(style: &Style, entry: &PostEntry) -> Result<()> {
     }
 }
 
-pub fn list_post(style: &Style, entry_list: &[PostEntry], total_count: usize, rev: bool) {
+pub fn list_post(style: &Style, result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
     match style {
-        Style::Colorful => colorful::list_post(entry_list, total_count, rev),
-        Style::Normal => normal::list_post(entry_list, total_count, rev),
-        Style::Json => json::list_post(entry_list, total_count, rev),
+        Style::Colorful => colorful::list_post(result, rev),
+        Style::Normal => normal::list_post(result, rev),
+        Style::Json => json::list_post(result, rev),
     }
 }
 
@@ -96,11 +93,11 @@ pub fn delete_post(style: &Style, result: &Result<usize>) {
     }
 }
 
-pub fn search_post(style: &Style, id_list: &[usize], total_count: usize, rev: bool) {
+pub fn search_post(style: &Style, result: &Result<(Vec<usize>, usize)>, rev: bool) {
     match style {
-        Style::Colorful => colorful::search_post(id_list, total_count, rev),
-        Style::Normal => normal::search_post(id_list, total_count, rev),
-        Style::Json => json::search_post(id_list, total_count, rev),
+        Style::Colorful => colorful::search_post(result, rev),
+        Style::Normal => normal::search_post(result, rev),
+        Style::Json => json::search_post(result, rev),
     }
 }
 

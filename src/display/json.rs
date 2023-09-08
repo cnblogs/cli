@@ -3,31 +3,34 @@ use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
 use crate::infra::json;
-use crate::infra::result::IntoResult;
 use anyhow::Result;
 use serde::Serialize;
 use serde_json::json;
-use std::fmt::Display;
 use std::path::PathBuf;
 
-pub fn login(cfg_path: &PathBuf) {
-    let json = json!({"cfg_path":cfg_path});
-    println!("{}", json)
+pub fn login(cfg_path: &Result<PathBuf>) {
+    let json = cfg_path.as_ref().map(|pb| json!({"cfg_path":pb}));
+    println_result(&json);
 }
 
-pub fn logout(cfg_path: &PathBuf) {
-    let json = json!({"cfg_path":cfg_path});
-    println!("{}", json)
+pub fn logout(cfg_path: &Result<PathBuf>) {
+    let json = cfg_path.as_ref().map(|pb| json!({"cfg_path":pb}));
+    println_result(&json);
 }
 
-pub fn user_info(info: &UserInfo) -> Result<()> {
-    let json = json::serialize(info)?;
-    print!("{}", json);
-    ().into_ok()
+pub fn user_info(info: &Result<UserInfo>) {
+    println_result(info);
 }
 
-pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) -> Result<()> {
+pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
+    if let Err(e) = ing_list {
+        println_err(e);
+        return;
+    }
+
     let vec = ing_list
+        .as_ref()
+        .unwrap()
         .iter()
         .dyn_rev(rev)
         .map(|(entry, comment_list)| {
@@ -37,26 +40,30 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) -> Res
             })
         })
         .collect::<Vec<_>>();
-    let json = json::serialize(vec)?;
+    let json = json::serialize(vec).unwrap();
     print!("{}", json);
-    ().into_ok()
 }
 
-pub fn show_post(entry: &PostEntry) {
-    let json = json!({
-        "title": entry.title,
-        "body": entry.body
+pub fn show_post(entry: &Result<PostEntry>) {
+    let json = entry.as_ref().map(|entry| {
+        json!({
+            "title": entry.title,
+            "body": entry.body
+        })
     });
-    println!("{}", json);
+    println_result(&json);
 }
 
-pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
-    let json = json::serialize(entry)?;
-    print!("{}", json);
-    ().into_ok()
+pub fn show_post_meta(entry: &Result<PostEntry>) {
+    println_result(entry);
 }
 
-pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
+pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
+    if let Err(e) = result {
+        println_err(e);
+        return;
+    }
+    let (entry_list, total_count) = result.as_ref().unwrap();
     let vec = entry_list.iter().dyn_rev(rev).collect::<Vec<_>>();
     let json = json!({
        "listed_count": vec.len(),
@@ -66,7 +73,13 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     print!("{}", json);
 }
 
-pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
+pub fn search_post(result: &Result<(Vec<usize>, usize)>, rev: bool) {
+    if let Err(e) = result {
+        println_err(e);
+        return;
+    }
+
+    let (id_list, total_count) = result.as_ref().unwrap();
     let id_list = id_list.iter().dyn_rev(rev).collect::<Vec<&usize>>();
     let json = json!({
        "listed_count": id_list.len(),
@@ -77,7 +90,15 @@ pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
     println!("{}", json);
 }
 
-pub fn println_result<T: Display + Serialize>(result: &Result<T>) {
+pub fn println_err(e: &anyhow::Error) {
+    let json = json!({
+        "is_ok": false,
+        "msg": e.to_string()
+    });
+    println!("{}", json)
+}
+
+pub fn println_result<T: Serialize, E: ToString>(result: &Result<T, E>) {
     let json = match result {
         Ok(t) => json!({
             "is_ok": true,

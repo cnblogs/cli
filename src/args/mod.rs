@@ -24,15 +24,6 @@ pub struct Args {
     pub id: Option<usize>,
 
     #[arg(verbatim_doc_comment)]
-    /// Execute with specific PAT
-    /// Example: cnb --with-pat 'FOOBARBAZ' post --list
-    /// Your PAT in ~/.cnbrc will be ignored in this execution if it exists
-    /// Please login if you don't want to input PAT everytime, try 'cnb user --help' for more details
-    #[arg(long)]
-    #[arg(value_name = "PAT")]
-    pub with_pat: Option<String>,
-
-    #[arg(verbatim_doc_comment)]
     /// Reverse list output
     /// Example: cnb --rev ing --list
     #[arg(long)]
@@ -61,6 +52,15 @@ pub struct Args {
     pub take: Option<usize>,
 
     #[arg(verbatim_doc_comment)]
+    /// Execute with specific PAT
+    /// Example: cnb --with-pat 'FOOBARBAZ' post --list
+    /// Your PAT in ~/.cnbrc will be ignored in this execution if it exists
+    /// Please login if you don't want to input PAT everytime, try 'cnb user --help' for more details
+    #[arg(long)]
+    #[arg(value_name = "PAT")]
+    pub with_pat: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
     /// Execute in debug mode, this will print some messages for the developer
     /// Example: cnb --debug ing --list
     /// THIS OPTION IS UNSTABLE FOREVER and any output from it may change in the future
@@ -74,7 +74,15 @@ pub struct Args {
     #[arg(long)]
     #[arg(value_enum)]
     #[arg(hide_possible_values = true)]
-    #[arg(default_value = "colorful")]
+    #[arg(default_value_t = Style::Colorful)]
     #[arg(value_name = "NAME")]
     pub style: Style,
+
+    #[arg(verbatim_doc_comment)]
+    /// Fail if error occurred
+    /// Example: cnb --fail-on-error ing --list
+    #[arg(long)]
+    #[clap(visible_alias = "foe")]
+    #[arg(default_value_t = false)]
+    pub fail_on_error: bool,
 }

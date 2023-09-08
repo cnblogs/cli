@@ -1,7 +1,5 @@
-use crate::api::auth::session;
 use crate::args::{cmd, Args, Cmd};
-use crate::infra::option::{IntoOption, OptionExt};
-use anyhow::Result;
+use crate::infra::option::IntoOption;
 
 fn get_skip(skip: &Option<usize>) -> usize {
     skip.unwrap_or(0)
@@ -9,10 +7,6 @@ fn get_skip(skip: &Option<usize>) -> usize {
 
 fn get_take(take: &Option<usize>) -> usize {
     take.unwrap_or(8).min(100)
-}
-
-fn get_pat(pat: &Option<String>) -> Result<String> {
-    pat.clone().or_eval_result(session::get_pat)
 }
 
 pub const fn no_operation(args: &Args) -> bool {
@@ -27,33 +21,33 @@ pub const fn no_operation(args: &Args) -> bool {
             take: None,
             debug: _,
             style: _,
+            fail_on_error: _,
         }
     )
 }
 
-pub fn user_info(args: &Args) -> Option<Result<String>> {
-    match args {
+pub const fn user_info(args: &Args) -> bool {
+    matches!(
+        args,
         Args {
-            cmd:
-                Some(Cmd::User(cmd::user::Opt {
-                    login: None,
-                    logout: false,
-                    info: true,
-                })),
+            cmd: Some(Cmd::User(cmd::user::Opt {
+                login: None,
+                logout: false,
+                info: true,
+            })),
             id: None,
-            with_pat,
+            with_pat: _,
             rev: false,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat),
-        _ => return None,
-    }
-    .into_some()
+            fail_on_error: _,
+        }
+    )
 }
 
-pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
+pub fn publish_ing(args: &Args) -> Option<&String> {
     match args {
         Args {
             cmd:
@@ -63,13 +57,14 @@ pub fn publish_ing(args: &Args) -> Option<Result<(String, &String)>> {
                     comment: None,
                 })),
             id: None,
-            with_pat,
+            with_pat: _,
             rev: false,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, content)),
+            fail_on_error: _,
+        } => content,
         _ => return None,
     }
     .into_some()
@@ -91,6 +86,7 @@ pub fn login(args: &Args) -> Option<&String> {
             take: None,
             debug: _,
             style: _,
+            fail_on_error: _,
         } => pat,
         _ => return None,
     }
@@ -113,11 +109,12 @@ pub const fn logout(args: &Args) -> bool {
             take: None,
             debug: _,
             style: _,
+            fail_on_error: _,
         }
     )
 }
 
-pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize)>> {
+pub fn list_ing(args: &Args) -> Option<(usize, usize)> {
     match args {
         Args {
             cmd:
@@ -127,23 +124,24 @@ pub fn list_ing(args: &Args) -> Option<Result<(String, usize, usize)>> {
                     comment: None,
                 })),
             id: None,
-            with_pat,
+            with_pat: _,
             rev: _,
             skip,
             take,
             debug: _,
             style: _,
+            fail_on_error: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            get_pat(with_pat).map(|pat| (pat, skip, take))
+            (skip, take)
         }
         _ => return None,
     }
     .into_some()
 }
 
-pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
+pub fn comment_ing(args: &Args) -> Option<(&String, usize)> {
     match args {
         Args {
             cmd:
@@ -153,19 +151,20 @@ pub fn comment_ing(args: &Args) -> Option<Result<(String, &String, usize)>> {
                     comment: Some(content),
                 })),
             id: Some(id),
-            with_pat,
+            with_pat: _,
             rev: false,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, content, *id)),
+            fail_on_error: _,
+        } => (content, *id),
         _ => return None,
     }
     .into_some()
 }
 
-pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
+pub fn show_post(args: &Args) -> Option<usize> {
     match args {
         Args {
             cmd:
@@ -178,19 +177,20 @@ pub fn show_post(args: &Args) -> Option<Result<(String, usize)>> {
                     cmd: None,
                 })),
             id: Some(id),
-            with_pat,
+            with_pat: _,
             rev: false,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, *id)),
+            fail_on_error: _,
+        } => *id,
         _ => return None,
     }
     .into_some()
 }
 
-pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
+pub fn show_post_meta(args: &Args) -> Option<usize> {
     match args {
         Args {
             cmd:
@@ -203,19 +203,20 @@ pub fn show_post_meta(args: &Args) -> Option<Result<(String, usize)>> {
                     cmd: None,
                 })),
             id: Some(id),
-            with_pat,
+            with_pat: _,
             rev: false,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, *id)),
+            fail_on_error: _,
+        } => *id,
         _ => return None,
     }
     .into_some()
 }
 
-pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
+pub fn list_post(args: &Args) -> Option<(usize, usize)> {
     match args {
         Args {
             cmd:
@@ -228,23 +229,24 @@ pub fn list_post(args: &Args) -> Option<Result<(String, usize, usize)>> {
                     cmd: None,
                 })),
             id: None,
-            with_pat,
+            with_pat: _,
             rev: _,
             skip,
             take,
             debug: _,
             style: _,
+            fail_on_error: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            get_pat(with_pat).map(|pat| (pat, skip, take))
+            (skip, take)
         }
         _ => return None,
     }
     .into_some()
 }
 
-pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
+pub fn delete_post(args: &Args) -> Option<usize> {
     match args {
         Args {
             cmd:
@@ -257,19 +259,20 @@ pub fn delete_post(args: &Args) -> Option<Result<(String, usize)>> {
                     cmd: None,
                 })),
             id: Some(id),
-            with_pat,
+            with_pat: _,
             rev: false,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, *id)),
+            fail_on_error: _,
+        } => *id,
         _ => return None,
     }
     .into_some()
 }
 
-pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)>> {
+pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
     match args {
         Args {
             cmd:
@@ -282,23 +285,24 @@ pub fn search_post(args: &Args) -> Option<Result<(String, &String, usize, usize)
                     cmd: None,
                 })),
             id: None,
-            with_pat,
+            with_pat: _,
             rev: _,
             skip,
             take,
             debug: _,
             style: _,
+            fail_on_error: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            get_pat(with_pat).map(|pat| (pat, keyword, skip, take))
+            (keyword, skip, take)
         }
         _ => return None,
     }
     .into_some()
 }
 
-pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String, bool)>> {
+pub fn create_post(args: &Args) -> Option<(&String, &String, bool)> {
     match args {
         Args {
             cmd:
@@ -316,13 +320,14 @@ pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String, bool
                         }),
                 })),
             id: None,
-            with_pat,
+            with_pat: _,
             rev: _,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, title, body, *publish)),
+            fail_on_error: _,
+        } => (title, body, *publish),
         _ => return None,
     }
     .into_some()
@@ -332,15 +337,7 @@ pub fn create_post(args: &Args) -> Option<Result<(String, &String, &String, bool
 #[allow(clippy::type_complexity)]
 pub fn update_post(
     args: &Args,
-) -> Option<
-    Result<(
-        String,
-        usize,
-        &Option<String>,
-        &Option<String>,
-        &Option<bool>,
-    )>,
-> {
+) -> Option<(usize, &Option<String>, &Option<String>, &Option<bool>)> {
     match args {
         Args {
             cmd:
@@ -358,13 +355,14 @@ pub fn update_post(
                         }),
                 })),
             id: Some(id),
-            with_pat,
+            with_pat: _,
             rev: _,
             skip: None,
             take: None,
             debug: _,
             style: _,
-        } => get_pat(with_pat).map(|pat| (pat, *id, title, body, publish)),
+            fail_on_error: _,
+        } => (*id, title, body, publish),
         _ => return None,
     }
     .into_some()

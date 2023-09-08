@@ -6,7 +6,7 @@ use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UserInfo {
     #[serde(rename = "UserId")]
     pub user_id: String,

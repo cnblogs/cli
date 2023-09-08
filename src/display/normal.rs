@@ -5,38 +5,55 @@ use crate::api::ing::{
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
-use crate::infra::result::IntoResult;
 use anyhow::Result;
 use chrono::DateTime;
 use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
 
-pub fn login(cfg_path: &PathBuf) {
-    println!("PAT was saved in {:?}", cfg_path);
+pub fn login(cfg_path: &Result<PathBuf>) {
+    match cfg_path {
+        Ok(pb) => println!("PAT was saved in {:?}", pb),
+        Err(e) => println_err(e),
+    };
 }
 
-pub fn logout(cfg_path: &PathBuf) {
-    println!("{:?} was removed", cfg_path);
-}
-
-pub fn user_info(info: &UserInfo) {
-    print!("{}", info.display_name);
-    if info.is_vip {
-        print!(" VIP");
+pub fn logout(cfg_path: &Result<PathBuf>) {
+    match cfg_path {
+        Ok(pb) => println!("{:?} was successfully removed", pb),
+        Err(e) => println_err(e),
     }
-    println!();
-    println!(
-        "{} Following {} Followers",
-        info.following_count, info.followers_count
-    );
-    println!("ID     {}", info.blog_id);
-    println!("Joined {}", info.joined);
-    println!("Blog   https://www.cnblogs.com/{}", info.blog_app);
 }
 
-pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
+pub fn user_info(info: &Result<UserInfo>) {
+    match info {
+        Ok(info) => {
+            print!("{}", info.display_name);
+            if info.is_vip {
+                print!(" VIP");
+            }
+            println!();
+            println!(
+                "{} Following {} Followers",
+                info.following_count, info.followers_count
+            );
+            println!("ID     {}", info.blog_id);
+            println!("Joined {}", info.joined);
+            println!("Blog   https://www.cnblogs.com/{}", info.blog_app);
+        }
+        Err(e) => println_err(e),
+    }
+}
+
+pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
+    if let Err(e) = ing_list {
+        println_err(e);
+        return;
+    }
+
     ing_list
+        .as_ref()
+        .unwrap()
         .iter()
         .dyn_rev(rev)
         .for_each(|(ing, comment_list)| {
@@ -77,14 +94,25 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
         });
 }
 
-pub fn show_post(entry: &PostEntry) {
-    println!("{}\n", entry.title);
-    if let Some(body) = &entry.body {
-        println!("{}", body);
+pub fn show_post(entry: &Result<PostEntry>) {
+    match entry {
+        Ok(entry) => {
+            println!("{}\n", entry.title);
+            if let Some(body) = &entry.body {
+                println!("{}", body);
+            }
+        }
+        Err(e) => println_err(e),
     }
 }
 
-pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
+pub fn show_post_meta(entry: &Result<PostEntry>) {
+    if let Err(e) = entry {
+        println_err(e);
+        return;
+    }
+
+    let entry = entry.as_ref().unwrap();
     println!("Title  {}", entry.title);
     {
         print!("Status");
@@ -111,16 +139,19 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
             println!("Tags   {}", tags_text);
         }
     }
-    let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time))?;
+    let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time)).unwrap();
     println!("Create {}", create_time.format("%Y/%m/%d %H:%M"));
-    let modify_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time))?;
+    let modify_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time)).unwrap();
     println!("Modify {}", modify_time.format("%Y/%m/%d %H:%M"));
     println!("Link   https:{}", entry.url);
-
-    ().into_ok()
 }
 
-pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
+pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
+    if let Err(e) = result {
+        println_err(e);
+        return;
+    }
+    let (entry_list, total_count) = result.as_ref().unwrap();
     println!("{}/{}", entry_list.len(), total_count);
     entry_list.iter().dyn_rev(rev).for_each(|entry| {
         print!("# {}", entry.id);
@@ -137,12 +168,22 @@ pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     });
 }
 
-pub fn search_post(id_list: &[usize], total_count: usize, rev: bool) {
+pub fn search_post(result: &Result<(Vec<usize>, usize)>, rev: bool) {
+    if let Err(e) = result {
+        println_err(e);
+        return;
+    }
+
+    let (id_list, total_count) = result.as_ref().unwrap();
     println!("{}/{}", id_list.len(), total_count);
     id_list
         .iter()
         .dyn_rev(rev)
         .for_each(|id| println!("# {}", id));
+}
+
+pub fn println_err(e: &anyhow::Error) {
+    println!("Err: {}", e)
 }
 
 pub fn println_result<T: Display>(result: &Result<T>) {
