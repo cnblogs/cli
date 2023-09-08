@@ -24,6 +24,12 @@ pub mod args;
 pub mod display;
 pub mod infra;
 
+fn panic_if_err<T>(result: &Result<T>) {
+    if let Err(e) = result {
+        panic!("{}", e)
+    }
+}
+
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<()> {
     let args_vec = env::args().collect::<Vec<_>>();
@@ -39,22 +45,24 @@ async fn main() -> Result<()> {
     let pat = args.with_pat.clone().or_eval_result(session::get_pat);
     let style = &args.style;
     let rev = args.rev;
-    // TODO
-    let _fail_on_error = args.fail_on_error;
+    let foe = args.fail_on_error;
 
     match args {
         _ if let Some(pat) = parser::login(&args) => {
             let cfg_path = session::login(pat);
+            foe.then(||panic_if_err(&cfg_path));
             display::login(style, &cfg_path);
         }
         _ if parser::logout(&args) => {
-            let cfg_path = session::logout();
-            display::logout(style, &cfg_path);
+            let cfg_path = &session::logout();
+            foe.then(||panic_if_err(cfg_path));
+            display::logout(style, cfg_path);
         }
         _ if parser::user_info(&args) => {
             let user_info = try {
                 User::new(pat?).get_info().await?
             };
+            foe.then(||panic_if_err(&user_info));
             display::user_info(style, &user_info);
         }
         _ if let Some((skip, take)) = parser::list_ing(&args) => {
@@ -62,6 +70,7 @@ async fn main() -> Result<()> {
             let ing_vec = try {
                 Ing::new(pat?).get_list(skip, take, &ing_type).await?
             };
+            foe.then(||panic_if_err(&ing_vec));
             display::list_ing(style, &ing_vec, rev);
         }
         _ if let Some(content) = parser::publish_ing(&args) => {
@@ -69,6 +78,7 @@ async fn main() -> Result<()> {
                 Ing::new(pat?).publish(content).await?;
                 content
             };
+            foe.then(||panic_if_err(&content));
             display::publish_ing(style, &content);
         }
         _ if let Some((content, id))= parser::comment_ing(&args) => {
@@ -76,18 +86,22 @@ async fn main() -> Result<()> {
                 Ing::new(pat?).comment(id, content.clone(), None, None).await?;
                 content
             };
+            foe.then(||panic_if_err(&content));
             display::comment_ing(style, &content);
         }
         _ if let Some(id) = parser::show_post(&args) => {
             let entry = try { Post::new(pat?).get_one(id).await? };
+            foe.then(||panic_if_err(&entry));
             display::show_post(style, &entry);
         }
         _ if let Some(id) = parser::show_post_meta(&args) => {
             let entry = try { Post::new(pat?).get_one(id).await? };
+            foe.then(||panic_if_err(&entry));
             display::show_post_meta(style, &entry);
         }
         _ if let Some((skip, take)) = parser::list_post(&args) => {
             let result = try { Post::new(pat?).get_meta_list(skip, take).await? };
+            foe.then(||panic_if_err(&result));
             display::list_post(style, &result, rev);
         }
         _ if let Some(id) = parser::delete_post(&args) => {
@@ -95,18 +109,22 @@ async fn main() -> Result<()> {
                 Post::new(pat?).del_one(id).await?;
                 id
             };
+            foe.then(||panic_if_err(&id));
             display::delete_post(style, &id);
         }
         _ if let Some((kw, skip, take)) = parser::search_post(&args) => {
             let result = try { Post::new(pat?).search(skip, take, kw).await? };
+            foe.then(||panic_if_err(&result));
             display::search_post(style, &result, rev);
         }
         _ if let Some((title, body, publish)) = parser::create_post(&args) => {
             let id = try { Post::new(pat?).create(title, body, publish).await? };
+            foe.then(||panic_if_err(&id));
             display::create_post(style, &id);
         }
         _ if let Some((id, title, body, publish)) = parser::update_post(&args) => {
             let id = try { Post::new(pat?).update(id,title, body, publish).await? };
+            foe.then(||panic_if_err(&id));
             display::update_post(style, &id);
         }
 
