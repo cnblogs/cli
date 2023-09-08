@@ -38,6 +38,14 @@ jobs:
           toolchain: nightly-2023-09-06
           components: rustfmt, clippy
 
+      - name: Show rust toolchain version
+        shell: bash
+        run: |
+          cargo -V
+          cargo clippy -V
+          cargo fmt -- -V
+          rustc -V
+
       - name: Add target
         uses: ./.github/actions/add-target
         with:
