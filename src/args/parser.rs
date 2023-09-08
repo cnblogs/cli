@@ -15,7 +15,7 @@ fn get_pat(pat: &Option<String>) -> Result<String> {
     pat.clone().or_eval_result(session::get_pat)
 }
 
-pub fn no_operation(args: &Args) -> bool {
+pub const fn no_operation(args: &Args) -> bool {
     matches!(
         args,
         Args {
@@ -97,7 +97,7 @@ pub fn login(args: &Args) -> Option<&String> {
     .into_some()
 }
 
-pub fn logout(args: &Args) -> bool {
+pub const fn logout(args: &Args) -> bool {
     matches!(
         args,
         Args {

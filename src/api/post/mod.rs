@@ -12,7 +12,7 @@ pub struct Post {
 }
 
 impl Post {
-    pub fn new(pat: String) -> Post {
-        Post { pat }
+    pub const fn new(pat: String) -> Self {
+        Self { pat }
     }
 }

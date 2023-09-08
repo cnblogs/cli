@@ -22,9 +22,6 @@ impl<T> OptionExt<T> for Option<T> {
     where
         F: FnOnce() -> Result<T, E>,
     {
-        match self {
-            Some(val) => Ok(val),
-            _ => f(),
-        }
+        self.map_or_else(f, |val| Ok(val))
     }
 }

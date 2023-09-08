@@ -14,8 +14,8 @@ pub struct Ing {
 }
 
 impl Ing {
-    pub fn new(pat: String) -> Ing {
-        Ing { pat }
+    pub const fn new(pat: String) -> Self {
+        Self { pat }
     }
 }
 
@@ -48,14 +48,14 @@ impl TryFrom<usize> for IngSendFrom {
 
     fn try_from(value: usize) -> Result<Self, Self::Error> {
         match value {
-            0 => IngSendFrom::None,
-            1 => IngSendFrom::Ms,
-            2 => IngSendFrom::GTalk,
-            3 => IngSendFrom::Qq,
-            5 => IngSendFrom::Sms,
-            6 => IngSendFrom::CellPhone,
-            8 => IngSendFrom::Web,
-            9 => IngSendFrom::Code,
+            0 => Self::None,
+            1 => Self::Ms,
+            2 => Self::GTalk,
+            3 => Self::Qq,
+            5 => Self::Sms,
+            6 => Self::CellPhone,
+            8 => Self::Web,
+            9 => Self::Code,
             u => bail!("Unknown value of ing source: {}", u),
         }
         .into_ok()
@@ -76,12 +76,13 @@ pub fn fmt_content(content: &str) -> String {
         static ref REGEX: Regex =
             Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>"#).unwrap();
     }
-    if let Some(caps) = REGEX.captures(content) {
-        let at_user = caps.get(1).unwrap().as_str();
-        REGEX.replace(content, at_user).to_string()
-    } else {
-        content.to_string()
-    }
+    REGEX.captures(content).map_or_else(
+        || content.to_string(),
+        |caps| {
+            let at_user = caps.get(1).unwrap().as_str();
+            REGEX.replace(content, at_user).to_string()
+        },
+    )
 }
 
 pub fn rm_ing_at_user_tag(text: &str) -> String {
@@ -97,9 +98,8 @@ pub fn get_ing_at_user_tag_text(text: &str) -> String {
         static ref REGEX: Regex =
             Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#).unwrap();
     }
-    if let Some(caps) = REGEX.captures(text) {
-        caps.get(1).unwrap().as_str().to_string()
-    } else {
-        "".to_string()
-    }
+    REGEX.captures(text).map_or_else(
+        || "".to_string(),
+        |caps| caps.get(1).unwrap().as_str().to_string(),
+    )
 }

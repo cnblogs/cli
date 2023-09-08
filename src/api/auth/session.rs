@@ -20,7 +20,7 @@ fn save_pat(pat: &str, path: &Path) -> Result<()> {
 }
 
 fn get_cfg_path() -> Result<PathBuf> {
-    let home = home_dir().ok_or(anyhow!("Can not get home dir"))?;
+    let home = home_dir().ok_or_else(|| anyhow!("Can not get home dir"))?;
     home.join(".cnbrc").into_ok()
 }
 

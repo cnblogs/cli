@@ -5,7 +5,7 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(pat: String) -> User {
-        User { pat }
+    pub const fn new(pat: String) -> Self {
+        Self { pat }
     }
 }

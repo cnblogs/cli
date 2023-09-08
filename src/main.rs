@@ -3,6 +3,7 @@
 #![feature(let_chains)]
 #![feature(type_name_of_val)]
 #![feature(iterator_try_collect)]
+#![warn(clippy::all, clippy::nursery, clippy::cargo_common_metadata)]
 
 use crate::api::auth::session;
 use crate::api::ing::{Ing, IngType};

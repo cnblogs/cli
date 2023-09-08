@@ -9,4 +9,5 @@ runs:
 
     - name: Clippy
       shell: bash
+      # You need to run 'cargo clippy -r' in the local to get the same output with CI
       run: cargo clippy -- -D warnings

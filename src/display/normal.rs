@@ -49,7 +49,7 @@ pub fn list_ing(ing_list: &[(IngEntry, Vec<IngCommentEntry>)], rev: bool) {
                 let star_text = ing_star_tag_to_text(&ing.icons);
                 print!(" {}⭐", star_text);
             }
-            println!(" # {}", ing.id.to_string());
+            println!(" # {}", ing.id);
             let content = fmt_content(&ing.content);
             println!("  {}: {}", ing.user_name, content);
 
@@ -123,7 +123,7 @@ pub fn show_post_meta(entry: &PostEntry) -> Result<()> {
 pub fn list_post(entry_list: &[PostEntry], total_count: usize, rev: bool) {
     println!("{}/{}", entry_list.len(), total_count);
     entry_list.iter().dyn_rev(rev).for_each(|entry| {
-        print!("# {}", entry.id.to_string());
+        print!("# {}", entry.id);
         print!(" {}", entry.title);
         if entry.is_published {
             print!(" Pub");
