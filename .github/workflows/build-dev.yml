@@ -13,19 +13,19 @@ on:
 
 jobs:
   build-dev:
-    name: ${{ matrix.targets.target }}@${{ matrix.targets.os }}
+    name: ${{ matrix.targets.alias }}
     runs-on: ${{ matrix.targets.os }}
 
     strategy:
       fail-fast: false
       matrix:
         targets:
-          - { os: macos-11    , target: aarch64-apple-darwin     }
-          - { os: macos-12    , target: aarch64-apple-darwin     }
-          - { os: ubuntu-20.04, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
-          - { os: windows-2019, target: x86_64-pc-windows-msvc   }
-          - { os: windows-2022, target: x86_64-pc-windows-msvc   }
+          - { os: macos-11    , target: aarch64-apple-darwin    , alias: aarch64-macos-11   }
+          - { os: macos-12    , target: aarch64-apple-darwin    , alias: aarch64-macos-12   }
+          - { os: ubuntu-20.04, target: x86_64-unknown-linux-gnu, alias: amd64-ubuntu-2004  }
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu, alias: amd64-ubuntu-2204  }
+          - { os: windows-2019, target: x86_64-pc-windows-msvc  , alias: amd64-windows-2019 }
+          - { os: windows-2022, target: x86_64-pc-windows-msvc  , alias: amd64-windows-2022 }
 
     steps:
       - name: Checkout
@@ -57,7 +57,7 @@ jobs:
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: ${{ matrix.targets.target }}@${{ matrix.targets.os }}
+          prefix-key: ${{ matrix.targets.alias }}
 
       - name: Generate version
         id: gen-version
@@ -84,7 +84,7 @@ jobs:
       - name: Generate artifacts name
         id: gen-name
         shell: bash
-        run: echo 'NAME=${{ matrix.targets.target }}@${{ matrix.targets.os }}' >> $GITHUB_OUTPUT
+        run: echo 'NAME=dev-${{ matrix.targets.alias }}' >> $GITHUB_OUTPUT
 
       - name: Generate binary extension
         id: gen-ext
@@ -96,5 +96,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.gen-name.outputs.NAME }}
-          path: './target/${{ matrix.targets.target }}/debug/cnb${{ steps.gen-ext.outputs.EXT }}'
+          path: ./target/${{ matrix.targets.target }}/debug/cnb${{ steps.gen-ext.outputs.EXT }}
           if-no-files-found: error
