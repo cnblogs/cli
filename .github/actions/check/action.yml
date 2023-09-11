@@ -1,8 +1,14 @@
-name: Lint
-description: Check the code style
+name: Check
+description: Check the code with audit, fmt and clippy
 runs:
   using: composite
   steps:
+    - name: Audit
+      shell: bash
+      run: |
+        cargo install cargo-audit
+        cargo audit
+
     - name: Fmt
       shell: bash
       run: cargo fmt --check
