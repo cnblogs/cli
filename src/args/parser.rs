@@ -22,6 +22,7 @@ pub const fn no_operation(args: &Args) -> bool {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         }
     )
 }
@@ -43,6 +44,7 @@ pub const fn user_info(args: &Args) -> bool {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         }
     )
 }
@@ -64,6 +66,7 @@ pub fn publish_ing(args: &Args) -> Option<&String> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => content,
         _ => return None,
     }
@@ -87,6 +90,7 @@ pub fn login(args: &Args) -> Option<&String> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => pat,
         _ => return None,
     }
@@ -110,6 +114,7 @@ pub const fn logout(args: &Args) -> bool {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         }
     )
 }
@@ -131,6 +136,7 @@ pub fn list_ing(args: &Args) -> Option<(usize, usize)> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
@@ -158,6 +164,7 @@ pub fn comment_ing(args: &Args) -> Option<(&String, usize)> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => (content, *id),
         _ => return None,
     }
@@ -184,6 +191,7 @@ pub fn show_post(args: &Args) -> Option<usize> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => *id,
         _ => return None,
     }
@@ -210,6 +218,7 @@ pub fn show_post_meta(args: &Args) -> Option<usize> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => *id,
         _ => return None,
     }
@@ -236,6 +245,7 @@ pub fn list_post(args: &Args) -> Option<(usize, usize)> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
@@ -266,6 +276,7 @@ pub fn delete_post(args: &Args) -> Option<usize> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => *id,
         _ => return None,
     }
@@ -292,6 +303,7 @@ pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
@@ -327,6 +339,7 @@ pub fn create_post(args: &Args) -> Option<(&String, &String, bool)> {
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => (title, body, *publish),
         _ => return None,
     }
@@ -362,6 +375,7 @@ pub fn update_post(
             debug: _,
             style: _,
             fail_on_error: _,
+            quiet: _,
         } => (*id, title, body, publish),
         _ => return None,
     }

@@ -85,4 +85,12 @@ pub struct Args {
     #[clap(visible_alias = "foe")]
     #[arg(default_value_t = false)]
     pub fail_on_error: bool,
+
+    #[arg(verbatim_doc_comment)]
+    /// Suppress all output
+    /// Example: cnb --quiet ing --list
+    #[arg(long)]
+    #[clap(visible_alias = "silent")]
+    #[arg(default_value_t = false)]
+    pub quiet: bool,
 }
