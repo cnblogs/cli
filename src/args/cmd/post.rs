@@ -98,6 +98,7 @@ pub enum Cmd {
         /// Set post publish state
         /// Example: cnb --id 114514 post update --publish true
         #[arg(long)]
+        #[arg(value_name = "BOOL")]
         #[arg(visible_alias = "pub")]
         publish: Option<bool>,
     },
