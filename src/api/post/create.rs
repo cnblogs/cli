@@ -16,7 +16,8 @@ impl Post {
                 "postType": 1,
                 "title": title,
                 "postBody": body,
-                "isPublished": publish
+                "isPublished": publish,
+                "displayOnHomePage": true
             });
             client.post(url).json(&body).pat_auth(&self.pat)
         };
