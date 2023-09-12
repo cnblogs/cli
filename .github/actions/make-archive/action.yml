@@ -1,0 +1,23 @@
+name: Make Archive
+description: Archive files to zip
+inputs:
+  files:
+    description: files to archive
+    required: true
+  out:
+    description: Output path
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Archive (UNIX)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        zip ${{ inputs.out }} ${{ inputs.files }} -j
+
+    - name: Archive (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Compress-Archive ${{ inputs.files }} ${{ inputs.out }}

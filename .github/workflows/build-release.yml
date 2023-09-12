@@ -64,7 +64,7 @@ jobs:
       - name: Generate artifacts name
         id: gen-name
         shell: bash
-        run: echo 'NAME=release-${{ matrix.targets.alias }}' >> $GITHUB_OUTPUT
+        run: echo 'NAME=cnb-${{ steps.gen-version.outputs.VERSION }}-${{ matrix.targets.alias }}' >> $GITHUB_OUTPUT
 
       - name: Generate binary extension
         id: gen-ext
@@ -79,8 +79,14 @@ jobs:
           path: ./target/${{ matrix.targets.target }}/release/cnb${{ steps.gen-ext.outputs.EXT }}
           if-no-files-found: error
 
-      - name: Create github release
-        uses: softprops/action-gh-release@v1
+      - name: Archive binary
+        uses: ./.github/actions/make-archive
         with:
           files: ./target/${{ matrix.targets.target }}/release/cnb${{ steps.gen-ext.outputs.EXT }}
+          out: ${{ steps.gen-name.outputs.NAME }}.zip
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.gen-name.outputs.NAME }}.zip
 
