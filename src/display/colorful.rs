@@ -6,6 +6,7 @@ use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
+use crate::infra::time::patch_rfc3339;
 use anyhow::Result;
 use chrono::DateTime;
 use colored::Colorize;
@@ -59,9 +60,11 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
         .iter()
         .dyn_rev(rev)
         .for_each(|(ing, comment_list)| {
-            let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", ing.create_time))
-                .map(|dt| dt.format("%m-%d %H:%M").to_string())
-                .unwrap();
+            let create_time = {
+                let rfc3339 = patch_rfc3339(&ing.create_time);
+                let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+                dt.format("%m-%d %H:%M").to_string()
+            };
 
             print!("{}", create_time.dimmed());
             if ing.is_lucky {
@@ -141,10 +144,18 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
             println!("Tags   {}", tags_text);
         }
     }
-    let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time)).unwrap();
-    println!("Create {}", create_time.format("%Y/%m/%d %H:%M"));
-    let modify_time = DateTime::parse_from_rfc3339(&format!("{}Z", entry.create_time)).unwrap();
-    println!("Modify {}", modify_time.format("%Y/%m/%d %H:%M"));
+    let create_time = {
+        let rfc3339 = patch_rfc3339(&entry.create_time);
+        let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+        dt.format("%Y-%m-%d %H:%M")
+    };
+    println!("Create {}", create_time);
+    let modify_time = {
+        let rfc3339 = patch_rfc3339(&entry.modify_time);
+        let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+        dt.format("%Y-%m-%d %H:%M")
+    };
+    println!("Modify {}", modify_time);
     println!("Link   https:{}", entry.url);
 }
 
@@ -208,9 +219,11 @@ pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
         .iter()
         .dyn_rev(rev)
         .for_each(|news| {
-            let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", news.create_time))
-                .map(|dt| dt.format("%m-%d %H:%M").to_string())
-                .unwrap();
+            let create_time = {
+                let rfc3339 = patch_rfc3339(&news.create_time);
+                let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+                dt.format("%Y-%m-%d %H:%M").to_string()
+            };
 
             let url = format!("https://news.cnblogs.com/n/{}", news.id);
             println!("{} {}", create_time.dimmed(), url.dimmed(),);

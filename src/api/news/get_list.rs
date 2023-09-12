@@ -17,7 +17,7 @@ pub struct NewsEntry {
     #[serde(rename = "TopicId")]
     pub topic_id: usize,
     #[serde(rename = "TopicIcon")]
-    pub topic_icon_url: String,
+    pub topic_icon_url: Option<String>,
     #[serde(rename = "ViewCount")]
     pub view_count: usize,
     #[serde(rename = "CommentCount")]

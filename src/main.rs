@@ -78,7 +78,7 @@ async fn main() -> Result<()> {
         }
         _ if let Some(content) = parser::publish_ing(&args) => {
             let content = try {
-                Ing::new(pat?).publish(content).await?;
+                Ing::new(pat?).create(content).await?;
                 content
             };
             foe.then(||panic_if_err(&content));

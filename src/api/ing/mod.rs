@@ -1,5 +1,5 @@
 pub mod comment;
-pub mod publish;
+pub mod create;
 
 use crate::infra::result::IntoResult;
 use anyhow::bail;
@@ -40,7 +40,8 @@ pub enum IngSendFrom {
     Sms = 5,
     CellPhone = 6,
     Web = 8,
-    Code = 9,
+    VsCode = 9,
+    Cli = 13,
 }
 
 impl TryFrom<usize> for IngSendFrom {
@@ -55,7 +56,8 @@ impl TryFrom<usize> for IngSendFrom {
             5 => Self::Sms,
             6 => Self::CellPhone,
             8 => Self::Web,
-            9 => Self::Code,
+            9 => Self::VsCode,
+            13 => Self::Cli,
             u => bail!("Unknown value of ing source: {}", u),
         }
         .into_ok()
