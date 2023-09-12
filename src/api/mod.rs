@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod ing;
+pub mod news;
 pub mod post;
 pub mod user;
 

@@ -71,8 +71,8 @@ impl Ing {
         let fut_iter = range.map(|i| async move {
             let req = {
                 let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
-                let queries = vec![("pageIndex", i), ("pageSize", 1)];
-                client.get(url).query(&queries).pat_auth(&self.pat)
+                let query = vec![("pageIndex", i), ("pageSize", 1)];
+                client.get(url).query(&query).pat_auth(&self.pat)
             };
 
             let resp = req.send().await?;

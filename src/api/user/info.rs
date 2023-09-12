@@ -46,8 +46,8 @@ impl User {
         let resp = req.send().await?;
 
         let user_info = {
-            let json = body_or_err(resp).await?;
-            json::deserialize::<UserInfo>(&json)?
+            let body = body_or_err(resp).await?;
+            json::deserialize::<UserInfo>(&body)?
         };
 
         user_info.into_ok()
