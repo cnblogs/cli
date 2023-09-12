@@ -210,7 +210,8 @@ pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
                 .map(|dt| dt.format("%m-%d %H:%M").to_string())
                 .unwrap();
 
-            println!("{} # {}", create_time, news.id);
+            let url = format!("https://news.cnblogs.com/n/{}", news.id);
+            println!("{} {}", create_time, url);
             println!("  {}", news.title);
             println!("    {}...", news.summary);
             println!();
