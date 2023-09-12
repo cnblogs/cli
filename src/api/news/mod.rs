@@ -1,3 +1,4 @@
+pub mod get_body;
 pub mod get_list;
 
 pub struct News {
