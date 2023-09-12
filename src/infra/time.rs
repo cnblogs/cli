@@ -3,7 +3,7 @@
 // This will patch it to standard RFC3339 format
 pub fn patch_rfc3339(time_str: &str) -> String {
     if time_str.len() != 25 {
-        let u8vec: Vec<_> = time_str.bytes().into_iter().take(19).collect();
+        let u8vec: Vec<_> = time_str.bytes().take(19).collect();
         format!("{}+08:00", String::from_utf8(u8vec).unwrap())
     } else {
         time_str.to_owned()
