@@ -1,4 +1,5 @@
 use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::Style;
@@ -114,5 +115,13 @@ pub fn update_post(style: &Style, result: &Result<usize>) {
         Style::Colorful => colorful::println_result(result),
         Style::Normal => normal::println_result(result),
         Style::Json => json::println_result(result),
+    }
+}
+
+pub fn list_news(style: &Style, news_list: &Result<Vec<NewsEntry>>, rev: bool) {
+    match style {
+        Style::Colorful => colorful::list_news(news_list, rev),
+        Style::Normal => normal::list_news(news_list, rev),
+        Style::Json => json::list_news(news_list, rev),
     }
 }

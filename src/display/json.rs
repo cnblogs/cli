@@ -1,4 +1,5 @@
 use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
@@ -110,4 +111,19 @@ pub fn println_result<T: Serialize, E: ToString>(result: &Result<T, E>) {
         }),
     };
     println!("{}", json)
+}
+
+pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
+    if let Err(e) = news_list {
+        println_err(e);
+        return;
+    }
+    let vec = news_list
+        .as_ref()
+        .unwrap()
+        .iter()
+        .dyn_rev(rev)
+        .collect::<Vec<_>>();
+    let json = json::serialize(vec).unwrap();
+    print!("{}", json);
 }

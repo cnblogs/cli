@@ -2,6 +2,7 @@ use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
 use crate::api::ing::{
     fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag,
 };
+use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
@@ -68,9 +69,8 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
                 print!(" {}⭐", star_text.yellow());
             }
             println!(" {} {}", "#".dimmed(), ing.id.to_string().dimmed());
-            print!("  {}", ing.user_name.cyan());
             let content = fmt_content(&ing.content);
-            println!(" {}", content);
+            println!("  {} {}", ing.user_name.cyan(), content);
 
             let len = comment_list.len();
             if len != 0 {
@@ -194,4 +194,31 @@ pub fn println_result<T: Display>(result: &Result<T>) {
         Ok(t) => println!("{}: {}", "Ok".green(), t),
         Err(e) => println!("{}: {}", "Err".red(), e),
     }
+}
+
+pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
+    if let Err(e) = news_list {
+        println_err(e);
+        return;
+    }
+
+    news_list
+        .as_ref()
+        .unwrap()
+        .iter()
+        .dyn_rev(rev)
+        .for_each(|news| {
+            let create_time = DateTime::parse_from_rfc3339(&format!("{}Z", news.create_time))
+                .map(|dt| dt.format("%m-%d %H:%M").to_string())
+                .unwrap();
+
+            println!(
+                "{} {} {}",
+                create_time.dimmed(),
+                "#".dimmed(),
+                news.id.to_string().dimmed()
+            );
+            println!("  {}", news.title);
+            println!("    {}", news.summary.dimmed());
+        });
 }
