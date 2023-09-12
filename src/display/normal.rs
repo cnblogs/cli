@@ -212,6 +212,7 @@ pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
 
             println!("{} # {}", create_time, news.id);
             println!("  {}", news.title);
-            println!("    {}", news.summary);
+            println!("    {}...", news.summary);
+            println!();
         });
 }
