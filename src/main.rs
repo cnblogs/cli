@@ -7,6 +7,7 @@
 
 use crate::api::auth::session;
 use crate::api::ing::{Ing, IngType};
+use crate::api::news::News;
 use crate::api::post::Post;
 use crate::api::user::User;
 use crate::args::parser::no_operation;
@@ -128,6 +129,13 @@ async fn main() -> Result<()> {
             let id = try { Post::new(pat?).update(id,title, body, publish).await? };
             foe.then(||panic_if_err(&id));
             quiet.not().then(||display::update_post(style, &id));
+        }
+        _ if let Some((skip, take)) = parser::list_news(&args) => {
+            let news_vec = try {
+                News::new(pat?).get_list(skip, take).await?
+            };
+            foe.then(||panic_if_err(&news_vec));
+            quiet.not().then(||display::list_news(style, &news_vec, rev));
         }
 
         _ if no_operation(&args) => {
