@@ -1,4 +1,5 @@
 pub mod ing;
+pub mod news;
 pub mod post;
 pub mod user;
 
@@ -15,4 +16,7 @@ pub enum Cmd {
     /// Post operations
     #[clap(visible_alias = "p")]
     Post(post::Opt),
+    /// News operations
+    #[clap(visible_alias = "n")]
+    News(news::Opt),
 }
