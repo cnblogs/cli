@@ -40,6 +40,11 @@ jobs:
           toolchain: nightly-2023-09-06
           components: rustfmt, clippy
 
+      - name: Setup musl-tools
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo apt install musl-tools
+
       - name: Add target
         uses: ./.github/actions/add-target
         with:

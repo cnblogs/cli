@@ -54,6 +54,11 @@ jobs:
           cargo fmt -- -V
           rustc -V
 
+      - name: Setup musl-tools
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo apt install musl-tools
+
       - name: Add target
         uses: ./.github/actions/add-target
         with:
