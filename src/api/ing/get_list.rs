@@ -1,4 +1,4 @@
-use crate::api::ing::{Ing, IngType};
+use crate::api::ing::{Ing, IngSendFrom, IngType};
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
@@ -31,7 +31,7 @@ pub struct IngEntry {
     #[serde(rename = "UserGuid")]
     pub user_guid: String,
     #[serde(rename = "SendFrom")]
-    pub send_from: usize,
+    pub send_from: IngSendFrom,
     #[serde(rename = "Icons")]
     pub icons: String,
 }

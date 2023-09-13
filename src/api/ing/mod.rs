@@ -5,6 +5,7 @@ use crate::infra::result::IntoResult;
 use anyhow::bail;
 use lazy_static::lazy_static;
 use regex::Regex;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 pub mod get_comment_list;
 pub mod get_list;
@@ -31,7 +32,8 @@ pub enum IngType {
     Mention = 14,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
 pub enum IngSendFrom {
     None = 0,
     Ms = 1,

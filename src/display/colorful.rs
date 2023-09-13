@@ -1,6 +1,6 @@
 use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
 use crate::api::ing::{
-    fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag,
+    fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, IngSendFrom,
 };
 use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
@@ -67,6 +67,16 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
             };
 
             print!("{}", create_time.dimmed());
+            let send_from_mark = match ing.send_from {
+                IngSendFrom::Cli => Some("CLI"),
+                IngSendFrom::CellPhone => Some("Mobile"),
+                IngSendFrom::VsCode => Some("VSCode"),
+                IngSendFrom::Web => Some("Web"),
+                _ => None,
+            };
+            if let Some(mark) = send_from_mark {
+                print!(" {}", mark.dimmed());
+            }
             if ing.is_lucky {
                 let star_text = ing_star_tag_to_text(&ing.icons);
                 print!(" {}⭐", star_text.yellow());
