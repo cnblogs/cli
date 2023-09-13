@@ -141,7 +141,7 @@ pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType)> {
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            (skip, take, r#type.clone())
+            (skip, take, r#type.clone().unwrap_or(IngType::Public))
         }
         _ => return None,
     }

@@ -42,6 +42,6 @@ pub enum Cmd {
         #[arg(long)]
         #[arg(value_name = "TYPE")]
         #[arg(default_value = "public")]
-        r#type: IngType,
+        r#type: Option<IngType>,
     },
 }

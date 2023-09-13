@@ -23,7 +23,7 @@ impl Ing {
 pub enum IngType {
     Follow = 1,
     Myself = 4,
-    Pub = 5,
+    Public = 5,
     //RecentComment = 6,
     MyComment = 7,
     //Tag = 10,
