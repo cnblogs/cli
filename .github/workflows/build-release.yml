@@ -14,12 +14,17 @@ jobs:
       fail-fast: false
       matrix:
         targets:
-          - { os: macos-11    , target: aarch64-apple-darwin    , alias: aarch64-macos-11 }
-          - { os: macos-12    , target: aarch64-apple-darwin    , alias: aarch64-macos-12 }
-          - { os: ubuntu-20.04, target: x86_64-unknown-linux-gnu, alias: amd64-ubuntu-2004 }
-          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu, alias: amd64-ubuntu-2204 }
-          - { os: windows-2019, target: x86_64-pc-windows-msvc  , alias: amd64-windows-2019 }
-          - { os: windows-2022, target: x86_64-pc-windows-msvc  , alias: amd64-windows-2022 }
+          # aarch64
+          - { os: macos-11    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-11    }
+          - { os: macos-12    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-12    }
+          - { os: ubuntu-20.04, target: aarch64-unknown-linux-gnu, alias: aarch64-gnu-ubuntu-20.04   }
+          - { os: ubuntu-22.04, target: aarch64-unknown-linux-gnu, alias: aarch64-gnu-ubuntu-22.04   }
+          # amd64
+          - { os: macos-12    , target: x86_64-apple-darwin      , alias: amd64-darwin-macos-unknown }
+          - { os: ubuntu-20.04, target: x86_64-unknown-linux-gnu , alias: amd64-gnu-ubuntu-20.04     }
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu , alias: amd64-gnu-ubuntu-22.04     }
+          - { os: windows-2019, target: x86_64-pc-windows-msvc   , alias: amd64-msvc-windows-2019    }
+          - { os: windows-2022, target: x86_64-pc-windows-msvc   , alias: amd64-msvc-windows-2022    }
 
     steps:
       - name: Checkout
