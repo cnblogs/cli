@@ -10,4 +10,4 @@ runs:
     - name: Replace version
       shell: bash
       # There isn't a sed command working on all platforms to replace string in a file, so use perl.
-      run: perl -i -pe's/0.0.0-staging/${{ inputs.version }}/' Cargo.toml
+      run: perl -i -pe's/0.0.0-dev/${{ inputs.version }}/' Cargo.toml

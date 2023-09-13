@@ -1,7 +1,7 @@
 [package]
 name = "cnb"
 # WRN: Version will be updated by CI while create a tag, NERVER change this.
-version = "0.0.0-staging"
+version = "0.0.0-dev"
 edition = "2021"
 description = "Cnblogs' command line tool"
 license = "MIT"
