@@ -6,7 +6,7 @@
 #![warn(clippy::all, clippy::nursery, clippy::cargo_common_metadata)]
 
 use crate::api::auth::session;
-use crate::api::ing::{Ing, IngType};
+use crate::api::ing::Ing;
 use crate::api::news::News;
 use crate::api::post::Post;
 use crate::api::user::User;
@@ -68,10 +68,9 @@ async fn main() -> Result<()> {
             foe.then(||panic_if_err(&user_info));
             quiet.not().then(||display::user_info(style, &user_info));
         }
-        _ if let Some((skip, take)) = parser::list_ing(&args) => {
-            let ing_type = IngType::Public;
+        _ if let Some((skip, take, r#type)) = parser::list_ing(&args) => {
             let ing_vec = try {
-                Ing::new(pat?).get_list(skip, take, &ing_type).await?
+                Ing::new(pat?).get_list(skip, take, &r#type).await?
             };
             foe.then(||panic_if_err(&ing_vec));
             quiet.not().then(||display::list_ing(style, &ing_vec, rev));

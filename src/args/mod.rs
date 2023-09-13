@@ -25,13 +25,13 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Reverse list output
-    ///   Example: cnb --rev ing --list
+    ///   Example: cnb --rev ing list
     #[arg(long)]
     pub rev: bool,
 
     #[arg(verbatim_doc_comment)]
     /// Skip items while request list
-    ///   Example: cnb --skip 2 ing --list
+    ///   Example: cnb --skip 2 ing list
     ///     Use this option to save network I/O if some items of the list output are not needed
     ///     If this option is required but not specified, it will be set to 0
     #[arg(long)]
@@ -41,7 +41,7 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Take items while request list
-    ///   Example: cnb --take 2 ing --list
+    ///   Example: cnb --take 2 ing list
     ///     Use this option to save network I/O if only a subset of the list output are required
     ///     <LENGTH> should be in the range [0,100]
     ///     If <LENGTH> is greater than 100, it will be set to 100
@@ -62,7 +62,7 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Execute in debug mode, this will print some messages for the developer
-    ///   Example: cnb --debug ing --list
+    ///   Example: cnb --debug ing list
     ///     THIS OPTION IS UNSTABLE FOREVER and any output from it may change in the future
     ///     You should NEVER rely on the output while you turn this option on
     ///     *
@@ -83,7 +83,7 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Fail if error occurred
-    ///   Example: cnb --fail-on-error ing --list
+    ///   Example: cnb --fail-on-error ing list
     ///     *
     #[arg(long)]
     #[clap(visible_alias = "foe")]
@@ -92,7 +92,7 @@ pub struct Args {
 
     #[arg(verbatim_doc_comment)]
     /// Suppress all output
-    ///   Example: cnb --quiet ing --list
+    ///   Example: cnb --quiet ing list
     ///     *
     #[arg(long)]
     #[clap(visible_alias = "silent")]

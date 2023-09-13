@@ -34,9 +34,9 @@ cnb post create --title 'Hello' --body 'world!' --publish
 cnb --id 114514 post update --body 'niconiconiconi'
 
 # Show ing list
-cnb ing --list
+cnb ing list
 # Publish ing 
-cnb ing --pub 'Hello world!'
+cnb ing --publish 'Hello world!'
 # Comment to ing 
 cnb --id 114514 ing --comment 'Awesome!'
 

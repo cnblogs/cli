@@ -1,8 +1,7 @@
 pub mod comment;
 pub mod create;
 
-use crate::infra::result::IntoResult;
-use anyhow::bail;
+use clap::{Parser, ValueEnum};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -20,16 +19,16 @@ impl Ing {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Parser, ValueEnum)]
 pub enum IngType {
-    Following = 1,
+    Follow = 1,
     Myself = 4,
-    Public = 5,
-    RecentComment = 6,
+    Pub = 5,
+    //RecentComment = 6,
     MyComment = 7,
-    Tag = 10,
-    Comment = 13,
-    Mention = 14,
+    //Tag = 10,
+    //Comment = 13,
+    //Mention = 14,
 }
 
 #[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
@@ -44,26 +43,6 @@ pub enum IngSendFrom {
     Web = 8,
     VsCode = 9,
     Cli = 13,
-}
-
-impl TryFrom<usize> for IngSendFrom {
-    type Error = anyhow::Error;
-
-    fn try_from(value: usize) -> Result<Self, Self::Error> {
-        match value {
-            0 => Self::None,
-            1 => Self::Ms,
-            2 => Self::GTalk,
-            3 => Self::Qq,
-            5 => Self::Sms,
-            6 => Self::CellPhone,
-            8 => Self::Web,
-            9 => Self::VsCode,
-            13 => Self::Cli,
-            u => bail!("Unknown value of ing source: {}", u),
-        }
-        .into_ok()
-    }
 }
 
 pub fn ing_star_tag_to_text(tag: &str) -> String {

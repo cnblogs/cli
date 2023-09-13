@@ -1,3 +1,4 @@
+use crate::api::ing::IngType;
 use crate::args::{cmd, Args, Cmd};
 use crate::infra::option::IntoOption;
 
@@ -54,7 +55,7 @@ pub fn publish_ing(args: &Args) -> Option<&String> {
         Args {
             cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
-                    list: false,
+                    cmd: None,
                     publish: Some(content),
                     comment: None,
                 })),
@@ -119,12 +120,12 @@ pub const fn logout(args: &Args) -> bool {
     )
 }
 
-pub fn list_ing(args: &Args) -> Option<(usize, usize)> {
+pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType)> {
     match args {
         Args {
             cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
-                    list: true,
+                    cmd: Some(cmd::ing::Cmd::List { r#type }),
                     publish: None,
                     comment: None,
                 })),
@@ -140,7 +141,7 @@ pub fn list_ing(args: &Args) -> Option<(usize, usize)> {
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            (skip, take)
+            (skip, take, r#type.clone())
         }
         _ => return None,
     }
@@ -152,7 +153,7 @@ pub fn comment_ing(args: &Args) -> Option<(&String, usize)> {
         Args {
             cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
-                    list: false,
+                    cmd: None,
                     publish: None,
                     comment: Some(content),
                 })),
