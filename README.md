@@ -7,7 +7,7 @@ Access cnblogs form CLI.
 
 ## Usage
 
-To use `cnb` directly, register it to your environment variables is required.
+To use `cnb` directly, add it to your environment variables is required.
 
 ### Login
 
@@ -19,7 +19,7 @@ If you want to logout, run `cnb user --logout` or just remove `~/.cnbrc`.
 
 ### Examples
 
-After login, it's time to enjoy cnblogs.
+It's time to enjoy cnblogs.
 
 Here are some simple examples:
 
@@ -48,9 +48,13 @@ For more information, try `cnb --help`.
 
 ## Installation
 
-### Build
+### From releases
 
-This tool needs nightly toolchains(1.74.0+) to build.
+[Releases](https://github.com/cnblogs/cli/releases)
+
+### Build locally
+
+This tool requires nightly toolchains(1.74.0+) to build.
 
 ```shell
 git clone --depth 1 https://github.com/cnblogs/cli.git
