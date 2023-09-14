@@ -4,9 +4,9 @@ use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashSet;
+use std::iter;
 
 impl Post {
     pub async fn search(
@@ -35,14 +35,9 @@ impl Post {
 
             // total_count
             {
-                #[derive(Serialize, Deserialize, Debug)]
-                struct Body {
-                    #[serde(rename = "postsCount")]
-                    pub total_count: usize,
-                }
                 let body = body_or_err(resp).await?;
-                let body = json::deserialize::<Body>(&body)?;
-                body.total_count
+                let json = json::deserialize::<Value>(&body)?;
+                json["postsCount"].as_u64().unwrap() as usize
             }
         };
 
@@ -64,18 +59,19 @@ impl Post {
             let id_list = {
                 let body = body_or_err(resp).await?;
                 let mut json = json::deserialize::<Value>(&body)?;
-                let post_id_list = {
+                let post_id = {
                     let json = json["postList"].take();
-                    serde_json::from_value::<Vec<usize>>(json)
-                }?;
+                    let [post, ..] = serde_json::from_value::<[Value; 1]>(json)?;
+                    post["id"].as_u64().unwrap() as usize
+                };
                 let zzk_post_id_list = {
                     let json = json["zzkSearchResult"]["postIds"].take();
                     serde_json::from_value::<Vec<usize>>(json)
                 }?;
 
-                post_id_list
+                zzk_post_id_list
                     .into_iter()
-                    .chain(zzk_post_id_list.into_iter())
+                    .chain(iter::once(post_id))
                     .collect::<Vec<usize>>()
             };
 
