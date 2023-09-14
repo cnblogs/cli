@@ -2,9 +2,11 @@ use crate::api::ing::{Ing, IngSendFrom, IngType};
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
+use crate::infra::vec::VecExt;
 use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use std::ops::ControlFlow;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngEntry {
@@ -58,13 +60,15 @@ pub struct IngCommentEntry {
     pub user_guid: String,
 }
 
+type IngEntryWithComment = (IngEntry, Vec<IngCommentEntry>);
+
 impl Ing {
     pub async fn get_list(
         &self,
         skip: usize,
         take: usize,
         ing_type: &IngType,
-    ) -> Result<Vec<(IngEntry, Vec<IngCommentEntry>)>> {
+    ) -> Result<Vec<IngEntryWithComment>> {
         let client = &reqwest::Client::new();
 
         let range = (skip + 1)..=(skip + take);
@@ -80,18 +84,34 @@ impl Ing {
             let body = body_or_err(resp).await?;
 
             let entry_with_comment = {
-                let [entry, ..] = json::deserialize::<[IngEntry; 1]>(&body)?;
+                match json::deserialize::<Vec<IngEntry>>(&body)?.pop() {
+                    Some(entry) => {
+                        let id = entry.id;
+                        let comment_vec = self.get_comment_list(id).await?;
 
-                let id = entry.id;
-                (entry, self.get_comment_list(id).await?)
+                        ControlFlow::Continue((entry, comment_vec))
+                    }
+                    None => ControlFlow::Break(()),
+                }
             };
 
             entry_with_comment.into_ok::<anyhow::Error>()
         });
 
-        futures::future::join_all(fut_iter)
+        let cf = futures::future::join_all(fut_iter)
             .await
             .into_iter()
-            .collect()
+            .try_fold(vec![], |acc, it| match it {
+                Ok(cf) => match cf {
+                    ControlFlow::Continue(it) => ControlFlow::Continue(acc.chain_push(it)),
+                    _ => ControlFlow::Break(Ok(acc)),
+                },
+                Err(e) => ControlFlow::Break(Err(e)),
+            });
+
+        match cf {
+            ControlFlow::Continue(vec) => Ok(vec),
+            ControlFlow::Break(result) => result,
+        }
     }
 }
