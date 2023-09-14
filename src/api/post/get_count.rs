@@ -24,7 +24,9 @@ impl Post {
         let count = {
             let body = body_or_err(resp).await?;
             let json = json::deserialize::<Value>(&body)?;
-            json["postsCount"].as_u64().unwrap() as usize
+            json["postsCount"]
+                .as_u64()
+                .expect("as_u64 failed for `postsCount`") as usize
         };
 
         count.into_ok()

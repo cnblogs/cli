@@ -41,7 +41,7 @@ impl Post {
         let id = {
             let body = body_or_err(resp).await?;
             let json = json::deserialize::<Value>(&body)?;
-            json["id"].as_u64().unwrap() as usize
+            json["id"].as_u64().expect("as_u64 failed for `id`") as usize
         };
 
         id.into_ok()

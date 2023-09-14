@@ -24,14 +24,12 @@ pub fn user_info(info: &Result<UserInfo>) {
 }
 
 pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
-    if let Err(e) = ing_list {
-        println_err(e);
-        return;
-    }
+    let ing_list = match ing_list {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
 
     let vec = ing_list
-        .as_ref()
-        .unwrap()
         .iter()
         .dyn_rev(rev)
         .map(|(entry, comment_list)| {
@@ -41,7 +39,9 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
             })
         })
         .collect::<Vec<_>>();
-    let json = json::serialize(vec).unwrap();
+
+    let json =
+        json::serialize(vec.clone()).unwrap_or_else(|_| panic!("Can not serialize: {:?}", vec));
     print!("{}", json);
 }
 
@@ -60,11 +60,11 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
 }
 
 pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
-    if let Err(e) = result {
-        println_err(e);
-        return;
-    }
-    let (entry_list, total_count) = result.as_ref().unwrap();
+    let (entry_list, total_count) = match result {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
+
     let vec = entry_list.iter().dyn_rev(rev).collect::<Vec<_>>();
     let json = json!({
        "listed_count": vec.len(),
@@ -75,12 +75,11 @@ pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
 }
 
 pub fn search_post(result: &Result<(Vec<usize>, usize)>, rev: bool) {
-    if let Err(e) = result {
-        println_err(e);
-        return;
-    }
+    let (id_list, total_count) = match result {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
 
-    let (id_list, total_count) = result.as_ref().unwrap();
     let id_list = id_list.iter().dyn_rev(rev).collect::<Vec<&usize>>();
     let json = json!({
        "listed_count": id_list.len(),
@@ -114,16 +113,14 @@ pub fn println_result<T: Serialize, E: ToString>(result: &Result<T, E>) {
 }
 
 pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
-    if let Err(e) = news_list {
-        println_err(e);
-        return;
-    }
-    let vec = news_list
-        .as_ref()
-        .unwrap()
-        .iter()
-        .dyn_rev(rev)
-        .collect::<Vec<_>>();
-    let json = json::serialize(vec).unwrap();
+    let news_list = match news_list {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
+
+    let vec = news_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+
+    let json =
+        json::serialize(vec.clone()).unwrap_or_else(|_| panic!("Can not serialize: {:?}", vec));
     print!("{}", json);
 }

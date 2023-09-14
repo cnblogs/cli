@@ -47,22 +47,26 @@ pub enum IngSendFrom {
 
 pub fn ing_star_tag_to_text(tag: &str) -> String {
     lazy_static! {
-        static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]"(\n|.)*>"#).unwrap();
+        static ref REGEX: Regex =
+            Regex::new(r#"<img.*alt="\[(.*?)]"(\n|.)*>"#).expect("Invalid regexp");
     }
-    let caps = REGEX.captures(tag).expect(tag);
-    let text = caps.get(1).unwrap().as_str();
+    let caps = REGEX
+        .captures(tag)
+        .unwrap_or_else(|| panic!("No captures for: {}", tag));
+    let text = caps.get(1).expect("No capture at index 1").as_str();
     text.to_string()
 }
 
 pub fn fmt_content(content: &str) -> String {
     lazy_static! {
         static ref REGEX: Regex =
-            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>"#).unwrap();
+            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>"#)
+                .expect("Invalid regexp");
     }
     REGEX.captures(content).map_or_else(
         || content.to_string(),
         |caps| {
-            let at_user = caps.get(1).unwrap().as_str();
+            let at_user = caps.get(1).expect("No capture at index 1").as_str();
             REGEX.replace(content, at_user).to_string()
         },
     )
@@ -71,7 +75,8 @@ pub fn fmt_content(content: &str) -> String {
 pub fn rm_ing_at_user_tag(text: &str) -> String {
     lazy_static! {
         static ref REGEX: Regex =
-            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>："#).unwrap();
+            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>："#)
+                .expect("Invalid regexp");
     }
     REGEX.replace(text, "".to_string()).to_string()
 }
@@ -79,10 +84,16 @@ pub fn rm_ing_at_user_tag(text: &str) -> String {
 pub fn get_ing_at_user_tag_text(text: &str) -> String {
     lazy_static! {
         static ref REGEX: Regex =
-            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#).unwrap();
+            Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#)
+                .expect("Invalid regexp");
     }
     REGEX.captures(text).map_or_else(
         || "".to_string(),
-        |caps| caps.get(1).unwrap().as_str().to_string(),
+        |caps| {
+            caps.get(1)
+                .expect("No capture at index 1")
+                .as_str()
+                .to_string()
+        },
     )
 }

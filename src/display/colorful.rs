@@ -49,20 +49,19 @@ pub fn user_info(info: &Result<UserInfo>) {
 }
 
 pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
-    if let Err(e) = ing_list {
-        println_err(e);
-        return;
-    }
+    let ing_list = match ing_list {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
 
     ing_list
-        .as_ref()
-        .unwrap()
         .iter()
         .dyn_rev(rev)
         .for_each(|(ing, comment_list)| {
             let create_time = {
                 let rfc3339 = patch_rfc3339(&ing.create_time);
-                let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+                let dt = DateTime::parse_from_rfc3339(&rfc3339)
+                    .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
                 dt.format("%m-%d %H:%M").to_string()
             };
 
@@ -122,12 +121,11 @@ pub fn show_post(entry: &Result<PostEntry>) {
 }
 
 pub fn show_post_meta(entry: &Result<PostEntry>) {
-    if let Err(e) = entry {
-        println_err(e);
-        return;
-    }
+    let entry = match entry {
+        Ok(entry) => entry,
+        Err(e) => return println_err(e),
+    };
 
-    let entry = entry.as_ref().unwrap();
     println!("Title  {}", entry.title.cyan().bold());
     {
         print!("Status");
@@ -156,13 +154,15 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
     }
     let create_time = {
         let rfc3339 = patch_rfc3339(&entry.create_time);
-        let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+        let dt = DateTime::parse_from_rfc3339(&rfc3339)
+            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
         dt.format("%Y-%m-%d %H:%M")
     };
     println!("Create {}", create_time);
     let modify_time = {
         let rfc3339 = patch_rfc3339(&entry.modify_time);
-        let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
+        let dt = DateTime::parse_from_rfc3339(&rfc3339)
+            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
         dt.format("%Y-%m-%d %H:%M")
     };
     println!("Modify {}", modify_time);
@@ -170,12 +170,11 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
 }
 
 pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
-    if let Err(e) = result {
-        println_err(e);
-        return;
-    }
+    let (entry_list, total_count) = match result {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
 
-    let (entry_list, total_count) = result.as_ref().unwrap();
     println!("{}/{}", entry_list.len(), total_count);
     entry_list.iter().dyn_rev(rev).for_each(|entry| {
         print!("{} {}", "#".dimmed(), entry.id.to_string().dimmed());
@@ -193,12 +192,11 @@ pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {
 }
 
 pub fn search_post(result: &Result<(Vec<usize>, usize)>, rev: bool) {
-    if let Err(e) = result {
-        println_err(e);
-        return;
-    }
+    let (id_list, total_count) = match result {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
 
-    let (id_list, total_count) = result.as_ref().unwrap();
     println!("{}/{}", id_list.len(), total_count);
     id_list
         .iter()
@@ -218,27 +216,23 @@ pub fn println_result<T: Display>(result: &Result<T>) {
 }
 
 pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
-    if let Err(e) = news_list {
-        println_err(e);
-        return;
-    }
+    let news_list = match news_list {
+        Ok(o) => o,
+        Err(e) => return println_err(e),
+    };
 
-    news_list
-        .as_ref()
-        .unwrap()
-        .iter()
-        .dyn_rev(rev)
-        .for_each(|news| {
-            let create_time = {
-                let rfc3339 = patch_rfc3339(&news.create_time);
-                let dt = DateTime::parse_from_rfc3339(&rfc3339).unwrap();
-                dt.format("%Y-%m-%d %H:%M").to_string()
-            };
+    news_list.iter().dyn_rev(rev).for_each(|news| {
+        let create_time = {
+            let rfc3339 = patch_rfc3339(&news.create_time);
+            let dt = DateTime::parse_from_rfc3339(&rfc3339)
+                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
+            dt.format("%Y-%m-%d %H:%M").to_string()
+        };
 
-            let url = format!("https://news.cnblogs.com/n/{}", news.id);
-            println!("{} {}", create_time.dimmed(), url.dimmed(),);
-            println!("  {}", news.title);
-            println!("    {}{}", news.summary.dimmed(), "...".dimmed());
-            println!();
-        });
+        let url = format!("https://news.cnblogs.com/n/{}", news.id);
+        println!("{} {}", create_time.dimmed(), url.dimmed(),);
+        println!("  {}", news.title);
+        println!("    {}{}", news.summary.dimmed(), "...".dimmed());
+        println!();
+    });
 }

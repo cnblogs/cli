@@ -37,7 +37,9 @@ impl Post {
             {
                 let body = body_or_err(resp).await?;
                 let json = json::deserialize::<Value>(&body)?;
-                json["postsCount"].as_u64().unwrap() as usize
+                json["postsCount"]
+                    .as_u64()
+                    .expect("as_u64 failed for `postsCount`") as usize
             }
         };
 
@@ -62,7 +64,7 @@ impl Post {
                 let post_id = {
                     let json = json["postList"].take();
                     let [post, ..] = serde_json::from_value::<[Value; 1]>(json)?;
-                    post["id"].as_u64().unwrap() as usize
+                    post["id"].as_u64().expect("as_u64 failed for `id`") as usize
                 };
                 let zzk_post_id_list = {
                     let json = json["zzkSearchResult"]["postIds"].take();
