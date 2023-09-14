@@ -1,4 +1,4 @@
-use crate::api::ing::Ing;
+use crate::api::ing::{Ing, IngSendFrom};
 use crate::infra::http::{unit_or_err, RequestBuilderExt};
 use crate::openapi;
 use anyhow::Result;
@@ -14,6 +14,7 @@ impl Ing {
             let body = json!({
                 "content": content,
                 "isPrivate": false,
+                "clientType": IngSendFrom::Cli,
             });
 
             client.post(url).json(&body).pat_auth(&self.pat)
