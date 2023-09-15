@@ -13,6 +13,7 @@ use colored::Colorize;
 use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
+use unicode_width::UnicodeWidthStr;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     match cfg_path {
@@ -81,8 +82,10 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
                 print!(" {}⭐", star_text);
             }
             println!(" # {}", ing.id);
-            let content = fmt_content(&ing.content);
-            println!("  {}: {}", ing.user_name, content);
+            let user_name_width = ing.user_name.width_cjk();
+            let content = fmt_content(&ing.content)
+                .replace('\n', &format!("\n{}", " ".repeat(user_name_width + 3)));
+            println!("  {} {}", ing.user_name, content);
 
             let len = comment_list.len();
             if len != 0 {
