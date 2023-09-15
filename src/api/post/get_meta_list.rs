@@ -2,6 +2,7 @@ use crate::api::post::get_one::PostEntry;
 use crate::api::post::Post;
 use crate::blog_backend;
 use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
+use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
@@ -31,30 +32,30 @@ impl Post {
         let total_count = self.get_count().await?;
 
         let range = (skip + 1)..=(skip + take).min(total_count);
-        let fut_iter = range.map(|i| async move {
-            let req = {
-                let url = {
-                    let query = vec![('t', 1), ('p', i), ('s', 1)].into_query_string();
-                    blog_backend!("/posts/list?{}", query)
+        let vec = range
+            .map(|i| async move {
+                let req = {
+                    let url = {
+                        let query = vec![('t', 1), ('p', i), ('s', 1)].into_query_string();
+                        blog_backend!("/posts/list?{}", query)
+                    };
+
+                    client.get(url).pat_auth(&self.pat)
                 };
 
-                client.get(url).pat_auth(&self.pat)
-            };
+                let resp = req.send().await?;
 
-            let resp = req.send().await?;
+                let entry = {
+                    let body = body_or_err(resp).await?;
+                    let json = json::deserialize::<Value>(&body)?["postList"].take();
 
-            let entry = {
-                let body = body_or_err(resp).await?;
-                let json = json::deserialize::<Value>(&body)?["postList"].take();
+                    let [entry, ..] = serde_json::from_value::<[PostEntry; 1]>(json)?;
+                    entry
+                };
 
-                let [entry, ..] = serde_json::from_value::<[PostEntry; 1]>(json)?;
-                entry
-            };
-
-            entry.into_ok()
-        });
-
-        let vec = futures::future::join_all(fut_iter)
+                entry.into_ok()
+            })
+            .join_all()
             .await
             .into_iter()
             .collect::<Result<Vec<_>>>();

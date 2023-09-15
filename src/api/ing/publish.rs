@@ -5,8 +5,7 @@ use anyhow::Result;
 use serde_json::json;
 
 impl Ing {
-    // TODO: impl send from
-    pub async fn create(&self, content: &str) -> Result<()> {
+    pub async fn publish(&self, content: &str) -> Result<()> {
         let client = reqwest::Client::new();
 
         let req = {

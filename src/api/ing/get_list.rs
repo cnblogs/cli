@@ -1,5 +1,6 @@
 use crate::api::ing::{Ing, IngSendFrom, IngType};
 use crate::infra::http::{body_or_err, RequestBuilderExt};
+use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::infra::vec::VecExt;
@@ -72,33 +73,33 @@ impl Ing {
         let client = &reqwest::Client::new();
 
         let range = (skip + 1)..=(skip + take);
-        let fut_iter = range.map(|i| async move {
-            let req = {
-                let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
-                let query = vec![("pageIndex", i), ("pageSize", 1)];
-                client.get(url).query(&query).pat_auth(&self.pat)
-            };
+        let cf = range
+            .map(|i| async move {
+                let req = {
+                    let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
+                    let query = vec![("pageIndex", i), ("pageSize", 1)];
+                    client.get(url).query(&query).pat_auth(&self.pat)
+                };
 
-            let resp = req.send().await?;
+                let resp = req.send().await?;
 
-            let body = body_or_err(resp).await?;
+                let body = body_or_err(resp).await?;
 
-            let entry_with_comment = {
-                match json::deserialize::<Vec<IngEntry>>(&body)?.pop() {
-                    Some(entry) => {
-                        let id = entry.id;
-                        let comment_vec = self.get_comment_list(id).await?;
+                let entry_with_comment = {
+                    match json::deserialize::<Vec<IngEntry>>(&body)?.pop() {
+                        Some(entry) => {
+                            let id = entry.id;
+                            let comment_vec = self.get_comment_list(id).await?;
 
-                        ControlFlow::Continue((entry, comment_vec))
+                            ControlFlow::Continue((entry, comment_vec))
+                        }
+                        None => ControlFlow::Break(()),
                     }
-                    None => ControlFlow::Break(()),
-                }
-            };
+                };
 
-            entry_with_comment.into_ok::<anyhow::Error>()
-        });
-
-        let cf = futures::future::join_all(fut_iter)
+                entry_with_comment.into_ok::<anyhow::Error>()
+            })
+            .join_all()
             .await
             .into_iter()
             .try_fold(vec![], |acc, it| match it {

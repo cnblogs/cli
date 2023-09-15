@@ -1,5 +1,5 @@
 pub mod comment;
-pub mod create;
+pub mod publish;
 
 use clap::{Parser, ValueEnum};
 use lazy_static::lazy_static;
