@@ -1,4 +1,4 @@
-use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::ing::get_list::{ IngEntry};
 use crate::api::ing::{
     fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, IngSendFrom,
 };
@@ -15,6 +15,7 @@ use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
 use unicode_width::UnicodeWidthStr;
+use crate::api::ing::get_comment_list::IngCommentEntry;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     match cfg_path {

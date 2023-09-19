@@ -1,4 +1,4 @@
-use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::ing::get_list::{ IngEntry};
 use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
@@ -8,6 +8,7 @@ use anyhow::Result;
 use serde::Serialize;
 use serde_json::json;
 use std::path::PathBuf;
+use crate::api::ing::get_comment_list::IngCommentEntry;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     let json = cfg_path.as_ref().map(|pb| json!({"cfg_path":pb}));

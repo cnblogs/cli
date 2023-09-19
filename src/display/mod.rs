@@ -1,10 +1,11 @@
-use crate::api::ing::get_list::{IngCommentEntry, IngEntry};
+use crate::api::ing::get_list::{IngEntry};
 use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::Style;
 use anyhow::Result;
 use std::path::PathBuf;
+use crate::api::ing::get_comment_list::IngCommentEntry;
 
 mod colorful;
 mod json;
