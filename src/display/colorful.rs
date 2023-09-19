@@ -49,7 +49,7 @@ pub fn user_info(info: &Result<UserInfo>) {
     }
 }
 
-pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
+pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool, align: bool) {
     let ing_list = match ing_list {
         Ok(o) => o,
         Err(e) => return println_err(e),
@@ -83,8 +83,12 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
             }
             println!(" {} {}", "#".dimmed(), ing.id.to_string().dimmed());
             let user_name_width = ing.user_name.width_cjk();
-            let content = fmt_content(&ing.content)
-                .replace('\n', &format!("\n{}", " ".repeat(user_name_width + 3)));
+            let content = if align {
+                fmt_content(&ing.content)
+                    .replace('\n', &format!("\n{}", " ".repeat(user_name_width + 3)))
+            } else {
+                fmt_content(&ing.content)
+            };
             println!("  {} {}", ing.user_name.cyan(), content);
 
             let len = comment_list.len();

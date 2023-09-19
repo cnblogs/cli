@@ -43,5 +43,13 @@ pub enum Cmd {
         #[arg(value_name = "TYPE")]
         #[arg(default_value = "public")]
         r#type: Option<IngType>,
+
+        #[arg(verbatim_doc_comment)]
+        /// Align ing content to user name automatically
+        ///   Example: cnb ing list --align
+        #[arg(long)]
+        #[arg(value_name = "BOOL")]
+        #[arg(default_value_t = true)]
+        align: bool,
     },
 }

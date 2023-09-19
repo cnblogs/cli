@@ -38,10 +38,11 @@ pub fn list_ing(
     style: &Style,
     ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
     rev: bool,
+    align: bool,
 ) {
     match style {
-        Style::Colorful => colorful::list_ing(ing_list, rev),
-        Style::Normal => normal::list_ing(ing_list, rev),
+        Style::Colorful => colorful::list_ing(ing_list, rev, align),
+        Style::Normal => normal::list_ing(ing_list, rev, align),
         Style::Json => json::list_ing(ing_list, rev),
     }
 }

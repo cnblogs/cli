@@ -120,12 +120,12 @@ pub const fn logout(args: &Args) -> bool {
     )
 }
 
-pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType)> {
+pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType, bool)> {
     match args {
         Args {
             cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
-                    cmd: Some(cmd::ing::Cmd::List { r#type }),
+                    cmd: Some(cmd::ing::Cmd::List { r#type, align }),
                     publish: None,
                     comment: None,
                 })),
@@ -141,7 +141,8 @@ pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType)> {
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);
-            (skip, take, r#type.clone().unwrap_or(IngType::Public))
+            let r#type = r#type.clone().unwrap_or(IngType::Public);
+            (skip, take, r#type, *align)
         }
         _ => return None,
     }
