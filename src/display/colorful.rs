@@ -14,6 +14,7 @@ use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
 use unicode_width::UnicodeWidthStr;
+use crate::infra::str::StrExt;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     match cfg_path {
@@ -82,10 +83,20 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
                 print!(" {}⭐", star_text.yellow());
             }
             println!(" {} {}", "#".dimmed(), ing.id.to_string().dimmed());
-            let user_name_width = ing.user_name.width_cjk();
             let content = if align {
-                fmt_content(&ing.content)
-                    .replace('\n', &format!("\n{}", " ".repeat(user_name_width + 3)))
+                let user_name_width = ing.user_name.width_cjk();
+                let (term_width, _) = term_size::dimensions()
+                    .expect("Can not get terminal size");
+                let left_width = term_width.checked_sub(user_name_width + 3).unwrap_or(0);
+                if let Some(lines) = fmt_content(&ing.content).width_split(left_width) {
+                    if comment_list.len() > 0 {
+                        lines.join("\n").replace("\n", &format!("\n    │{}", " ".repeat(user_name_width - 2)))
+                    } else {
+                        lines.join("\n").replace("\n", &format!("\n{}", " ".repeat(user_name_width + 3)))
+                    }
+                } else {
+                    ing.content.clone()
+                }
             } else {
                 fmt_content(&ing.content)
             };
@@ -237,7 +248,7 @@ pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
         };
 
         let url = format!("https://news.cnblogs.com/n/{}", news.id);
-        println!("{} {}", create_time.dimmed(), url.dimmed(),);
+        println!("{} {}", create_time.dimmed(), url.dimmed(), );
         println!("  {}", news.title);
         println!("    {}{}", news.summary.dimmed(), "...".dimmed());
         println!();
