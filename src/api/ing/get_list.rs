@@ -8,7 +8,6 @@ use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::ops::ControlFlow;
-use crate::api::ing::get_comment_list::IngCommentEntry;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IngEntry {
@@ -40,15 +39,13 @@ pub struct IngEntry {
     pub icons: String,
 }
 
-type IngEntryWithComment = (IngEntry, Vec<IngCommentEntry>);
-
 impl Ing {
     pub async fn get_list(
         &self,
         skip: usize,
         take: usize,
         ing_type: &IngType,
-    ) -> Result<Vec<IngEntryWithComment>> {
+    ) -> Result<Vec<IngEntry>> {
         let client = &reqwest::Client::new();
 
         let range = (skip + 1)..=(skip + take);
@@ -64,27 +61,15 @@ impl Ing {
 
                 let body = body_or_err(resp).await?;
 
-                let entry_with_comment = {
-                    match json::deserialize::<Vec<IngEntry>>(&body)?.pop() {
-                        Some(entry) => {
-                            let id = entry.id;
-                            let comment_vec = self.get_comment_list(id).await?;
-
-                            ControlFlow::Continue((entry, comment_vec))
-                        }
-                        None => ControlFlow::Break(()),
-                    }
-                };
-
-                entry_with_comment.into_ok::<anyhow::Error>()
+                json::deserialize::<Vec<IngEntry>>(&body)?.pop().into_ok()
             })
             .join_all()
             .await
             .into_iter()
             .try_fold(vec![], |acc, it| match it {
-                Ok(cf) => match cf {
-                    ControlFlow::Continue(it) => ControlFlow::Continue(acc.chain_push(it)),
-                    _ => ControlFlow::Break(Ok(acc)),
+                Ok(maybe) => match maybe {
+                    Some(entry) => ControlFlow::Continue(acc.chain_push(entry)),
+                    None => ControlFlow::Break(Ok(acc)),
                 },
                 Err(e) => ControlFlow::Break(Err(e)),
             });

@@ -1,11 +1,11 @@
-use crate::api::ing::get_list::{IngEntry};
+use crate::api::ing::get_comment_list::IngCommentEntry;
+use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::Style;
 use anyhow::Result;
 use std::path::PathBuf;
-use crate::api::ing::get_comment_list::IngCommentEntry;
 
 mod colorful;
 mod json;
@@ -37,14 +37,14 @@ pub fn user_info(style: &Style, user_info: &Result<UserInfo>) {
 
 pub fn list_ing(
     style: &Style,
-    ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
+    ing_with_comment_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
     rev: bool,
     align: bool,
 ) {
     match style {
-        Style::Colorful => colorful::list_ing(ing_list, rev, align),
-        Style::Normal => normal::list_ing(ing_list, rev, align),
-        Style::Json => json::list_ing(ing_list, rev),
+        Style::Colorful => colorful::list_ing(ing_with_comment_list, rev, align),
+        Style::Normal => normal::list_ing(ing_with_comment_list, rev, align),
+        Style::Json => json::list_ing(ing_with_comment_list, rev),
     }
 }
 

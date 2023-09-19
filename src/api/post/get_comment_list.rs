@@ -1,11 +1,11 @@
+use crate::api::post::Post;
+use crate::api::user::User;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use crate::api::post::Post;
-use crate::api::user::User;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PostCommentEntry {
@@ -31,7 +31,11 @@ impl Post {
         let client = reqwest::Client::new();
 
         let req = {
-            let url = openapi!("https://api.cnblogs.com/api/blogs/{}/posts/{}/comments", blog_app, post_id);
+            let url = openapi!(
+                "https://api.cnblogs.com/api/blogs/{}/posts/{}/comments",
+                blog_app,
+                post_id
+            );
             client.get(url).pat_auth(&self.pat)
         };
         let resp = req.send().await?;

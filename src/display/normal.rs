@@ -1,4 +1,5 @@
-use crate::api::ing::get_list::{ IngEntry};
+use crate::api::ing::get_comment_list::IngCommentEntry;
+use crate::api::ing::get_list::IngEntry;
 use crate::api::ing::{
     fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, IngSendFrom,
 };
@@ -15,7 +16,6 @@ use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
 use unicode_width::UnicodeWidthStr;
-use crate::api::ing::get_comment_list::IngCommentEntry;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     match cfg_path {
@@ -51,13 +51,17 @@ pub fn user_info(info: &Result<UserInfo>) {
     }
 }
 
-pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool, align: bool) {
-    let ing_list = match ing_list {
+pub fn list_ing(
+    ing_with_comment_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
+    rev: bool,
+    align: bool,
+) {
+    let ing_with_comment_list = match ing_with_comment_list {
         Ok(o) => o,
         Err(e) => return println_err(e),
     };
 
-    ing_list
+    ing_with_comment_list
         .iter()
         .dyn_rev(rev)
         .for_each(|(ing, comment_list)| {

@@ -28,7 +28,6 @@ pub struct IngCommentEntry {
     pub user_guid: String,
 }
 
-
 impl Ing {
     pub async fn get_comment_list(&self, ing_id: usize) -> Result<Vec<IngCommentEntry>> {
         let client = reqwest::Client::new();

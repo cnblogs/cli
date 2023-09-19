@@ -13,6 +13,7 @@ use crate::api::user::User;
 use crate::args::parser::no_operation;
 use crate::args::{parser, Args};
 use crate::infra::fp::currying::eq;
+use crate::infra::iter::IntoIteratorExt;
 use crate::infra::option::OptionExt;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
@@ -69,11 +70,21 @@ async fn main() -> Result<()> {
             quiet.not().then(|| display::user_info(style, &user_info));
         }
         _ if let Some((skip, take, r#type, align)) = parser::list_ing(&args) => {
-            let ing_vec = try {
-                Ing::new(pat?).get_list(skip, take, &r#type).await?
+            let ing_with_comment_list = try {
+                let ing_api = Ing::new(pat?);
+                let ing_vec = ing_api.get_list(skip, take, &r#type).await?;
+                ing_vec.into_iter()
+                    .map(|ing| async {
+                        let result = ing_api.get_comment_list(ing.id).await;
+                        result.map(|comment_vec| (ing, comment_vec))
+                    })
+                    .join_all()
+                    .await
+                    .into_iter()
+                    .collect::<Result<Vec<_>>>()?
             };
-            foe.then(|| panic_if_err(&ing_vec));
-            quiet.not().then(|| display::list_ing(style, &ing_vec, rev, align));
+            foe.then(|| panic_if_err(&ing_with_comment_list));
+            quiet.not().then(|| display::list_ing(style, &ing_with_comment_list, rev, align));
         }
         _ if let Some(content) = parser::publish_ing(&args) => {
             let content = try {

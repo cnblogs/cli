@@ -1,4 +1,5 @@
-use crate::api::ing::get_list::{ IngEntry};
+use crate::api::ing::get_comment_list::IngCommentEntry;
+use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
@@ -8,7 +9,6 @@ use anyhow::Result;
 use serde::Serialize;
 use serde_json::json;
 use std::path::PathBuf;
-use crate::api::ing::get_comment_list::IngCommentEntry;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     let json = cfg_path.as_ref().map(|pb| json!({"cfg_path":pb}));
@@ -24,13 +24,13 @@ pub fn user_info(info: &Result<UserInfo>) {
     println_result(info);
 }
 
-pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
-    let ing_list = match ing_list {
+pub fn list_ing(ing_with_comment_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: bool) {
+    let ing_with_comment_list = match ing_with_comment_list {
         Ok(o) => o,
         Err(e) => return println_err(e),
     };
 
-    let vec = ing_list
+    let json_vec = ing_with_comment_list
         .iter()
         .dyn_rev(rev)
         .map(|(entry, comment_list)| {
@@ -41,8 +41,7 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
         })
         .collect::<Vec<_>>();
 
-    let json =
-        json::serialize(vec.clone()).unwrap_or_else(|_| panic!("Can not serialize: {:?}", vec));
+    let json = json::serialize(json_vec).expect("Can not serialize json_vec");
     print!("{}", json);
 }
 
