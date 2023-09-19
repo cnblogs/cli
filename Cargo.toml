@@ -44,6 +44,6 @@ futures = "0.3.28"
 
 clap = { version = "4.4.3", features = ["derive", "wrap_help"] }
 colored = "2.0.4"
-term_size = "0.3.2"
+terminal_size = "0.2.6"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

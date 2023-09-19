@@ -15,6 +15,7 @@ use colored::Colorize;
 use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
+use terminal_size::terminal_size;
 use unicode_width::UnicodeWidthStr;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
@@ -90,7 +91,7 @@ pub fn list_ing(
             println!(" # {}", ing.id);
             let content = if align {
                 let user_name_width = ing.user_name.width_cjk();
-                let (term_width, _) = term_size::dimensions().expect("Can not get terminal size");
+                let term_width = terminal_size().expect("Can not get terminal size").0 .0 as usize;
                 let left_width = term_width.saturating_sub(user_name_width + 3);
                 fmt_content(&ing.content)
                     .width_split(left_width)

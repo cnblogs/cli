@@ -63,6 +63,7 @@ fn test_width_split_head() {
 
 #[test]
 fn test_width_split() {
+    use crate::infra::option::IntoOption;
     let text = "测试test⭐测试test⭐";
     assert_eq!(text.width_split(0), None);
     assert_eq!(text.width_split(1), None);
