@@ -34,11 +34,11 @@ impl StrExt for str {
         loop {
             let (head, tail) = str.width_split_head(width);
             // No split strategy exist, return None
-            if head == "" {
+            if head.is_empty() {
                 return None;
             }
             vec.push(head);
-            if tail == "" {
+            if tail.is_empty() {
                 break;
             }
             str = tail;

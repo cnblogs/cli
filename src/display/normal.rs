@@ -6,6 +6,7 @@ use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
+use crate::infra::str::StrExt;
 use crate::infra::time::patch_rfc3339;
 use anyhow::Result;
 use chrono::DateTime;
@@ -14,7 +15,6 @@ use std::fmt::Display;
 use std::ops::Not;
 use std::path::PathBuf;
 use unicode_width::UnicodeWidthStr;
-use crate::infra::str::StrExt;
 
 pub fn login(cfg_path: &Result<PathBuf>) {
     match cfg_path {
@@ -85,18 +85,26 @@ pub fn list_ing(ing_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>, rev: b
             println!(" # {}", ing.id);
             let content = if align {
                 let user_name_width = ing.user_name.width_cjk();
-                let (term_width, _) = term_size::dimensions()
-                    .expect("Can not get terminal size");
-                let left_width = term_width.checked_sub(user_name_width + 3).unwrap_or(0);
-                if let Some(lines) = fmt_content(&ing.content).width_split(left_width) {
-                    if comment_list.len() > 0 {
-                        lines.join("\n").replace("\n", &format!("\n    │{}", " ".repeat(user_name_width - 2)))
-                    } else {
-                        lines.join("\n").replace("\n", &format!("\n{}", " ".repeat(user_name_width + 3)))
-                    }
-                } else {
-                    ing.content.clone()
-                }
+                let (term_width, _) = term_size::dimensions().expect("Can not get terminal size");
+                let left_width = term_width.saturating_sub(user_name_width + 3);
+                fmt_content(&ing.content)
+                    .width_split(left_width)
+                    .map_or_else(
+                        || ing.content.clone(),
+                        |lines| {
+                            if comment_list.is_empty().not() {
+                                lines.join("\n").replace(
+                                    '\n',
+                                    &format!("\n    │{}", " ".repeat(user_name_width - 2)),
+                                )
+                            } else {
+                                lines.join("\n").replace(
+                                    '\n',
+                                    &format!("\n{}", " ".repeat(user_name_width + 3)),
+                                )
+                            }
+                        },
+                    )
             } else {
                 fmt_content(&ing.content)
             };
