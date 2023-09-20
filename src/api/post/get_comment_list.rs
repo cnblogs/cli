@@ -31,11 +31,7 @@ impl Post {
         let client = reqwest::Client::new();
 
         let req = {
-            let url = openapi!(
-                "https://api.cnblogs.com/api/blogs/{}/posts/{}/comments",
-                blog_app,
-                post_id
-            );
+            let url = openapi!("/blogs/{}/posts/{}/comments", blog_app, post_id);
             client.get(url).pat_auth(&self.pat)
         };
         let resp = req.send().await?;
