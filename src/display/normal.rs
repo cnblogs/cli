@@ -9,9 +9,9 @@ use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
 use crate::infra::str::StrExt;
-use crate::infra::time::patch_rfc3339;
+use crate::infra::time::{fmt_time_to_string_friendly, patch_rfc3339};
 use anyhow::Result;
-use chrono::DateTime;
+use chrono::{DateTime, Local, Utc};
 use colored::Colorize;
 use std::fmt::Display;
 use std::ops::Not;
@@ -70,8 +70,9 @@ pub fn list_ing(
             let create_time = {
                 let rfc3339 = patch_rfc3339(&ing.create_time);
                 let dt = DateTime::parse_from_rfc3339(&rfc3339)
-                    .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
-                dt.format("%m-%d %H:%M")
+                    .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
+                    .with_timezone(&Utc);
+                fmt_time_to_string_friendly(dt.into(), Local::now())
             };
 
             print!("{}", create_time);
@@ -188,15 +189,17 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
     let create_time = {
         let rfc3339 = patch_rfc3339(&entry.create_time);
         let dt = DateTime::parse_from_rfc3339(&rfc3339)
-            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
-        dt.format("%Y-%m-%d %H:%M")
+            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
+            .with_timezone(&Utc);
+        fmt_time_to_string_friendly(dt.into(), Local::now())
     };
     println!("Create {}", create_time);
     let modify_time = {
         let rfc3339 = patch_rfc3339(&entry.modify_time);
         let dt = DateTime::parse_from_rfc3339(&rfc3339)
-            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
-        dt.format("%Y-%m-%d %H:%M")
+            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
+            .with_timezone(&Utc);
+        fmt_time_to_string_friendly(dt.into(), Local::now())
     };
     println!("Modify {}", modify_time);
     println!("Link   https:{}", entry.url);
@@ -212,8 +215,9 @@ pub fn show_post_comment(comment_list: &Result<Vec<PostCommentEntry>>, rev: bool
         let create_time = {
             let rfc3339 = patch_rfc3339(&comment.create_time);
             let dt = DateTime::parse_from_rfc3339(&rfc3339)
-                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
-            dt.format("%Y-%m-%d %H:%M")
+                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
+                .with_timezone(&Utc);
+            fmt_time_to_string_friendly(dt.into(), Local::now())
         };
         println!("{} {}F", create_time, comment.floor);
         println!("  {} {}", comment.user_name, comment.content);
@@ -276,8 +280,9 @@ pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
         let create_time = {
             let rfc3339 = patch_rfc3339(&news.create_time);
             let dt = DateTime::parse_from_rfc3339(&rfc3339)
-                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
-            dt.format("%Y-%m-%d %H:%M")
+                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
+                .with_timezone(&Utc);
+            fmt_time_to_string_friendly(dt.into(), Local::now())
         };
 
         let url = format!("https://news.cnblogs.com/n/{}", news.id);
