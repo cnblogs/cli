@@ -1,6 +1,7 @@
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
+use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::Style;
@@ -77,6 +78,14 @@ pub fn show_post_meta(style: &Style, entry: &Result<PostEntry>) {
         Style::Colorful => colorful::show_post_meta(entry),
         Style::Normal => normal::show_post_meta(entry),
         Style::Json => json::show_post_meta(entry),
+    }
+}
+
+pub fn show_post_comment(style: &Style, comment_list: &Result<Vec<PostCommentEntry>>, rev: bool) {
+    match style {
+        Style::Colorful => colorful::show_post_comment(comment_list, rev),
+        Style::Normal => normal::show_post_comment(comment_list, rev),
+        Style::Json => json::show_post_comment(comment_list, rev),
     }
 }
 

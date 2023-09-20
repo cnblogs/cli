@@ -180,6 +180,7 @@ pub fn show_post(args: &Args) -> Option<usize> {
                 Some(Cmd::Post(cmd::post::Opt {
                     show: true,
                     show_meta: false,
+                    show_comment: false,
                     list: false,
                     delete: false,
                     search: None,
@@ -207,6 +208,7 @@ pub fn show_post_meta(args: &Args) -> Option<usize> {
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: true,
+                    show_comment: false,
                     list: false,
                     delete: false,
                     search: None,
@@ -227,6 +229,34 @@ pub fn show_post_meta(args: &Args) -> Option<usize> {
     .into_some()
 }
 
+pub fn show_post_comment(args: &Args) -> Option<usize> {
+    match args {
+        Args {
+            cmd:
+                Some(Cmd::Post(cmd::post::Opt {
+                    show: false,
+                    show_meta: false,
+                    show_comment: true,
+                    list: false,
+                    delete: false,
+                    search: None,
+                    cmd: None,
+                })),
+            id: Some(id),
+            with_pat: _,
+            rev: _,
+            skip: None,
+            take: None,
+            debug: _,
+            style: _,
+            fail_on_error: _,
+            quiet: _,
+        } => *id,
+        _ => return None,
+    }
+    .into_some()
+}
+
 pub fn list_post(args: &Args) -> Option<(usize, usize)> {
     match args {
         Args {
@@ -234,6 +264,7 @@ pub fn list_post(args: &Args) -> Option<(usize, usize)> {
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
+                    show_comment: false,
                     list: true,
                     delete: false,
                     search: None,
@@ -265,6 +296,7 @@ pub fn delete_post(args: &Args) -> Option<usize> {
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
+                    show_comment: false,
                     list: false,
                     delete: true,
                     search: None,
@@ -292,6 +324,7 @@ pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
+                    show_comment: false,
                     list: false,
                     delete: false,
                     search: Some(keyword),
@@ -323,6 +356,7 @@ pub fn create_post(args: &Args) -> Option<(&String, &String, bool)> {
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
+                    show_comment: false,
                     list: false,
                     delete: false,
                     search: None,
@@ -359,6 +393,7 @@ pub fn update_post(
                 Some(Cmd::Post(cmd::post::Opt {
                     show: false,
                     show_meta: false,
+                    show_comment: false,
                     list: false,
                     delete: false,
                     search: None,

@@ -20,6 +20,15 @@ pub struct Opt {
     pub show_meta: bool,
 
     #[arg(verbatim_doc_comment)]
+    /// Show comment list of post, order by time in DESC
+    ///   Example: cnb --id 114514 post --show-comment
+    ///     You should also specify the id of the post via --id
+    ///     *
+    #[arg(long)]
+    #[arg(visible_alias = "sc")]
+    pub show_comment: bool,
+
+    #[arg(verbatim_doc_comment)]
     /// Show post list, order by time in DESC
     ///   Example: cnb post --list
     ///     <LENGTH> should in range [0,100]

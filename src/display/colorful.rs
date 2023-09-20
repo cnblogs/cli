@@ -4,6 +4,7 @@ use crate::api::ing::{
     fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, IngSendFrom,
 };
 use crate::api::news::get_list::NewsEntry;
+use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
@@ -199,6 +200,29 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
     };
     println!("Modify {}", modify_time);
     println!("Link   https:{}", entry.url);
+}
+
+pub fn show_post_comment(comment_list: &Result<Vec<PostCommentEntry>>, rev: bool) {
+    let comment_list = match comment_list {
+        Ok(entry) => entry,
+        Err(e) => return println_err(e),
+    };
+
+    comment_list.iter().dyn_rev(rev).for_each(|comment| {
+        let create_time = {
+            let rfc3339 = patch_rfc3339(&comment.create_time);
+            let dt = DateTime::parse_from_rfc3339(&rfc3339)
+                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339));
+            dt.format("%Y-%m-%d %H:%M")
+        };
+        let floor_text = format!("{}F", comment.floor);
+        println!(
+            "{} {}",
+            create_time.to_string().dimmed(),
+            floor_text.dimmed()
+        );
+        println!("  {} {}", comment.user_name.cyan(), comment.content);
+    })
 }
 
 pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {

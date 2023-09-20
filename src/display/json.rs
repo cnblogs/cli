@@ -1,6 +1,7 @@
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
+use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::infra::iter::IteratorExt;
@@ -57,6 +58,17 @@ pub fn show_post(entry: &Result<PostEntry>) {
 
 pub fn show_post_meta(entry: &Result<PostEntry>) {
     println_result(entry);
+}
+
+pub fn show_post_comment(comment_list: &Result<Vec<PostCommentEntry>>, rev: bool) {
+    let comment_list = match comment_list {
+        Ok(entry) => entry,
+        Err(e) => return println_err(e),
+    };
+
+    let comment_vec = comment_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+    let json = json::serialize(comment_vec).expect("Can not serialize comment_vec");
+    print!("{}", json);
 }
 
 pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) {

@@ -110,6 +110,11 @@ async fn main() -> Result<()> {
             foe.then(|| panic_if_err(&entry));
             quiet.not().then(|| display::show_post_meta(style, &entry));
         }
+        _ if let Some(id) = parser::show_post_comment(&args) => {
+            let comment_vec = Post::new(pat?).get_comment_list(id).await;
+            foe.then(|| panic_if_err(&comment_vec));
+            quiet.not().then(|| display::show_post_comment(style, &comment_vec, rev));
+        }
         _ if let Some((skip, take)) = parser::list_post(&args) => {
             let meta_vec = Post::new(pat?).get_meta_list(skip,take).await;
             foe.then(|| panic_if_err(&meta_vec));
