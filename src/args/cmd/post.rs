@@ -14,8 +14,9 @@ pub struct Opt {
     /// Show metadata of a specific post
     ///   Example: cnb --id 114514 post --show-meta
     ///     You should also specify the id of the post via --id
+    ///     *
     #[arg(long)]
-    #[arg(short = 'm')]
+    #[arg(visible_alias = "sm")]
     pub show_meta: bool,
 
     #[arg(verbatim_doc_comment)]
