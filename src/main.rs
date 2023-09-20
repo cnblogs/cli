@@ -63,9 +63,7 @@ async fn main() -> Result<()> {
             quiet.not().then(|| display::logout(style, cfg_path));
         }
         _ if parser::user_info(&args) => {
-            let user_info = try {
-                User::new(pat?).get_info().await?
-            };
+            let user_info = User::new(pat?).get_info().await;
             foe.then(|| panic_if_err(&user_info));
             quiet.not().then(|| display::user_info(style, &user_info));
         }
@@ -103,19 +101,19 @@ async fn main() -> Result<()> {
             quiet.not().then(|| display::comment_ing(style, &content));
         }
         _ if let Some(id) = parser::show_post(&args) => {
-            let entry = try { Post::new(pat?).get_one(id).await? };
+            let entry = Post::new(pat?).get_one(id).await;
             foe.then(|| panic_if_err(&entry));
             quiet.not().then(|| display::show_post(style, &entry));
         }
         _ if let Some(id) = parser::show_post_meta(&args) => {
-            let entry = try { Post::new(pat?).get_one(id).await? };
+            let entry = Post::new(pat?).get_one(id).await;
             foe.then(|| panic_if_err(&entry));
             quiet.not().then(|| display::show_post_meta(style, &entry));
         }
         _ if let Some((skip, take)) = parser::list_post(&args) => {
-            let result = try { Post::new(pat?).get_meta_list(skip, take).await? };
-            foe.then(|| panic_if_err(&result));
-            quiet.not().then(|| display::list_post(style, &result, rev));
+            let meta_vec = Post::new(pat?).get_meta_list(skip,take).await;
+            foe.then(|| panic_if_err(&meta_vec));
+            quiet.not().then(|| display::list_post(style, &meta_vec, rev));
         }
         _ if let Some(id) = parser::delete_post(&args) => {
             let id = try {
@@ -126,24 +124,22 @@ async fn main() -> Result<()> {
             quiet.not().then(|| display::delete_post(style, &id));
         }
         _ if let Some((kw, skip, take)) = parser::search_post(&args) => {
-            let result = try { Post::new(pat?).search(skip, take, kw).await? };
+            let result = Post::new(pat?).search(skip, take, kw).await;
             foe.then(|| panic_if_err(&result));
             quiet.not().then(|| display::search_post(style, &result, rev));
         }
         _ if let Some((title, body, publish)) = parser::create_post(&args) => {
-            let id = try { Post::new(pat?).create(title, body, publish).await? };
+            let id = Post::new(pat?).create(title, body, publish).await;
             foe.then(|| panic_if_err(&id));
             quiet.not().then(|| display::create_post(style, &id));
         }
         _ if let Some((id, title, body, publish)) = parser::update_post(&args) => {
-            let id = try { Post::new(pat?).update(id, title, body, publish).await? };
+            let id = Post::new(pat?).update(id, title, body, publish).await;
             foe.then(|| panic_if_err(&id));
             quiet.not().then(|| display::update_post(style, &id));
         }
         _ if let Some((skip, take)) = parser::list_news(&args) => {
-            let news_vec = try {
-                News::new(pat?).get_list(skip, take).await?
-            };
+            let news_vec = News::new(pat?).get_list(skip, take).await;
             foe.then(|| panic_if_err(&news_vec));
             quiet.not().then(|| display::list_news(style, &news_vec, rev));
         }
