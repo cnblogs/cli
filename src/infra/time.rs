@@ -38,7 +38,7 @@ where
     let diff = current_time.clone() - time_to_fmt.clone();
     match diff {
         // In the future
-        _ if diff.num_milliseconds() < 0 => time_to_fmt.format("%Y-%m-%d %H:%M").to_string(),
+        _ if diff.num_milliseconds() < 0 => time_to_fmt.format("%y-%-m-%-d %-H:%M").to_string(),
         // Same year...
         _ if time_to_fmt.year() != current_time.year() => {
             time_to_fmt.format("%Y-%m-%d").to_string()
