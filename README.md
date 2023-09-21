@@ -64,11 +64,11 @@ cargo build -r
 
 Or get binaries from [CI](https://github.com/cnblogs/cli/actions) artifacts.
 
-### License
+## License
 
 [MIT](https://raw.githubusercontent.com/cnblogs/cli/main/LICENSE)
 
-### Feedback
+## Feedback
 
 We’d love to hear your thoughts on this project. Feel free to drop us a note!
 
