@@ -1,10 +1,23 @@
-use chrono::{DateTime, Datelike, TimeZone, Timelike};
+use crate::args::TimeStyle;
+use chrono::{DateTime, Datelike, Local, TimeZone, Timelike, Utc};
 use std::fmt::Display;
+
+pub fn display_cnb_time(time_str: &str, time_style: &TimeStyle) -> String {
+    let rfc3339 = patch_rfc3339(time_str);
+    let dt = DateTime::parse_from_rfc3339(&rfc3339)
+        .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
+        .with_timezone(&Utc);
+
+    match time_style {
+        TimeStyle::Friendly => fmt_time_to_string_friendly(dt.into(), Local::now()),
+        TimeStyle::Normal => dt.format("%y-%-m-%-d %-H:%M").to_string(),
+    }
+}
 
 // HACK:
 // Sometimes cnblogs' web API returns time string like: "2023-09-12T14:07:00" or "2019-02-06T08:45:53.94"
 // This will patch it to standard RFC3339 format
-pub fn patch_rfc3339(time_str: &str) -> String {
+fn patch_rfc3339(time_str: &str) -> String {
     if time_str.len() != 25 {
         let u8vec: Vec<_> = time_str.bytes().take(19).collect();
         format!(
@@ -17,7 +30,7 @@ pub fn patch_rfc3339(time_str: &str) -> String {
     }
 }
 
-pub fn fmt_time_to_string_friendly<T>(time_to_fmt: DateTime<T>, current_time: DateTime<T>) -> String
+fn fmt_time_to_string_friendly<T>(time_to_fmt: DateTime<T>, current_time: DateTime<T>) -> String
 where
     T: TimeZone,
     <T as TimeZone>::Offset: Display,

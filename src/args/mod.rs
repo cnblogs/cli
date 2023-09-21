@@ -11,6 +11,12 @@ pub enum Style {
     Json,
 }
 
+#[derive(Clone, Debug, Parser, ValueEnum)]
+pub enum TimeStyle {
+    Friendly,
+    Normal,
+}
+
 #[derive(Debug, Parser)]
 #[command(author, about, long_about = None, version)]
 pub struct Args {
@@ -80,6 +86,18 @@ pub struct Args {
     #[arg(default_value_t = Style::Colorful)]
     #[arg(value_name = "NAME")]
     pub style: Style,
+
+    #[arg(verbatim_doc_comment)]
+    /// Configure the time style
+    ///   Example: cnb --style normal ing list
+    ///     This option does not affect the output of '--style json'
+    ///     *
+    #[arg(long)]
+    #[arg(value_enum)]
+    #[arg(hide_possible_values = true)]
+    #[arg(default_value_t = TimeStyle::Friendly)]
+    #[arg(value_name = "NAME")]
+    pub time_style: TimeStyle,
 
     #[arg(verbatim_doc_comment)]
     /// Fail if error occurred

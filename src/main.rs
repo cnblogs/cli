@@ -47,6 +47,7 @@ async fn main() -> Result<()> {
 
     let pat = args.with_pat.clone().or_eval_result(session::get_pat);
     let style = &args.style;
+    let time_style = &args.time_style;
     let rev = args.rev;
     let foe = args.fail_on_error;
     let quiet = args.quiet;
@@ -82,7 +83,7 @@ async fn main() -> Result<()> {
                     .collect::<Result<Vec<_>>>()?
             };
             foe.then(|| panic_if_err(&ing_with_comment_list));
-            quiet.not().then(|| display::list_ing(style, &ing_with_comment_list, rev, align));
+            quiet.not().then(|| display::list_ing(style, time_style, &ing_with_comment_list, rev, align));
         }
         _ if let Some(content) = parser::publish_ing(&args) => {
             let content = try {
@@ -108,15 +109,15 @@ async fn main() -> Result<()> {
         _ if let Some(id) = parser::show_post_meta(&args) => {
             let entry = Post::new(pat?).get_one(id).await;
             foe.then(|| panic_if_err(&entry));
-            quiet.not().then(|| display::show_post_meta(style, &entry));
+            quiet.not().then(|| display::show_post_meta(style, time_style, &entry));
         }
         _ if let Some(id) = parser::show_post_comment(&args) => {
             let comment_vec = Post::new(pat?).get_comment_list(id).await;
             foe.then(|| panic_if_err(&comment_vec));
-            quiet.not().then(|| display::show_post_comment(style, &comment_vec, rev));
+            quiet.not().then(|| display::show_post_comment(style, time_style, &comment_vec, rev));
         }
         _ if let Some((skip, take)) = parser::list_post(&args) => {
-            let meta_vec = Post::new(pat?).get_meta_list(skip,take).await;
+            let meta_vec = Post::new(pat?).get_meta_list(skip, take).await;
             foe.then(|| panic_if_err(&meta_vec));
             quiet.not().then(|| display::list_post(style, &meta_vec, rev));
         }
@@ -146,7 +147,7 @@ async fn main() -> Result<()> {
         _ if let Some((skip, take)) = parser::list_news(&args) => {
             let news_vec = News::new(pat?).get_list(skip, take).await;
             foe.then(|| panic_if_err(&news_vec));
-            quiet.not().then(|| display::list_news(style, &news_vec, rev));
+            quiet.not().then(|| display::list_news(style, time_style, &news_vec, rev));
         }
 
         _ if no_operation(&args) => {

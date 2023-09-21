@@ -7,11 +7,11 @@ use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
+use crate::args::TimeStyle;
 use crate::infra::iter::IteratorExt;
 use crate::infra::str::StrExt;
-use crate::infra::time::{fmt_time_to_string_friendly, patch_rfc3339};
+use crate::infra::time::display_cnb_time;
 use anyhow::Result;
-use chrono::{DateTime, Local, Utc};
 use colored::Colorize;
 use std::fmt::Display;
 use std::ops::Not;
@@ -54,6 +54,7 @@ pub fn user_info(info: &Result<UserInfo>) {
 }
 
 pub fn list_ing(
+    time_style: &TimeStyle,
     ing_with_comment_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
     rev: bool,
     align: bool,
@@ -67,15 +68,9 @@ pub fn list_ing(
         .iter()
         .dyn_rev(rev)
         .for_each(|(ing, comment_list)| {
-            let create_time = {
-                let rfc3339 = patch_rfc3339(&ing.create_time);
-                let dt = DateTime::parse_from_rfc3339(&rfc3339)
-                    .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
-                    .with_timezone(&Utc);
-                fmt_time_to_string_friendly(dt.into(), Local::now())
-            };
-
+            let create_time = display_cnb_time(&ing.create_time, time_style);
             print!("{}", create_time);
+
             let send_from_mark = match ing.send_from {
                 IngSendFrom::Cli => Some("CLI"),
                 IngSendFrom::CellPhone => Some("Mobile"),
@@ -154,7 +149,7 @@ pub fn show_post(entry: &Result<PostEntry>) {
     }
 }
 
-pub fn show_post_meta(entry: &Result<PostEntry>) {
+pub fn show_post_meta(time_style: &TimeStyle, entry: &Result<PostEntry>) {
     let entry = match entry {
         Ok(o) => o,
         Err(e) => return println_err(e),
@@ -186,39 +181,25 @@ pub fn show_post_meta(entry: &Result<PostEntry>) {
             println!("Tags   {}", tags_text);
         }
     }
-    let create_time = {
-        let rfc3339 = patch_rfc3339(&entry.create_time);
-        let dt = DateTime::parse_from_rfc3339(&rfc3339)
-            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
-            .with_timezone(&Utc);
-        fmt_time_to_string_friendly(dt.into(), Local::now())
-    };
+    let create_time = display_cnb_time(&entry.create_time, time_style);
     println!("Create {}", create_time);
-    let modify_time = {
-        let rfc3339 = patch_rfc3339(&entry.modify_time);
-        let dt = DateTime::parse_from_rfc3339(&rfc3339)
-            .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
-            .with_timezone(&Utc);
-        fmt_time_to_string_friendly(dt.into(), Local::now())
-    };
+    let modify_time = display_cnb_time(&entry.modify_time, time_style);
     println!("Modify {}", modify_time);
     println!("Link   https:{}", entry.url);
 }
 
-pub fn show_post_comment(comment_list: &Result<Vec<PostCommentEntry>>, rev: bool) {
+pub fn show_post_comment(
+    time_style: &TimeStyle,
+    comment_list: &Result<Vec<PostCommentEntry>>,
+    rev: bool,
+) {
     let comment_list = match comment_list {
         Ok(entry) => entry,
         Err(e) => return println_err(e),
     };
 
     comment_list.iter().dyn_rev(rev).for_each(|comment| {
-        let create_time = {
-            let rfc3339 = patch_rfc3339(&comment.create_time);
-            let dt = DateTime::parse_from_rfc3339(&rfc3339)
-                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
-                .with_timezone(&Utc);
-            fmt_time_to_string_friendly(dt.into(), Local::now())
-        };
+        let create_time = display_cnb_time(&comment.create_time, time_style);
         println!("{} {}F", create_time, comment.floor);
         println!("  {} {}", comment.user_name, comment.content);
     })
@@ -270,21 +251,14 @@ pub fn println_result<T: Display>(result: &Result<T>) {
     }
 }
 
-pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) {
+pub fn list_news(time_style: &TimeStyle, news_list: &Result<Vec<NewsEntry>>, rev: bool) {
     let news_list = match news_list {
         Ok(o) => o,
         Err(e) => return println_err(e),
     };
 
     news_list.iter().dyn_rev(rev).for_each(|news| {
-        let create_time = {
-            let rfc3339 = patch_rfc3339(&news.create_time);
-            let dt = DateTime::parse_from_rfc3339(&rfc3339)
-                .unwrap_or_else(|_| panic!("Invalid RFC3339: {}", rfc3339))
-                .with_timezone(&Utc);
-            fmt_time_to_string_friendly(dt.into(), Local::now())
-        };
-
+        let create_time = display_cnb_time(&news.create_time, time_style);
         let url = format!("https://news.cnblogs.com/n/{}", news.id);
         println!("{} {}", create_time, url);
         println!("  {}", news.title);
