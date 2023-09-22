@@ -17,6 +17,7 @@ jobs:
           # aarch64
           - { os: macos-11    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-11    }
           - { os: macos-12    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-12    }
+          - { os: macos-13    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-13    }
           # amd64
           - { os: macos-12    , target: x86_64-apple-darwin      , alias: amd64-darwin-macos-unknown }
           - { os: ubuntu-20.04, target: x86_64-unknown-linux-gnu , alias: amd64-gnu-ubuntu-20.04     }
