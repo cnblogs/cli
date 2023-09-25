@@ -156,7 +156,13 @@ async fn main() -> Result<()> {
         _ => "Invalid usage, follow '--help' for more information".to_owned()
     };
 
-    print!("{}", output);
+    if output.ends_with("\n\n") {
+        print!("{}", &output[..output.len() - 1]);
+    } else if output.ends_with('\n') {
+        print!("{}", output);
+    } else {
+        println!("{}", output);
+    }
 
     ().into_ok()
 }
