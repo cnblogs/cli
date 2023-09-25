@@ -11,6 +11,7 @@ use crate::args::TimeStyle;
 use crate::infra::iter::IteratorExt;
 use crate::infra::result::IntoResult;
 use crate::infra::str::StrExt;
+use crate::infra::terminal::get_term_width;
 use crate::infra::time::display_cnb_time;
 use anyhow::{Context, Result};
 use std::fmt::{Display, Write};
@@ -109,11 +110,7 @@ pub fn list_ing(
                 writeln!(buf, " # {}", ing.id)?;
                 let content = if align {
                     let user_name_width = ing.user_name.width_cjk();
-                    let term_width = terminal_size()
-                        .with_context(|| "Can not get terminal size")?
-                        .0
-                         .0 as usize;
-                    let left_width = term_width.saturating_sub(user_name_width + 3);
+                    let left_width = get_term_width().saturating_sub(user_name_width + 3);
                     fmt_content(&ing.content)
                         .width_split(left_width)
                         .map_or_else(
@@ -265,7 +262,6 @@ pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) -> Result<
     };
 
     entry_list.iter().dyn_rev(rev).try_fold(
-        //TODO: formatln! macro
         format!("{}/{}\n", entry_list.len(), total_count),
         |mut buf, entry| try {
             {

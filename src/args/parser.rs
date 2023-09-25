@@ -396,7 +396,7 @@ pub fn create_post(args: &Args) -> Option<(&String, &String, bool)> {
     .into_some()
 }
 
-// TODO
+// TODO: fix warn
 #[allow(clippy::type_complexity)]
 pub fn update_post(
     args: &Args,

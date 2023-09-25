@@ -5,5 +5,6 @@ pub mod json;
 pub mod option;
 pub mod result;
 pub mod str;
+pub mod terminal;
 pub mod time;
 pub mod vec;
