@@ -20,12 +20,27 @@ use crate::infra::result::IntoResult;
 use anyhow::Result;
 use clap::CommandFactory;
 use clap::Parser;
+use colored::Colorize;
 use std::env;
 
 pub mod api;
 pub mod args;
 pub mod display;
 pub mod infra;
+
+fn show_non_printable_chars(text: String) -> String {
+    #[inline]
+    fn make_red(str: &str) -> String {
+        format!("{}", str.red())
+    }
+
+    text.replace(' ', &make_red("·"))
+        .replace('\0', &make_red("␀\0"))
+        .replace('\t', &make_red("␉\t"))
+        .replace('\n', &make_red("␊\n"))
+        .replace('\r', &make_red("␍\r"))
+        .replace("\r\n", &make_red("␍␊\r\n"))
+}
 
 fn panic_if_err<T>(result: &Result<T>) {
     if let Err(e) = result {
@@ -160,13 +175,22 @@ async fn main() -> Result<()> {
         return ().into_ok();
     }
 
-    if output.ends_with("\n\n") {
-        print!("{}", &output[..output.len() - 1]);
-    } else if output.ends_with('\n') {
-        print!("{}", output);
-    } else {
-        println!("{}", output);
-    }
+    let output = {
+        let output = if output.ends_with("\n\n") {
+            output[..output.len() - 1].to_owned()
+        } else if output.ends_with('\n') {
+            output
+        } else {
+            format!("{}\n", output)
+        };
+        if args.debug {
+            show_non_printable_chars(output)
+        } else {
+            output
+        }
+    };
+
+    print!("{}", output);
 
     ().into_ok()
 }
