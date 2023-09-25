@@ -13,11 +13,10 @@ use crate::infra::result::IntoResult;
 use crate::infra::str::StrExt;
 use crate::infra::terminal::get_term_width;
 use crate::infra::time::display_cnb_time;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use std::fmt::{Display, Write};
 use std::ops::Not;
 use std::path::PathBuf;
-use terminal_size::terminal_size;
 use unicode_width::UnicodeWidthStr;
 
 #[inline]
@@ -298,7 +297,6 @@ pub fn search_post(result: &Result<(Vec<usize>, usize)>, rev: bool) -> Result<St
     )
 }
 
-// TODO: auto align
 pub fn list_news(
     time_style: &TimeStyle,
     news_list: &Result<Vec<NewsEntry>>,
@@ -320,7 +318,20 @@ pub fn list_news(
                 let url = format!("https://news.cnblogs.com/n/{}", news.id);
                 writeln!(buf, "{} {}", create_time, url)?;
                 writeln!(buf, "  {}", news.title)?;
-                writeln!(buf, "    {}...", news.summary)?;
+
+                let summary = {
+                    let summary = format!("{}...", news.summary);
+                    summary.width_split(get_term_width() - 4).map_or_else(
+                        || summary.clone(),
+                        |vec| {
+                            vec.into_iter()
+                                .map(|line| format!("    {}", line))
+                                .collect::<Vec<_>>()
+                                .join("\n")
+                        },
+                    )
+                };
+                writeln!(buf, "{}", summary)?;
             }
             buf
         })
