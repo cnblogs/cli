@@ -1,3 +1,4 @@
+use crate::api::fav::get_list::FavEntry;
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
@@ -130,6 +131,17 @@ pub fn fmt_result<T: Serialize, E: ToString>(result: &Result<T, E>) -> String {
 }
 
 pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) -> Result<String> {
+    let news_list = match news_list {
+        Ok(o) => o,
+        Err(e) => return fmt_err(e).into_ok(),
+    };
+
+    let vec = news_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+
+    json::serialize(vec.clone())
+}
+
+pub fn list_fav(news_list: &Result<Vec<FavEntry>>, rev: bool) -> Result<String> {
     let news_list = match news_list {
         Ok(o) => o,
         Err(e) => return fmt_err(e).into_ok(),

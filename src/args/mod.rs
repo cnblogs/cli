@@ -17,6 +17,7 @@ pub enum TimeStyle {
     Normal,
 }
 
+// TODO: flatten options in struct?
 #[derive(Debug, Parser)]
 #[command(author, about, long_about = None, version)]
 pub struct Args {

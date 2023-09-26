@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod fav;
 pub mod ing;
 pub mod news;
 pub mod post;

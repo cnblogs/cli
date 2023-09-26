@@ -1,3 +1,4 @@
+pub mod fav;
 pub mod ing;
 pub mod news;
 pub mod post;
@@ -19,4 +20,7 @@ pub enum Cmd {
     /// News operations
     #[clap(visible_alias = "n")]
     News(news::Opt),
+    /// Favorite operations
+    #[clap(visible_alias = "f")]
+    Fav(fav::Opt),
 }

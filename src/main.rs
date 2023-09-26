@@ -7,6 +7,7 @@
 #![warn(clippy::all, clippy::nursery, clippy::cargo_common_metadata)]
 
 use crate::api::auth::session;
+use crate::api::fav::Fav;
 use crate::api::ing::Ing;
 use crate::api::news::News;
 use crate::api::post::Post;
@@ -163,6 +164,11 @@ async fn main() -> Result<()> {
             let news_vec = News::new(pat?).get_list(skip, take).await;
             foe.then(|| panic_if_err(&news_vec));
             display::list_news(style, time_style, &news_vec, rev)?
+        }
+        _ if let Some((skip, take)) = parser::list_fav(&args) => {
+            let fav_vec = Fav::new(pat?).get_list(skip, take).await;
+            foe.then(|| panic_if_err(&fav_vec));
+            display::list_fav(style, time_style, &fav_vec, rev)?
         }
 
         _ if no_operation(&args) =>

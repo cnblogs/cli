@@ -1,3 +1,4 @@
+use crate::api::fav::get_list::FavEntry;
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
 use crate::api::ing::{
@@ -332,6 +333,50 @@ pub fn list_news(
                     )
                 };
                 writeln!(buf, "{}", summary)?;
+            }
+            buf
+        })
+        .try_fold(String::new(), |mut acc, buf: Result<String>| try {
+            write!(&mut acc, "\n{}", buf?)?;
+            acc
+        })
+}
+
+pub fn list_fav(
+    time_style: &TimeStyle,
+    fav_list: &Result<Vec<FavEntry>>,
+    rev: bool,
+) -> Result<String> {
+    let fav_list = match fav_list {
+        Ok(o) => o,
+        Err(e) => return fmt_err(e).into_ok(),
+    };
+
+    fav_list
+        .iter()
+        .dyn_rev(rev)
+        .map(|fav| try {
+            let mut buf = String::new();
+            {
+                let buf = &mut buf;
+                let create_time = display_cnb_time(&fav.create_time, time_style);
+                writeln!(buf, "{} {}", create_time, fav.url)?;
+                writeln!(buf, "  {}", fav.title)?;
+
+                let summary = {
+                    fav.summary.width_split(get_term_width() - 4).map_or_else(
+                        || fav.summary.clone(),
+                        |vec| {
+                            vec.into_iter()
+                                .map(|line| format!("    {}", line))
+                                .collect::<Vec<_>>()
+                                .join("\n")
+                        },
+                    )
+                };
+                if summary.is_empty().not() {
+                    writeln!(buf, "{}", summary)?;
+                }
             }
             buf
         })

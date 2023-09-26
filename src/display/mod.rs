@@ -1,3 +1,4 @@
+use crate::api::fav::get_list::FavEntry;
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
@@ -158,5 +159,18 @@ pub fn list_news(
         Style::Colorful => colorful::list_news(time_style, news_list, rev),
         Style::Normal => normal::list_news(time_style, news_list, rev),
         Style::Json => json::list_news(news_list, rev),
+    }
+}
+
+pub fn list_fav(
+    style: &Style,
+    time_style: &TimeStyle,
+    fav_list: &Result<Vec<FavEntry>>,
+    rev: bool,
+) -> Result<String> {
+    match style {
+        Style::Colorful => colorful::list_fav(time_style, fav_list, rev),
+        Style::Normal => normal::list_fav(time_style, fav_list, rev),
+        Style::Json => json::list_fav(fav_list, rev),
     }
 }
