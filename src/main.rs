@@ -14,12 +14,13 @@ use crate::api::user::User;
 use crate::args::parser::no_operation;
 use crate::args::{parser, Args};
 use crate::infra::fp::currying::eq;
+use crate::infra::infer::infer;
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::option::OptionExt;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
-use clap::CommandFactory;
 use clap::Parser;
+use clap::{Command, CommandFactory};
 use colored::Colorize;
 use std::env;
 
@@ -164,10 +165,8 @@ async fn main() -> Result<()> {
             display::list_news(style, time_style, &news_vec, rev)?
         }
 
-        _ if no_operation(&args) => {
-            Args::command().print_help()?;
-            return ().into_ok();
-        }
+        _ if no_operation(&args) =>
+            infer::<Command>(Args::command()).render_help().to_string(),
         _ => "Invalid usage, follow '--help' for more information".to_owned()
     };
 

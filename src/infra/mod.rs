@@ -1,5 +1,6 @@
 pub mod fp;
 pub mod http;
+pub mod infer;
 pub mod iter;
 pub mod json;
 pub mod option;
