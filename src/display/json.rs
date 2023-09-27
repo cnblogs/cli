@@ -5,7 +5,6 @@ use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
-use crate::infra::iter::IteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
@@ -37,17 +36,14 @@ pub fn user_info(info: &Result<UserInfo>) -> String {
 }
 
 pub fn list_ing(
-    ing_with_comment_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
-    rev: bool,
+    ing_with_comment_list: Result<impl ExactSizeIterator<Item = (IngEntry, Vec<IngCommentEntry>)>>,
 ) -> Result<String> {
     let ing_with_comment_list = match ing_with_comment_list {
         Ok(o) => o,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(&e).into_ok(),
     };
 
     let json_vec = ing_with_comment_list
-        .iter()
-        .dyn_rev(rev)
         .map(|(entry, comment_list)| {
             json!({
                 "entry": entry,
@@ -74,25 +70,24 @@ pub fn show_post_meta(entry: &Result<PostEntry>) -> String {
 }
 
 pub fn show_post_comment(
-    comment_list: &Result<Vec<PostCommentEntry>>,
-    rev: bool,
+    comment_iter: Result<impl ExactSizeIterator<Item = PostCommentEntry>>,
 ) -> Result<String> {
-    let comment_list = match comment_list {
+    let comment_iter = match comment_iter {
         Ok(entry) => entry,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(&e).into_ok(),
     };
 
-    let comment_vec = comment_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+    let comment_vec = comment_iter.collect::<Vec<_>>();
     json::serialize(comment_vec)
 }
 
-pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) -> String {
-    let (entry_list, total_count) = match result {
+pub fn list_post(result: Result<(impl ExactSizeIterator<Item = PostEntry>, usize)>) -> String {
+    let (entry_iter, total_count) = match result {
         Ok(o) => o,
-        Err(e) => return fmt_err(e),
+        Err(e) => return fmt_err(&e),
     };
 
-    let vec = entry_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+    let vec = entry_iter.collect::<Vec<_>>();
     let json = json!({
        "listed_count": vec.len(),
        "total_count": total_count,
@@ -101,13 +96,13 @@ pub fn list_post(result: &Result<(Vec<PostEntry>, usize)>, rev: bool) -> String 
     json.to_string()
 }
 
-pub fn search_post(result: &Result<(Vec<usize>, usize)>, rev: bool) -> String {
-    let (id_list, total_count) = match result {
+pub fn search_post(result: Result<(impl ExactSizeIterator<Item = usize>, usize)>) -> String {
+    let (id_iter, total_count) = match result {
         Ok(o) => o,
-        Err(e) => return fmt_err(e),
+        Err(e) => return fmt_err(&e),
     };
 
-    let id_list = id_list.iter().dyn_rev(rev).collect::<Vec<&usize>>();
+    let id_list = id_iter.collect::<Vec<usize>>();
     let json = json!({
        "listed_count": id_list.len(),
        "total_count": total_count,
@@ -130,24 +125,24 @@ pub fn fmt_result<T: Serialize, E: ToString>(result: &Result<T, E>) -> String {
     json.to_string()
 }
 
-pub fn list_news(news_list: &Result<Vec<NewsEntry>>, rev: bool) -> Result<String> {
-    let news_list = match news_list {
+pub fn list_news(news_iter: Result<impl ExactSizeIterator<Item = NewsEntry>>) -> Result<String> {
+    let news_iter = match news_iter {
         Ok(o) => o,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(&e).into_ok(),
     };
 
-    let vec = news_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+    let vec = news_iter.collect::<Vec<_>>();
 
-    json::serialize(vec.clone())
+    json::serialize(vec)
 }
 
-pub fn list_fav(news_list: &Result<Vec<FavEntry>>, rev: bool) -> Result<String> {
-    let news_list = match news_list {
+pub fn list_fav(fav_iter: Result<impl ExactSizeIterator<Item = FavEntry>>) -> Result<String> {
+    let fav_iter = match fav_iter {
         Ok(o) => o,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(&e).into_ok(),
     };
 
-    let vec = news_list.iter().dyn_rev(rev).collect::<Vec<_>>();
+    let vec = fav_iter.collect::<Vec<_>>();
 
-    json::serialize(vec.clone())
+    json::serialize(vec)
 }

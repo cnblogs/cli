@@ -16,7 +16,7 @@ use crate::args::parser::no_operation;
 use crate::args::{parser, Args};
 use crate::infra::fp::currying::eq;
 use crate::infra::infer::infer;
-use crate::infra::iter::IntoIteratorExt;
+use crate::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};
 use crate::infra::option::OptionExt;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
@@ -85,7 +85,7 @@ async fn main() -> Result<()> {
             display::user_info(style, &user_info)?
         }
         _ if let Some((skip, take, r#type, align)) = parser::list_ing(&args) => {
-            let ing_with_comment_list = try {
+            let ing_with_comment_iter = infer::<Result<_, _>>(try {
                 let ing_api = Ing::new(pat?);
                 let ing_vec = ing_api.get_list(skip, take, &r#type).await?;
                 ing_vec.into_iter()
@@ -97,9 +97,9 @@ async fn main() -> Result<()> {
                     .await
                     .into_iter()
                     .collect::<Result<Vec<_>>>()?
-            };
-            foe.then(|| panic_if_err(&ing_with_comment_list));
-            display::list_ing(style, time_style, &ing_with_comment_list, rev, align)?
+            }).map(|vec| vec.into_iter().dyn_rev(rev));
+            foe.then(|| panic_if_err(&ing_with_comment_iter));
+            display::list_ing(style, time_style, ing_with_comment_iter, align)?
         }
         _ if let Some(content) = parser::publish_ing(&args) => {
             let content = try {
@@ -128,14 +128,19 @@ async fn main() -> Result<()> {
             display::show_post_meta(style, time_style, &entry)?
         }
         _ if let Some(id) = parser::show_post_comment(&args) => {
-            let comment_vec = Post::new(pat?).get_comment_list(id).await;
-            foe.then(|| panic_if_err(&comment_vec));
-            display::show_post_comment(style, time_style, &comment_vec, rev)?
+            let comment_iter = Post::new(pat?)
+                .get_comment_list(id).await
+                .map(|vec| vec.into_iter().dyn_rev(rev));
+            foe.then(|| panic_if_err(&comment_iter));
+            display::show_post_comment(style, time_style, comment_iter)?
         }
         _ if let Some((skip, take)) = parser::list_post(&args) => {
-            let meta_vec = Post::new(pat?).get_meta_list(skip, take).await;
-            foe.then(|| panic_if_err(&meta_vec));
-            display::list_post(style, &meta_vec, rev)?
+            let meta_iter = Post::new(pat?)
+                .get_meta_list(skip, take)
+                .await
+                .map(|(vec, count)| (vec.into_iter().dyn_rev(rev), count));
+            foe.then(|| panic_if_err(&meta_iter));
+            display::list_post(style, meta_iter)?
         }
         _ if let Some(id) = parser::delete_post(&args) => {
             let id = try {
@@ -146,9 +151,12 @@ async fn main() -> Result<()> {
             display::delete_post(style, &id)
         }
         _ if let Some((kw, skip, take)) = parser::search_post(&args) => {
-            let result = Post::new(pat?).search(skip, take, kw).await;
+            let result = Post::new(pat?)
+                .search(skip, take, kw)
+                .await
+                .map(|(vec, count)| (vec.into_iter().dyn_rev(rev), count));
             foe.then(|| panic_if_err(&result));
-            display::search_post(style, &result, rev)?
+            display::search_post(style, result)?
         }
         _ if let Some((title, body, publish)) = parser::create_post(&args) => {
             let id = Post::new(pat?).create(title, body, publish).await;
@@ -161,14 +169,20 @@ async fn main() -> Result<()> {
             display::update_post(style, &id)
         }
         _ if let Some((skip, take)) = parser::list_news(&args) => {
-            let news_vec = News::new(pat?).get_list(skip, take).await;
-            foe.then(|| panic_if_err(&news_vec));
-            display::list_news(style, time_style, &news_vec, rev)?
+            let news_iter = News::new(pat?)
+                .get_list(skip, take)
+                .await
+                .map(|vec| vec.into_iter().dyn_rev(rev));
+            foe.then(|| panic_if_err(&news_iter));
+            display::list_news(style, time_style, news_iter)?
         }
         _ if let Some((skip, take)) = parser::list_fav(&args) => {
-            let fav_vec = Fav::new(pat?).get_list(skip, take).await;
-            foe.then(|| panic_if_err(&fav_vec));
-            display::list_fav(style, time_style, &fav_vec, rev)?
+            let fav_iter = Fav::new(pat?)
+                .get_list(skip, take)
+                .await
+                .map(|vec| vec.into_iter().dyn_rev(rev));
+            foe.then(|| panic_if_err(&fav_iter));
+            display::list_fav(style, time_style, fav_iter)?
         }
 
         _ if no_operation(&args) =>

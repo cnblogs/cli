@@ -41,14 +41,13 @@ pub fn user_info(style: &Style, user_info: &Result<UserInfo>) -> Result<String> 
 pub fn list_ing(
     style: &Style,
     time_style: &TimeStyle,
-    ing_with_comment_list: &Result<Vec<(IngEntry, Vec<IngCommentEntry>)>>,
-    rev: bool,
+    ing_with_comment_iter: Result<impl ExactSizeIterator<Item = (IngEntry, Vec<IngCommentEntry>)>>,
     align: bool,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_ing(time_style, ing_with_comment_list, rev, align),
-        Style::Normal => normal::list_ing(time_style, ing_with_comment_list, rev, align),
-        Style::Json => json::list_ing(ing_with_comment_list, rev),
+        Style::Colorful => colorful::list_ing(time_style, ing_with_comment_iter, align),
+        Style::Normal => normal::list_ing(time_style, ing_with_comment_iter, align),
+        Style::Json => json::list_ing(ing_with_comment_iter),
     }
 }
 
@@ -91,25 +90,23 @@ pub fn show_post_meta(
 pub fn show_post_comment(
     style: &Style,
     time_style: &TimeStyle,
-    comment_list: &Result<Vec<PostCommentEntry>>,
-    rev: bool,
+    comment_iter: Result<impl ExactSizeIterator<Item = PostCommentEntry>>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::show_post_comment(time_style, comment_list, rev),
-        Style::Normal => normal::show_post_comment(time_style, comment_list, rev),
-        Style::Json => json::show_post_comment(comment_list, rev),
+        Style::Colorful => colorful::show_post_comment(time_style, comment_iter),
+        Style::Normal => normal::show_post_comment(time_style, comment_iter),
+        Style::Json => json::show_post_comment(comment_iter),
     }
 }
 
 pub fn list_post(
     style: &Style,
-    result: &Result<(Vec<PostEntry>, usize)>,
-    rev: bool,
+    result: Result<(impl ExactSizeIterator<Item = PostEntry>, usize)>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_post(result, rev),
-        Style::Normal => normal::list_post(result, rev),
-        Style::Json => json::list_post(result, rev).into_ok(),
+        Style::Colorful => colorful::list_post(result),
+        Style::Normal => normal::list_post(result),
+        Style::Json => json::list_post(result).into_ok(),
     }
 }
 
@@ -123,13 +120,12 @@ pub fn delete_post(style: &Style, result: &Result<usize>) -> String {
 
 pub fn search_post(
     style: &Style,
-    result: &Result<(Vec<usize>, usize)>,
-    rev: bool,
+    result: Result<(impl ExactSizeIterator<Item = usize>, usize)>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::search_post(result, rev),
-        Style::Normal => normal::search_post(result, rev),
-        Style::Json => json::search_post(result, rev).into_ok(),
+        Style::Colorful => colorful::search_post(result),
+        Style::Normal => normal::search_post(result),
+        Style::Json => json::search_post(result).into_ok(),
     }
 }
 
@@ -152,25 +148,23 @@ pub fn update_post(style: &Style, result: &Result<usize>) -> String {
 pub fn list_news(
     style: &Style,
     time_style: &TimeStyle,
-    news_list: &Result<Vec<NewsEntry>>,
-    rev: bool,
+    news_iter: Result<impl ExactSizeIterator<Item = NewsEntry>>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_news(time_style, news_list, rev),
-        Style::Normal => normal::list_news(time_style, news_list, rev),
-        Style::Json => json::list_news(news_list, rev),
+        Style::Colorful => colorful::list_news(time_style, news_iter),
+        Style::Normal => normal::list_news(time_style, news_iter),
+        Style::Json => json::list_news(news_iter),
     }
 }
 
 pub fn list_fav(
     style: &Style,
     time_style: &TimeStyle,
-    fav_list: &Result<Vec<FavEntry>>,
-    rev: bool,
+    fav_iter: Result<impl ExactSizeIterator<Item = FavEntry>>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_fav(time_style, fav_list, rev),
-        Style::Normal => normal::list_fav(time_style, fav_list, rev),
-        Style::Json => json::list_fav(fav_list, rev),
+        Style::Colorful => colorful::list_fav(time_style, fav_iter),
+        Style::Normal => normal::list_fav(time_style, fav_iter),
+        Style::Json => json::list_fav(fav_iter),
     }
 }
