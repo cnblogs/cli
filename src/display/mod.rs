@@ -16,25 +16,25 @@ mod normal;
 
 pub fn login(style: &Style, cfg_path: &Result<PathBuf>) -> String {
     match style {
-        Style::Colorful => colorful::login(cfg_path),
-        Style::Normal => normal::login(cfg_path),
-        Style::Json => json::login(cfg_path),
+        Style::Colorful => colorful::user::login(cfg_path),
+        Style::Normal => normal::user::login(cfg_path),
+        Style::Json => json::user::login(cfg_path),
     }
 }
 
 pub fn logout(style: &Style, cfg_path: &Result<PathBuf>) -> String {
     match style {
-        Style::Colorful => colorful::logout(cfg_path),
-        Style::Normal => normal::logout(cfg_path),
-        Style::Json => json::logout(cfg_path),
+        Style::Colorful => colorful::user::logout(cfg_path),
+        Style::Normal => normal::user::logout(cfg_path),
+        Style::Json => json::user::logout(cfg_path),
     }
 }
 
 pub fn user_info(style: &Style, user_info: &Result<UserInfo>) -> Result<String> {
     match style {
-        Style::Colorful => colorful::user_info(user_info),
-        Style::Normal => normal::user_info(user_info),
-        Style::Json => json::user_info(user_info).into_ok(),
+        Style::Colorful => colorful::user::user_info(user_info),
+        Style::Normal => normal::user::user_info(user_info),
+        Style::Json => json::user::user_info(user_info).into_ok(),
     }
 }
 
@@ -45,9 +45,9 @@ pub fn list_ing(
     align: bool,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_ing(time_style, ing_with_comment_iter, align),
-        Style::Normal => normal::list_ing(time_style, ing_with_comment_iter, align),
-        Style::Json => json::list_ing(ing_with_comment_iter),
+        Style::Colorful => colorful::ing::list_ing(time_style, ing_with_comment_iter, align),
+        Style::Normal => normal::ing::list_ing(time_style, ing_with_comment_iter, align),
+        Style::Json => json::ing::list_ing(ing_with_comment_iter),
     }
 }
 
@@ -69,9 +69,20 @@ pub fn comment_ing(style: &Style, result: &Result<&String>) -> String {
 
 pub fn show_post(style: &Style, entry: &Result<PostEntry>) -> Result<String> {
     match style {
-        Style::Colorful => colorful::show_post(entry),
-        Style::Normal => normal::show_post(entry),
-        Style::Json => json::show_post(entry).into_ok(),
+        Style::Colorful => colorful::post::show_post(entry),
+        Style::Normal => normal::post::show_post(entry),
+        Style::Json => json::post::show_post(entry).into_ok(),
+    }
+}
+
+pub fn list_post(
+    style: &Style,
+    result: Result<(impl ExactSizeIterator<Item = PostEntry>, usize)>,
+) -> Result<String> {
+    match style {
+        Style::Colorful => colorful::post::list_post(result),
+        Style::Normal => normal::post::list_post(result),
+        Style::Json => json::post::list_post(result).into_ok(),
     }
 }
 
@@ -81,9 +92,9 @@ pub fn show_post_meta(
     entry: &Result<PostEntry>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::show_post_meta(time_style, entry),
-        Style::Normal => normal::show_post_meta(time_style, entry),
-        Style::Json => json::show_post_meta(entry).into_ok(),
+        Style::Colorful => colorful::post::show_post_meta(time_style, entry),
+        Style::Normal => normal::post::show_post_meta(time_style, entry),
+        Style::Json => json::post::show_post_meta(entry).into_ok(),
     }
 }
 
@@ -93,20 +104,9 @@ pub fn show_post_comment(
     comment_iter: Result<impl ExactSizeIterator<Item = PostCommentEntry>>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::show_post_comment(time_style, comment_iter),
-        Style::Normal => normal::show_post_comment(time_style, comment_iter),
-        Style::Json => json::show_post_comment(comment_iter),
-    }
-}
-
-pub fn list_post(
-    style: &Style,
-    result: Result<(impl ExactSizeIterator<Item = PostEntry>, usize)>,
-) -> Result<String> {
-    match style {
-        Style::Colorful => colorful::list_post(result),
-        Style::Normal => normal::list_post(result),
-        Style::Json => json::list_post(result).into_ok(),
+        Style::Colorful => colorful::post::show_post_comment(time_style, comment_iter),
+        Style::Normal => normal::post::show_post_comment(time_style, comment_iter),
+        Style::Json => json::post::show_post_comment(comment_iter),
     }
 }
 
@@ -123,9 +123,9 @@ pub fn search_post(
     result: Result<(impl ExactSizeIterator<Item = usize>, usize)>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::search_post(result),
-        Style::Normal => normal::search_post(result),
-        Style::Json => json::search_post(result).into_ok(),
+        Style::Colorful => colorful::post::search_post(result),
+        Style::Normal => normal::post::search_post(result),
+        Style::Json => json::post::search_post(result).into_ok(),
     }
 }
 
@@ -151,9 +151,9 @@ pub fn list_news(
     news_iter: Result<impl ExactSizeIterator<Item = NewsEntry>>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_news(time_style, news_iter),
-        Style::Normal => normal::list_news(time_style, news_iter),
-        Style::Json => json::list_news(news_iter),
+        Style::Colorful => colorful::news::list_news(time_style, news_iter),
+        Style::Normal => normal::news::list_news(time_style, news_iter),
+        Style::Json => json::news::list_news(news_iter),
     }
 }
 
@@ -163,8 +163,8 @@ pub fn list_fav(
     fav_iter: Result<impl ExactSizeIterator<Item = FavEntry>>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::list_fav(time_style, fav_iter),
-        Style::Normal => normal::list_fav(time_style, fav_iter),
-        Style::Json => json::list_fav(fav_iter),
+        Style::Colorful => colorful::fav::list_fav(time_style, fav_iter),
+        Style::Normal => normal::fav::list_fav(time_style, fav_iter),
+        Style::Json => json::fav::list_fav(fav_iter),
     }
 }

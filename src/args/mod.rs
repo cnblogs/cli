@@ -80,7 +80,6 @@ pub struct GlobalOpt {
     pub quiet: bool,
 }
 
-// TODO: flatten options in struct?
 #[derive(Debug, Parser)]
 #[command(author, about, long_about = None, version)]
 pub struct Args {
