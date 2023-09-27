@@ -1,3 +1,4 @@
+use crate::args::cmd::post::{CreateCmd, UpdateCmd};
 use crate::args::parser::{get_skip, get_take};
 use crate::args::{cmd, Args, Cmd};
 use crate::infra::option::IntoOption;
@@ -154,7 +155,7 @@ pub fn delete_post(args: &Args) -> Option<usize> {
     .into_some()
 }
 
-pub fn create_post(args: &Args) -> Option<(&String, &String, bool)> {
+pub fn create_post(args: &Args) -> Option<&CreateCmd> {
     match args {
         Args {
             cmd:
@@ -165,29 +166,20 @@ pub fn create_post(args: &Args) -> Option<(&String, &String, bool)> {
                     list: false,
                     delete: false,
                     search: None,
-                    cmd:
-                        Some(cmd::post::Cmd::Create {
-                            title,
-                            body,
-                            publish,
-                        }),
+                    cmd: Some(cmd::post::Cmd::Create(cmd)),
                 })),
             id: None,
             rev: _,
             skip: None,
             take: None,
             global_opt: _,
-        } => (title, body, *publish),
+        } => cmd,
         _ => return None,
     }
     .into_some()
 }
 
-// TODO: fix warn
-#[allow(clippy::type_complexity)]
-pub fn update_post(
-    args: &Args,
-) -> Option<(usize, &Option<String>, &Option<String>, &Option<bool>)> {
+pub fn update_post(args: &Args) -> Option<(usize, &UpdateCmd)> {
     match args {
         Args {
             cmd:
@@ -198,19 +190,14 @@ pub fn update_post(
                     list: false,
                     delete: false,
                     search: None,
-                    cmd:
-                        Some(cmd::post::Cmd::Update {
-                            title,
-                            body,
-                            publish,
-                        }),
+                    cmd: Some(cmd::post::Cmd::Update(cmd)),
                 })),
             id: Some(id),
             rev: _,
             skip: None,
             take: None,
             global_opt: _,
-        } => (*id, title, body, publish),
+        } => (*id, cmd),
         _ => return None,
     }
     .into_some()

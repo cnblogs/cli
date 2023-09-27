@@ -12,6 +12,7 @@ use crate::api::ing::Ing;
 use crate::api::news::News;
 use crate::api::post::Post;
 use crate::api::user::User;
+use crate::args::cmd::post::{CreateCmd, UpdateCmd};
 use crate::args::parser::no_operation;
 use crate::args::{parser, Args};
 use crate::infra::fp::currying::eq;
@@ -159,12 +160,14 @@ async fn main() -> Result<()> {
             foe.then(|| panic_if_err(&result));
             display::search_post(style, result)?
         }
-        _ if let Some((title, body, publish)) = parser::post::create_post(&args) => {
-            let id = Post::new(pat?).create(title, body, publish).await;
+        _ if let Some(create_cmd) = parser::post::create_post(&args) => {
+            let CreateCmd { title, body, publish } = create_cmd;
+            let id = Post::new(pat?).create(title, body, *publish).await;
             foe.then(|| panic_if_err(&id));
             display::create_post(style, &id)
         }
-        _ if let Some((id, title, body, publish)) = parser::post::update_post(&args) => {
+        _ if let Some((id, update_cmd)) = parser::post::update_post(&args) => {
+            let UpdateCmd { title, body, publish } = update_cmd;
             let id = Post::new(pat?).update(id, title, body, publish).await;
             foe.then(|| panic_if_err(&id));
             display::update_post(style, &id)

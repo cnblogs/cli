@@ -17,7 +17,7 @@ pub enum TimeStyle {
     Normal,
 }
 
-#[derive(Debug, Parser)]
+#[derive(Parser, Debug)]
 pub struct GlobalOpt {
     #[arg(verbatim_doc_comment)]
     /// Execute with specific PAT
@@ -80,7 +80,7 @@ pub struct GlobalOpt {
     pub quiet: bool,
 }
 
-#[derive(Debug, Parser)]
+#[derive(Parser, Debug)]
 #[command(author, about, long_about = None, version)]
 pub struct Args {
     #[command(subcommand)]

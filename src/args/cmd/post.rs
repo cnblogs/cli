@@ -60,6 +60,57 @@ pub struct Opt {
     pub cmd: Option<Cmd>,
 }
 
+#[derive(Parser, Debug)]
+pub struct CreateCmd {
+    #[arg(verbatim_doc_comment)]
+    /// Set post title
+    ///   Example: cnb post create --title 'Title' --body 'Body'
+    #[arg(long)]
+    #[arg(value_name = "TITLE")]
+    pub title: String,
+
+    #[arg(verbatim_doc_comment)]
+    /// Set post body
+    ///   Example: cnb post create --title 'Title' --body 'Body'
+    #[arg(long)]
+    #[arg(value_name = "BODY")]
+    pub body: String,
+
+    #[arg(verbatim_doc_comment)]
+    /// Set post status to publish
+    ///   Example: cnb post create --title 'Title' --body 'Body' --publish
+    ///     *
+    #[arg(long)]
+    #[arg(visible_alias = "pub")]
+    pub publish: bool,
+}
+
+#[derive(Parser, Debug)]
+pub struct UpdateCmd {
+    #[arg(verbatim_doc_comment)]
+    /// Set post title
+    ///   Example: cnb --id 114514 post update --title 'Title'
+    #[arg(long)]
+    #[arg(value_name = "TITLE")]
+    pub title: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Set post body
+    ///   Example: cnb --id 114514 post update --body 'Body'
+    #[arg(long)]
+    #[arg(value_name = "BODY")]
+    pub body: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Set post publish state
+    ///   Example: cnb --id 114514 post update --publish true
+    ///     *
+    #[arg(long)]
+    #[arg(value_name = "BOOL")]
+    #[arg(visible_alias = "pub")]
+    pub publish: Option<bool>,
+}
+
 #[derive(Debug, Subcommand)]
 pub enum Cmd {
     #[clap(verbatim_doc_comment)]
@@ -67,57 +118,12 @@ pub enum Cmd {
     /// Example: cnb post create --title 'Title' --body 'Body'
     ///   *
     #[clap(visible_alias = "c")]
-    Create {
-        #[arg(verbatim_doc_comment)]
-        /// Set post title
-        ///   Example: cnb post create --title 'Title' --body 'Body'
-        #[arg(long)]
-        #[arg(value_name = "TITLE")]
-        title: String,
-
-        #[arg(verbatim_doc_comment)]
-        /// Set post body
-        ///   Example: cnb post create --title 'Title' --body 'Body'
-        #[arg(long)]
-        #[arg(value_name = "BODY")]
-        body: String,
-
-        #[arg(verbatim_doc_comment)]
-        /// Set post status to publish
-        ///   Example: cnb post create --title 'Title' --body 'Body' --publish
-        ///     *
-        #[arg(long)]
-        #[arg(visible_alias = "pub")]
-        publish: bool,
-    },
+    Create(CreateCmd),
     #[clap(verbatim_doc_comment)]
     /// Update post
     /// Example: cnb --id 114514 post update --title 'Title'
     ///   You should also specify the id of the post via --id
     ///   *
     #[clap(visible_alias = "u")]
-    Update {
-        #[arg(verbatim_doc_comment)]
-        /// Set post title
-        ///   Example: cnb --id 114514 post update --title 'Title'
-        #[arg(long)]
-        #[arg(value_name = "TITLE")]
-        title: Option<String>,
-
-        #[arg(verbatim_doc_comment)]
-        /// Set post body
-        ///   Example: cnb --id 114514 post update --body 'Body'
-        #[arg(long)]
-        #[arg(value_name = "BODY")]
-        body: Option<String>,
-
-        #[arg(verbatim_doc_comment)]
-        /// Set post publish state
-        ///   Example: cnb --id 114514 post update --publish true
-        ///     *
-        #[arg(long)]
-        #[arg(value_name = "BOOL")]
-        #[arg(visible_alias = "pub")]
-        publish: Option<bool>,
-    },
+    Update(UpdateCmd),
 }
