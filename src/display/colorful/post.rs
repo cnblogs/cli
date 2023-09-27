@@ -22,7 +22,6 @@ pub fn list_post(
             {
                 let buf = &mut buf;
                 write!(buf, "{} {}", "#".dimmed(), entry.id.to_string().dimmed())?;
-                write!(buf, " {}", entry.title.cyan().bold())?;
                 if entry.is_published {
                     write!(buf, " {}", "Pub".green())?;
                 } else {
@@ -31,6 +30,7 @@ pub fn list_post(
                 if entry.is_pinned {
                     write!(buf, " {}", "Pin".magenta())?;
                 }
+                write!(buf, " {}", entry.title.cyan().bold())?;
                 writeln!(buf)?;
             }
             buf

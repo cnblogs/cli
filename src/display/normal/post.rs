@@ -21,7 +21,6 @@ pub fn list_post(
             {
                 let buf = &mut buf;
                 write!(buf, "# {}", entry.id)?;
-                write!(buf, " {}", entry.title)?;
                 if entry.is_published {
                     write!(buf, " Pub")?;
                 } else {
@@ -30,6 +29,7 @@ pub fn list_post(
                 if entry.is_pinned {
                     write!(buf, " Pin")?;
                 }
+                write!(buf, " {}", entry.title)?;
                 writeln!(buf)?;
             }
             buf
