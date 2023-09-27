@@ -1,6 +1,6 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
 use crate::infra::result::IntoResult;
 use anyhow::Result;
@@ -11,12 +11,9 @@ impl Post {
         let client = reqwest::Client::new();
 
         let req = {
-            let url = {
-                let query = vec![('t', 1), ('p', 1), ('s', 1)].into_query_string();
-                blog_backend!("/posts/list?{}", query)
-            };
-
-            client.get(url).pat_auth(&self.pat)
+            let url = blog_backend!("/posts/list");
+            let query = [('t', 1), ('p', 1), ('s', 1)];
+            client.get(url).query(&query).pat_auth(&self.pat)
         };
 
         let resp = req.send().await?;

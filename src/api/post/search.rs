@@ -1,6 +1,6 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
@@ -22,15 +22,14 @@ impl Post {
         // If index is greater than the max page index, API will still return the last page
         let total_count = {
             let req = {
-                let query = vec![
-                    ("t", "1".to_string()),
+                let url = blog_backend!("/posts/list");
+                let query = [
+                    ("t", 1.to_string()),
                     ("p", 1.to_string()),
                     ("s", 1.to_string()),
                     ("search", keyword.to_string()),
-                ]
-                .into_query_string();
-                let url = blog_backend!("/posts/list?{}", query);
-                client.get(url).pat_auth(&self.pat)
+                ];
+                client.get(url).query(&query).pat_auth(&self.pat)
             };
             let resp = req.send().await?;
 
@@ -48,15 +47,14 @@ impl Post {
         let id_list = range
             .map(|i| async move {
                 let req = {
-                    let query = vec![
-                        ("t", "1".to_string()),
+                    let url = blog_backend!("/posts/list");
+                    let query = [
+                        ("t", 1.to_string()),
                         ("p", i.to_string()),
                         ("s", 1.to_string()),
                         ("search", keyword.to_string()),
-                    ]
-                    .into_query_string();
-                    let url = blog_backend!("/posts/list?{}", query);
-                    client.get(url).pat_auth(&self.pat)
+                    ];
+                    client.get(url).query(&query).pat_auth(&self.pat)
                 };
                 let resp = req.send().await?;
 

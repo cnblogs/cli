@@ -53,7 +53,7 @@ impl Ing {
             .map(|i| async move {
                 let req = {
                     let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
-                    let query = vec![("pageIndex", i), ("pageSize", 1)];
+                    let query = [("pageIndex", i), ("pageSize", 1)];
                     client.get(url).query(&query).pat_auth(&self.pat)
                 };
 

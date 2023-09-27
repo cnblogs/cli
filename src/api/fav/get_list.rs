@@ -1,5 +1,5 @@
 use crate::api::fav::Fav;
-use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt as HttpVecExt};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
@@ -31,9 +31,9 @@ impl Fav {
         let cf = range
             .map(|i| async move {
                 let req = {
-                    let query = vec![("pageIndex", i), ("pageSize", 1)].into_query_string();
-                    let url = openapi!("/Bookmarks?{}", query);
-                    client.get(url).pat_auth(&self.pat)
+                    let url = openapi!("/bookmarks");
+                    let query = [("pageIndex", i), ("pageSize", 1)];
+                    client.get(url).query(&query).pat_auth(&self.pat)
                 };
 
                 let resp = req.send().await?;

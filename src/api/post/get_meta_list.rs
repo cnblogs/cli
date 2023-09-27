@@ -1,7 +1,7 @@
 use crate::api::post::get_one::PostEntry;
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, RequestBuilderExt, VecExt};
+use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
 use crate::infra::result::IntoResult;
@@ -35,12 +35,9 @@ impl Post {
         let vec = range
             .map(|i| async move {
                 let req = {
-                    let url = {
-                        let query = vec![('t', 1), ('p', i), ('s', 1)].into_query_string();
-                        blog_backend!("/posts/list?{}", query)
-                    };
-
-                    client.get(url).pat_auth(&self.pat)
+                    let url = blog_backend!("/posts/list");
+                    let query = [('t', 1), ('p', i), ('s', 1)];
+                    client.get(url).query(&query).pat_auth(&self.pat)
                 };
 
                 let resp = req.send().await?;
