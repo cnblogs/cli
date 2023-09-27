@@ -1,4 +1,4 @@
-use crate::args::{cmd, Args, Cmd};
+use crate::args::{cmd, Args, Cmd, GlobalOpt};
 use crate::infra::option::IntoOption;
 
 pub fn login(args: &Args) -> Option<&String> {
@@ -11,15 +11,10 @@ pub fn login(args: &Args) -> Option<&String> {
                     info: false,
                 })),
             id: None,
-            with_pat: None,
             rev: false,
             skip: None,
             take: None,
-            debug: _,
-            style: _,
-            time_style: _,
-            fail_on_error: _,
-            quiet: _,
+            global_opt: GlobalOpt { with_pat: None, .. },
         } => pat,
         _ => return None,
     }
@@ -36,15 +31,10 @@ pub const fn logout(args: &Args) -> bool {
                 info: false,
             })),
             id: None,
-            with_pat: None,
             rev: false,
             skip: None,
             take: None,
-            debug: _,
-            style: _,
-            time_style: _,
-            fail_on_error: _,
-            quiet: _,
+            global_opt: GlobalOpt { with_pat: None, .. },
         }
     )
 }
@@ -59,15 +49,10 @@ pub const fn user_info(args: &Args) -> bool {
                 info: true,
             })),
             id: None,
-            with_pat: _,
             rev: false,
             skip: None,
             take: None,
-            debug: _,
-            style: _,
-            time_style: _,
-            fail_on_error: _,
-            quiet: _,
+            global_opt: _,
         }
     )
 }

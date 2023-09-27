@@ -17,47 +17,8 @@ pub enum TimeStyle {
     Normal,
 }
 
-// TODO: flatten options in struct?
 #[derive(Debug, Parser)]
-#[command(author, about, long_about = None, version)]
-pub struct Args {
-    #[command(subcommand)]
-    cmd: Option<Cmd>,
-
-    #[arg(verbatim_doc_comment)]
-    /// Provide ID required by other options
-    ///   Example: cnb --id 114514 post --show
-    #[arg(long)]
-    pub id: Option<usize>,
-
-    #[arg(verbatim_doc_comment)]
-    /// Reverse list output
-    ///   Example: cnb --rev ing list
-    #[arg(long)]
-    pub rev: bool,
-
-    #[arg(verbatim_doc_comment)]
-    /// Skip items while request list
-    ///   Example: cnb --skip 2 ing list
-    ///     Use this option to save network I/O if some items of the list output are not needed
-    ///     If this option is required but not specified, it will be set to 0
-    #[arg(long)]
-    #[arg(short = 's')]
-    #[arg(value_name = "LENGTH")]
-    pub skip: Option<usize>,
-
-    #[arg(verbatim_doc_comment)]
-    /// Take items while request list
-    ///   Example: cnb --take 2 ing list
-    ///     Use this option to save network I/O if only a subset of the list output are required
-    ///     <LENGTH> should be in the range [0,100]
-    ///     If <LENGTH> is greater than 100, it will be set to 100
-    ///     If this option is required but not specified, it will be set to 8
-    #[arg(long)]
-    #[arg(short = 't')]
-    #[arg(value_name = "LENGTH")]
-    pub take: Option<usize>,
-
+pub struct GlobalOpt {
     #[arg(verbatim_doc_comment)]
     /// Execute with specific PAT
     ///   Example: cnb --with-pat 'FOOBARBAZ' post --list
@@ -117,4 +78,48 @@ pub struct Args {
     #[clap(visible_alias = "silent")]
     #[arg(default_value_t = false)]
     pub quiet: bool,
+}
+
+// TODO: flatten options in struct?
+#[derive(Debug, Parser)]
+#[command(author, about, long_about = None, version)]
+pub struct Args {
+    #[command(subcommand)]
+    pub cmd: Option<Cmd>,
+    #[clap(flatten)]
+    pub global_opt: GlobalOpt,
+
+    #[arg(verbatim_doc_comment)]
+    /// Provide ID required by other options
+    ///   Example: cnb --id 114514 post --show
+    #[arg(long)]
+    pub id: Option<usize>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Reverse list output
+    ///   Example: cnb --rev ing list
+    #[arg(long)]
+    pub rev: bool,
+
+    #[arg(verbatim_doc_comment)]
+    /// Skip items while request list
+    ///   Example: cnb --skip 2 ing list
+    ///     Use this option to save network I/O if some items of the list output are not needed
+    ///     If this option is required but not specified, it will be set to 0
+    #[arg(long)]
+    #[arg(short = 's')]
+    #[arg(value_name = "LENGTH")]
+    pub skip: Option<usize>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Take items while request list
+    ///   Example: cnb --take 2 ing list
+    ///     Use this option to save network I/O if only a subset of the list output are required
+    ///     <LENGTH> should be in the range [0,100]
+    ///     If <LENGTH> is greater than 100, it will be set to 100
+    ///     If this option is required but not specified, it will be set to 8
+    #[arg(long)]
+    #[arg(short = 't')]
+    #[arg(value_name = "LENGTH")]
+    pub take: Option<usize>,
 }

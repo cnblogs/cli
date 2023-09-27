@@ -4,7 +4,7 @@ pub mod news;
 pub mod post;
 pub mod user;
 
-use crate::args::Args;
+use crate::args::{Args, GlobalOpt};
 
 fn get_skip(skip: &Option<usize>) -> usize {
     skip.unwrap_or(0)
@@ -20,15 +20,10 @@ pub const fn no_operation(args: &Args) -> bool {
         Args {
             cmd: None,
             id: None,
-            with_pat: None,
             rev: false,
             skip: None,
             take: None,
-            debug: _,
-            style: _,
-            time_style: _,
-            fail_on_error: _,
-            quiet: _,
+            global_opt: GlobalOpt { with_pat: None, .. }
         }
     )
 }

@@ -7,15 +7,10 @@ pub fn list_fav(args: &Args) -> Option<(usize, usize)> {
         Args {
             cmd: Some(Cmd::Fav(cmd::fav::Opt { list: true })),
             id: None,
-            with_pat: _,
             rev: _,
             skip,
             take,
-            debug: _,
-            style: _,
-            time_style: _,
-            fail_on_error: _,
-            quiet: _,
+            global_opt: _,
         } => {
             let skip = get_skip(skip);
             let take = get_take(take);

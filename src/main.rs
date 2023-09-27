@@ -58,15 +58,16 @@ async fn main() -> Result<()> {
     }
 
     let args: Args = Args::parse();
-    if args.debug {
+    let global_opt = &args.global_opt;
+    if global_opt.debug {
         dbg!(&args);
     }
 
-    let pat = args.with_pat.clone().or_eval_result(session::get_pat);
-    let style = &args.style;
-    let time_style = &args.time_style;
+    let pat = global_opt.with_pat.clone().or_eval_result(session::get_pat);
+    let style = &global_opt.style;
+    let time_style = &global_opt.time_style;
     let rev = args.rev;
-    let foe = args.fail_on_error;
+    let foe = global_opt.fail_on_error;
 
     let output = match args {
         _ if let Some(pat) = parser::user::login(&args) => {
@@ -190,7 +191,7 @@ async fn main() -> Result<()> {
         _ => "Invalid usage, follow '--help' for more information".to_owned()
     };
 
-    if args.quiet {
+    if global_opt.quiet {
         return ().into_ok();
     }
 
@@ -202,7 +203,7 @@ async fn main() -> Result<()> {
         } else {
             format!("{}\n", output)
         };
-        if args.debug {
+        if global_opt.debug {
             show_non_printable_chars(output)
         } else {
             output
