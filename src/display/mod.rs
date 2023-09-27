@@ -47,7 +47,7 @@ pub fn list_ing(
     match style {
         Style::Colorful => colorful::ing::list_ing(time_style, ing_with_comment_iter, align),
         Style::Normal => normal::ing::list_ing(time_style, ing_with_comment_iter, align),
-        Style::Json => json::ing::list_ing(ing_with_comment_iter),
+        Style::Json => json::ing::list_ing(ing_with_comment_iter).into_ok(),
     }
 }
 
@@ -106,7 +106,7 @@ pub fn show_post_comment(
     match style {
         Style::Colorful => colorful::post::show_post_comment(time_style, comment_iter),
         Style::Normal => normal::post::show_post_comment(time_style, comment_iter),
-        Style::Json => json::post::show_post_comment(comment_iter),
+        Style::Json => json::post::show_post_comment(comment_iter).into_ok(),
     }
 }
 
@@ -153,7 +153,7 @@ pub fn list_news(
     match style {
         Style::Colorful => colorful::news::list_news(time_style, news_iter),
         Style::Normal => normal::news::list_news(time_style, news_iter),
-        Style::Json => json::news::list_news(news_iter),
+        Style::Json => json::news::list_news(news_iter).into_ok(),
     }
 }
 
@@ -165,6 +165,6 @@ pub fn list_fav(
     match style {
         Style::Colorful => colorful::fav::list_fav(time_style, fav_iter),
         Style::Normal => normal::fav::list_fav(time_style, fav_iter),
-        Style::Json => json::fav::list_fav(fav_iter),
+        Style::Json => json::fav::list_fav(fav_iter).into_ok(),
     }
 }

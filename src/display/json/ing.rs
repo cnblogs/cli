@@ -1,17 +1,15 @@
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
-use crate::display::json::fmt_err;
-use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::display::json::{fmt_err, fmt_ok};
 use anyhow::Result;
 use serde_json::json;
 
 pub fn list_ing(
     ing_with_comment_list: Result<impl ExactSizeIterator<Item = (IngEntry, Vec<IngCommentEntry>)>>,
-) -> Result<String> {
+) -> String {
     let ing_with_comment_list = match ing_with_comment_list {
         Ok(o) => o,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e),
     };
 
     let json_vec = ing_with_comment_list
@@ -23,5 +21,5 @@ pub fn list_ing(
         })
         .collect::<Vec<_>>();
 
-    json::serialize(json_vec)
+    fmt_ok(json_vec)
 }

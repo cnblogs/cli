@@ -1,8 +1,6 @@
 use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
-use crate::display::json::{fmt_err, fmt_result};
-use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::display::json::{fmt_err, fmt_ok, fmt_result};
 use anyhow::Result;
 use serde_json::json;
 
@@ -18,7 +16,7 @@ pub fn list_post(result: Result<(impl ExactSizeIterator<Item = PostEntry>, usize
        "total_count": total_count,
        "entry_list": vec,
     });
-    json.to_string()
+    fmt_ok(json)
 }
 
 pub fn show_post(entry: &Result<PostEntry>) -> String {
@@ -37,14 +35,14 @@ pub fn show_post_meta(entry: &Result<PostEntry>) -> String {
 
 pub fn show_post_comment(
     comment_iter: Result<impl ExactSizeIterator<Item = PostCommentEntry>>,
-) -> Result<String> {
+) -> String {
     let comment_iter = match comment_iter {
         Ok(entry) => entry,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e),
     };
 
     let comment_vec = comment_iter.collect::<Vec<_>>();
-    json::serialize(comment_vec)
+    fmt_ok(comment_vec)
 }
 
 pub fn search_post(result: Result<(impl ExactSizeIterator<Item = usize>, usize)>) -> String {
@@ -59,5 +57,5 @@ pub fn search_post(result: Result<(impl ExactSizeIterator<Item = usize>, usize)>
        "total_count": total_count,
        "id_list": id_list,
     });
-    json.to_string()
+    fmt_ok(json)
 }
