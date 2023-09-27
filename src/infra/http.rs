@@ -45,7 +45,7 @@ impl<K: ToString, V: ToString> VecExt for Vec<(K, V)> {
                 let s_v = v.to_string();
                 format!("{}={}", s_k, s_v)
             })
-            .fold("".to_string(), |acc, q| format!("{acc}&{q}"))
+            .fold(String::new(), |acc, q| format!("{acc}&{q}"))
     }
 }
 

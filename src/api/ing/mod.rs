@@ -64,7 +64,7 @@ pub fn fmt_content(content: &str) -> String {
                 .expect("Invalid regexp");
     }
     REGEX.captures(content).map_or_else(
-        || content.to_string(),
+        || content.to_owned(),
         |caps| {
             let at_user = caps.get(1).expect("No capture at index 1").as_str();
             REGEX.replace(content, at_user).to_string()
@@ -78,7 +78,7 @@ pub fn rm_ing_at_user_tag(text: &str) -> String {
             Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>(@.*?)</a>："#)
                 .expect("Invalid regexp");
     }
-    REGEX.replace(text, "".to_string()).to_string()
+    REGEX.replace(text, "").to_string()
 }
 
 pub fn get_ing_at_user_tag_text(text: &str) -> String {
@@ -87,13 +87,10 @@ pub fn get_ing_at_user_tag_text(text: &str) -> String {
             Regex::new(r#"<a.*href="https://home.cnblogs.com/u/.*?".*>@(.*?)</a>："#)
                 .expect("Invalid regexp");
     }
-    REGEX.captures(text).map_or_else(
-        || "".to_string(),
-        |caps| {
-            caps.get(1)
-                .expect("No capture at index 1")
-                .as_str()
-                .to_string()
-        },
-    )
+    REGEX.captures(text).map_or_else(String::new, |caps| {
+        caps.get(1)
+            .expect("No capture at index 1")
+            .as_str()
+            .to_string()
+    })
 }

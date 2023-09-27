@@ -54,7 +54,7 @@ fn panic_if_err<T>(result: &Result<T>) {
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<()> {
     let args_vec = env::args().collect::<Vec<_>>();
-    if args_vec.iter().any(eq(&"--debug".to_string())) {
+    if args_vec.iter().any(eq(&"--debug".to_owned())) {
         dbg!(args_vec);
     }
 
