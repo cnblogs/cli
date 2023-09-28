@@ -44,7 +44,7 @@ pub fn list_news(
             buf
         })
         .try_fold(String::new(), |mut acc, buf: Result<String>| try {
-            write!(&mut acc, "\n{}", buf?)?;
+            writeln!(&mut acc, "{}", buf?)?;
             acc
         })
 }
