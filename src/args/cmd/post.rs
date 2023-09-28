@@ -46,16 +46,6 @@ pub struct Opt {
     #[arg(visible_alias = "del")]
     pub delete: bool,
 
-    #[arg(verbatim_doc_comment)]
-    /// Search self post by keyword and output the post id list that matches
-    ///   Example: cnb post --search-self 'Hello world'
-    ///     *
-    #[arg(long)]
-    #[arg(visible_alias = "f-self")]
-    #[arg(visible_alias = "find-self")]
-    #[arg(value_name = "KEYWORD")]
-    pub search_self: Option<String>,
-
     #[command(subcommand)]
     pub cmd: Option<Cmd>,
 }
@@ -111,6 +101,17 @@ pub struct UpdateCmd {
     pub publish: Option<bool>,
 }
 
+#[derive(Parser, Debug)]
+pub struct SearchCmd {
+    #[arg(verbatim_doc_comment)]
+    /// Search self post
+    ///   Example: cnb post search --self 'Keyword'
+    #[arg(long)]
+    #[arg(long = "self")]
+    #[arg(value_name = "KEYWORD")]
+    pub self_keyword: Option<String>,
+}
+
 #[derive(Debug, Subcommand)]
 pub enum Cmd {
     #[clap(verbatim_doc_comment)]
@@ -119,6 +120,7 @@ pub enum Cmd {
     ///   *
     #[clap(visible_alias = "c")]
     Create(CreateCmd),
+
     #[clap(verbatim_doc_comment)]
     /// Update post
     /// Example: cnb --id 114514 post update --title 'Title'
@@ -126,4 +128,11 @@ pub enum Cmd {
     ///   *
     #[clap(visible_alias = "u")]
     Update(UpdateCmd),
+
+    #[clap(verbatim_doc_comment)]
+    /// Search post
+    /// Example: cnb post search --self 'Keyword'
+    ///   *
+    #[clap(visible_alias = "s")]
+    Search(SearchCmd),
 }
