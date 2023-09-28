@@ -2,7 +2,7 @@ use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::args::TimeStyle;
 use crate::display::normal::fmt_err;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::infra::time::display_cnb_time;
 use anyhow::Result;
 use std::fmt::Write;
@@ -12,7 +12,7 @@ pub fn list_post(
 ) -> Result<String> {
     let (mut entry_iter, total_count) = match result {
         Ok(o) => o,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e).wrap_ok(),
     };
 
     entry_iter.try_fold(
@@ -40,7 +40,7 @@ pub fn list_post(
 pub fn show_post(entry: &Result<PostEntry>) -> Result<String> {
     let entry = match entry {
         Ok(entry) => entry,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(e).wrap_ok(),
     };
 
     let mut buf = String::new();
@@ -51,13 +51,13 @@ pub fn show_post(entry: &Result<PostEntry>) -> Result<String> {
             writeln!(buf, "{}", body)?;
         }
     }
-    buf.into_ok()
+    buf.wrap_ok()
 }
 
 pub fn show_post_meta(time_style: &TimeStyle, entry: &Result<PostEntry>) -> Result<String> {
     let entry = match entry {
         Ok(entry) => entry,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(e).wrap_ok(),
     };
 
     let mut buf = String::new();
@@ -95,7 +95,7 @@ pub fn show_post_meta(time_style: &TimeStyle, entry: &Result<PostEntry>) -> Resu
         writeln!(buf, "Modify {}", modify_time)?;
         writeln!(buf, "Link   https:{}", entry.url)?;
     }
-    buf.into_ok()
+    buf.wrap_ok()
 }
 
 pub fn show_post_comment(
@@ -104,7 +104,7 @@ pub fn show_post_comment(
 ) -> Result<String> {
     let mut comment_iter = match comment_iter {
         Ok(entry) => entry,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e).wrap_ok(),
     };
 
     comment_iter.try_fold(String::new(), |mut buf, comment| try {
@@ -123,7 +123,7 @@ pub fn search_post(
 ) -> Result<String> {
     let (mut id_iter, total_count) = match result {
         Ok(o) => o,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e).wrap_ok(),
     };
 
     id_iter.try_fold(

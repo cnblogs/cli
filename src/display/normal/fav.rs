@@ -1,7 +1,7 @@
 use crate::api::fav::get_list::FavEntry;
 use crate::args::TimeStyle;
 use crate::display::normal::fmt_err;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::infra::str::StrExt;
 use crate::infra::terminal::get_term_width;
 use crate::infra::time::display_cnb_time;
@@ -15,7 +15,7 @@ pub fn list_fav(
 ) -> Result<String> {
     let fav_iter = match fav_iter {
         Ok(o) => o,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e).wrap_ok(),
     };
 
     fav_iter

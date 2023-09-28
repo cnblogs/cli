@@ -1,20 +1,20 @@
 use anyhow::Result;
 
-pub trait IntoResult
+pub trait WrapResult
 where
     Self: Sized,
 {
     #[inline]
-    fn into_ok<E>(self) -> Result<Self, E> {
+    fn wrap_ok<E>(self) -> Result<Self, E> {
         Ok(self)
     }
     #[inline]
-    fn into_err<O>(self) -> Result<O, Self> {
+    fn wrap_err<O>(self) -> Result<O, Self> {
         Err(self)
     }
 }
 
-impl<T> IntoResult for T {}
+impl<T> WrapResult for T {}
 
 pub type HomoResult<T> = Result<T, T>;
 

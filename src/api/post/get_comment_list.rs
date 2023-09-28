@@ -2,7 +2,7 @@ use crate::api::post::Post;
 use crate::api::user::User;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -41,6 +41,6 @@ impl Post {
             json::deserialize::<Vec<PostCommentEntry>>(&body)?
         };
 
-        entry_vec.into_ok()
+        entry_vec.wrap_ok()
     }
 }

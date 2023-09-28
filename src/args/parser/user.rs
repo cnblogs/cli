@@ -1,5 +1,5 @@
 use crate::args::{cmd, Args, Cmd, GlobalOpt};
-use crate::infra::option::IntoOption;
+use crate::infra::option::WrapOption;
 
 pub fn login(args: &Args) -> Option<&String> {
     match args {
@@ -18,7 +18,7 @@ pub fn login(args: &Args) -> Option<&String> {
         } => pat,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub const fn logout(args: &Args) -> bool {

@@ -63,32 +63,32 @@ fn test_width_split_head() {
 
 #[test]
 fn test_width_split() {
-    use crate::infra::option::IntoOption;
+    use crate::infra::option::WrapOption;
     let text = "测试test⭐测试test⭐";
     assert_eq!(text.width_split(0), None);
     assert_eq!(text.width_split(1), None);
     assert_eq!(
         text.width_split(2),
-        vec!["测", "试", "te", "st", "⭐", "测", "试", "te", "st", "⭐"].into_some()
+        vec!["测", "试", "te", "st", "⭐", "测", "试", "te", "st", "⭐"].wrap_some()
     );
     assert_eq!(
         text.width_split(3),
-        vec!["测", "试t", "est", "⭐", "测", "试t", "est", "⭐"].into_some()
+        vec!["测", "试t", "est", "⭐", "测", "试t", "est", "⭐"].wrap_some()
     );
     assert_eq!(
         text.width_split(4),
-        vec!["测试", "test", "⭐测", "试te", "st⭐"].into_some()
+        vec!["测试", "test", "⭐测", "试te", "st⭐"].wrap_some()
     );
     assert_eq!(
         text.width_split(19),
-        vec!["测试test⭐测试test", "⭐"].into_some()
+        vec!["测试test⭐测试test", "⭐"].wrap_some()
     );
     assert_eq!(
         text.width_split(20),
-        vec!["测试test⭐测试test⭐"].into_some()
+        vec!["测试test⭐测试test⭐"].wrap_some()
     );
     assert_eq!(
         text.width_split(21),
-        vec!["测试test⭐测试test⭐"].into_some()
+        vec!["测试test⭐测试test⭐"].wrap_some()
     );
 }

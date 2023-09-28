@@ -6,7 +6,7 @@ use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::{Style, TimeStyle};
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -34,7 +34,7 @@ pub fn user_info(style: &Style, user_info: &Result<UserInfo>) -> Result<String> 
     match style {
         Style::Colorful => colorful::user::user_info(user_info),
         Style::Normal => normal::user::user_info(user_info),
-        Style::Json => json::user::user_info(user_info).into_ok(),
+        Style::Json => json::user::user_info(user_info).wrap_ok(),
     }
 }
 
@@ -47,7 +47,7 @@ pub fn list_ing(
     match style {
         Style::Colorful => colorful::ing::list_ing(time_style, ing_with_comment_iter, align),
         Style::Normal => normal::ing::list_ing(time_style, ing_with_comment_iter, align),
-        Style::Json => json::ing::list_ing(ing_with_comment_iter).into_ok(),
+        Style::Json => json::ing::list_ing(ing_with_comment_iter).wrap_ok(),
     }
 }
 
@@ -71,7 +71,7 @@ pub fn show_post(style: &Style, entry: &Result<PostEntry>) -> Result<String> {
     match style {
         Style::Colorful => colorful::post::show_post(entry),
         Style::Normal => normal::post::show_post(entry),
-        Style::Json => json::post::show_post(entry).into_ok(),
+        Style::Json => json::post::show_post(entry).wrap_ok(),
     }
 }
 
@@ -82,7 +82,7 @@ pub fn list_post(
     match style {
         Style::Colorful => colorful::post::list_post(result),
         Style::Normal => normal::post::list_post(result),
-        Style::Json => json::post::list_post(result).into_ok(),
+        Style::Json => json::post::list_post(result).wrap_ok(),
     }
 }
 
@@ -94,7 +94,7 @@ pub fn show_post_meta(
     match style {
         Style::Colorful => colorful::post::show_post_meta(time_style, entry),
         Style::Normal => normal::post::show_post_meta(time_style, entry),
-        Style::Json => json::post::show_post_meta(entry).into_ok(),
+        Style::Json => json::post::show_post_meta(entry).wrap_ok(),
     }
 }
 
@@ -106,7 +106,7 @@ pub fn show_post_comment(
     match style {
         Style::Colorful => colorful::post::show_post_comment(time_style, comment_iter),
         Style::Normal => normal::post::show_post_comment(time_style, comment_iter),
-        Style::Json => json::post::show_post_comment(comment_iter).into_ok(),
+        Style::Json => json::post::show_post_comment(comment_iter).wrap_ok(),
     }
 }
 
@@ -125,7 +125,7 @@ pub fn search_post(
     match style {
         Style::Colorful => colorful::post::search_post(result),
         Style::Normal => normal::post::search_post(result),
-        Style::Json => json::post::search_post(result).into_ok(),
+        Style::Json => json::post::search_post(result).wrap_ok(),
     }
 }
 
@@ -153,7 +153,7 @@ pub fn list_news(
     match style {
         Style::Colorful => colorful::news::list_news(time_style, news_iter),
         Style::Normal => normal::news::list_news(time_style, news_iter),
-        Style::Json => json::news::list_news(news_iter).into_ok(),
+        Style::Json => json::news::list_news(news_iter).wrap_ok(),
     }
 }
 
@@ -165,6 +165,6 @@ pub fn list_fav(
     match style {
         Style::Colorful => colorful::fav::list_fav(time_style, fav_iter),
         Style::Normal => normal::fav::list_fav(time_style, fav_iter),
-        Style::Json => json::fav::list_fav(fav_iter).into_ok(),
+        Style::Json => json::fav::list_fav(fav_iter).wrap_ok(),
     }
 }

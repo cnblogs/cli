@@ -1,7 +1,7 @@
 use crate::api::user::User;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -50,6 +50,6 @@ impl User {
             json::deserialize::<UserInfo>(&body)?
         };
 
-        user_info.into_ok()
+        user_info.wrap_ok()
     }
 }

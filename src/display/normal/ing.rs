@@ -5,7 +5,7 @@ use crate::api::ing::{
 };
 use crate::args::TimeStyle;
 use crate::display::normal::fmt_err;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::infra::str::StrExt;
 use crate::infra::terminal::get_term_width;
 use crate::infra::time::display_cnb_time;
@@ -22,7 +22,7 @@ pub fn list_ing(
 ) -> Result<String> {
     let mut ing_with_comment_list = match ing_with_comment_list {
         Ok(o) => o,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e).wrap_ok(),
     };
 
     ing_with_comment_list.try_fold(String::new(), |mut buf, (ing, comment_list)| try {

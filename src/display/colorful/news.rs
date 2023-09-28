@@ -1,7 +1,7 @@
 use crate::api::news::get_list::NewsEntry;
 use crate::args::TimeStyle;
 use crate::display::colorful::fmt_err;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::infra::str::StrExt;
 use crate::infra::terminal::get_term_width;
 use crate::infra::time::display_cnb_time;
@@ -15,7 +15,7 @@ pub fn list_news(
 ) -> Result<String> {
     let news_iter = match news_iter {
         Ok(o) => o,
-        Err(e) => return fmt_err(&e).into_ok(),
+        Err(e) => return fmt_err(&e).wrap_ok(),
     };
 
     news_iter

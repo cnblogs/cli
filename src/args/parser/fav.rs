@@ -1,6 +1,6 @@
 use crate::args::parser::{get_skip, get_take};
 use crate::args::{cmd, Args, Cmd};
-use crate::infra::option::IntoOption;
+use crate::infra::option::WrapOption;
 
 pub fn list_fav(args: &Args) -> Option<(usize, usize)> {
     match args {
@@ -18,5 +18,5 @@ pub fn list_fav(args: &Args) -> Option<(usize, usize)> {
         }
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }

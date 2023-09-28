@@ -2,7 +2,7 @@ use crate::api::news::News;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -50,7 +50,7 @@ impl News {
                     entry
                 };
 
-                entry.into_ok::<anyhow::Error>()
+                entry.wrap_ok::<anyhow::Error>()
             })
             .join_all()
             .await

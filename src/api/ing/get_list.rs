@@ -2,7 +2,7 @@ use crate::api::ing::{Ing, IngSendFrom, IngType};
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::infra::vec::VecExt;
 use crate::openapi;
 use anyhow::Result;
@@ -61,7 +61,7 @@ impl Ing {
 
                 let body = body_or_err(resp).await?;
 
-                json::deserialize::<Vec<IngEntry>>(&body)?.pop().into_ok()
+                json::deserialize::<Vec<IngEntry>>(&body)?.pop().wrap_ok()
             })
             .join_all()
             .await

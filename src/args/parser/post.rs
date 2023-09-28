@@ -1,7 +1,7 @@
 use crate::args::cmd::post::{CreateCmd, UpdateCmd};
 use crate::args::parser::{get_skip, get_take};
 use crate::args::{cmd, Args, Cmd};
-use crate::infra::option::IntoOption;
+use crate::infra::option::WrapOption;
 
 pub fn list_post(args: &Args) -> Option<(usize, usize)> {
     match args {
@@ -28,7 +28,7 @@ pub fn list_post(args: &Args) -> Option<(usize, usize)> {
         }
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn show_post(args: &Args) -> Option<usize> {
@@ -52,7 +52,7 @@ pub fn show_post(args: &Args) -> Option<usize> {
         } => *id,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn show_post_meta(args: &Args) -> Option<usize> {
@@ -76,7 +76,7 @@ pub fn show_post_meta(args: &Args) -> Option<usize> {
         } => *id,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn show_post_comment(args: &Args) -> Option<usize> {
@@ -100,7 +100,7 @@ pub fn show_post_comment(args: &Args) -> Option<usize> {
         } => *id,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
@@ -128,7 +128,7 @@ pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
         }
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn delete_post(args: &Args) -> Option<usize> {
@@ -152,7 +152,7 @@ pub fn delete_post(args: &Args) -> Option<usize> {
         } => *id,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn create_post(args: &Args) -> Option<&CreateCmd> {
@@ -176,7 +176,7 @@ pub fn create_post(args: &Args) -> Option<&CreateCmd> {
         } => cmd,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn update_post(args: &Args) -> Option<(usize, &UpdateCmd)> {
@@ -200,5 +200,5 @@ pub fn update_post(args: &Args) -> Option<(usize, &UpdateCmd)> {
         } => (*id, cmd),
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }

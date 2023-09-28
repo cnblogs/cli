@@ -1,4 +1,4 @@
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::{anyhow, Result};
 use home::home_dir;
 use std::fs;
@@ -10,18 +10,18 @@ fn remove_pat(path: &Path) -> Result<()> {
     if metadata(path).is_ok() {
         remove_file(path)?;
     }
-    ().into_ok()
+    ().wrap_ok()
 }
 
 fn save_pat(pat: &str, path: &Path) -> Result<()> {
     let mut file = File::create(path)?;
     file.write_all(pat.as_bytes())?;
-    ().into_ok()
+    ().wrap_ok()
 }
 
 fn get_cfg_path() -> Result<PathBuf> {
     let home = home_dir().ok_or_else(|| anyhow!("Can not get home dir"))?;
-    home.join(".cnbrc").into_ok()
+    home.join(".cnbrc").wrap_ok()
 }
 
 pub fn login(pat: &str) -> Result<PathBuf> {
@@ -31,7 +31,7 @@ pub fn login(pat: &str) -> Result<PathBuf> {
     remove_pat(cfg_path)?;
     save_pat(pat, cfg_path)?;
 
-    cfg_path.to_owned().into_ok()
+    cfg_path.to_owned().wrap_ok()
 }
 
 pub fn logout() -> Result<PathBuf> {
@@ -40,7 +40,7 @@ pub fn logout() -> Result<PathBuf> {
 
     remove_pat(cfg_path)?;
 
-    cfg_path.to_owned().into_ok()
+    cfg_path.to_owned().wrap_ok()
 }
 
 pub fn get_pat() -> Result<String> {

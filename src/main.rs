@@ -19,7 +19,7 @@ use crate::infra::fp::currying::eq;
 use crate::infra::infer::infer;
 use crate::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};
 use crate::infra::option::OptionExt;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::Result;
 use clap::Parser;
 use clap::{Command, CommandFactory};
@@ -195,7 +195,7 @@ async fn main() -> Result<()> {
     };
 
     if global_opt.quiet {
-        return ().into_ok();
+        return ().wrap_ok();
     }
 
     let output = {
@@ -215,5 +215,5 @@ async fn main() -> Result<()> {
 
     print!("{}", output);
 
-    ().into_ok()
+    ().wrap_ok()
 }

@@ -1,4 +1,4 @@
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::bail;
 use anyhow::Result;
 use reqwest::header::AUTHORIZATION;
@@ -57,7 +57,7 @@ pub async fn unit_or_err(resp: Response) -> Result<()> {
         bail!("{}: {}", code, body);
     }
 
-    ().into_ok()
+    ().wrap_ok()
 }
 
 pub async fn body_or_err(resp: Response) -> Result<String> {
@@ -65,7 +65,7 @@ pub async fn body_or_err(resp: Response) -> Result<String> {
     let body = resp.text().await?;
 
     if code.is_success() {
-        body.into_ok()
+        body.wrap_ok()
     } else {
         bail!("{}: {}", code, body)
     }

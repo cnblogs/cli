@@ -1,7 +1,7 @@
 use crate::api::ing::IngType;
 use crate::args::parser::{get_skip, get_take};
 use crate::args::{cmd, Args, Cmd};
-use crate::infra::option::IntoOption;
+use crate::infra::option::WrapOption;
 
 pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType, bool)> {
     match args {
@@ -25,7 +25,7 @@ pub fn list_ing(args: &Args) -> Option<(usize, usize, IngType, bool)> {
         }
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn publish_ing(args: &Args) -> Option<&String> {
@@ -45,7 +45,7 @@ pub fn publish_ing(args: &Args) -> Option<&String> {
         } => content,
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }
 
 pub fn comment_ing(args: &Args) -> Option<(&String, usize)> {
@@ -65,5 +65,5 @@ pub fn comment_ing(args: &Args) -> Option<(&String, usize)> {
         } => (content, *id),
         _ => return None,
     }
-    .into_some()
+    .wrap_some()
 }

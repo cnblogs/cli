@@ -4,7 +4,7 @@ use crate::blog_backend;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::Result;
 use serde_json::Value;
 
@@ -50,13 +50,13 @@ impl Post {
                     entry
                 };
 
-                entry.into_ok()
+                entry.wrap_ok()
             })
             .join_all()
             .await
             .into_iter()
             .collect::<Result<Vec<_>>>();
 
-        (vec?, total_count).into_ok()
+        (vec?, total_count).wrap_ok()
     }
 }

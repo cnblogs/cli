@@ -1,6 +1,6 @@
 use crate::api::user::info::UserInfo;
 use crate::display::colorful::fmt_err;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::Result;
 use colored::Colorize;
 use std::fmt::Write;
@@ -23,7 +23,7 @@ pub fn logout(cfg_path: &Result<PathBuf>) -> String {
 pub fn user_info(info: &Result<UserInfo>) -> Result<String> {
     let info = match info {
         Ok(info) => info,
-        Err(e) => return fmt_err(e).into_ok(),
+        Err(e) => return fmt_err(e).wrap_ok(),
     };
 
     let mut buf = String::new();
@@ -43,5 +43,5 @@ pub fn user_info(info: &Result<UserInfo>) -> Result<String> {
         writeln!(buf, "Joined {}", info.joined)?;
         writeln!(buf, "Blog   https://www.cnblogs.com/{}", info.blog_app)?;
     }
-    buf.into_ok()
+    buf.wrap_ok()
 }

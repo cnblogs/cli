@@ -1,7 +1,7 @@
 use crate::api::ing::Ing;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::openapi;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -43,6 +43,6 @@ impl Ing {
             json::deserialize::<Vec<IngCommentEntry>>(&body)?
         };
 
-        entry_vec.into_ok()
+        entry_vec.wrap_ok()
     }
 }

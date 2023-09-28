@@ -3,7 +3,7 @@ use crate::blog_backend;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::Result;
 use serde_json::Value;
 use std::collections::HashSet;
@@ -77,7 +77,7 @@ impl Post {
                         .collect::<Vec<usize>>()
                 };
 
-                id_list.into_ok::<anyhow::Error>()
+                id_list.wrap_ok::<anyhow::Error>()
             })
             .join_all()
             .await
@@ -89,6 +89,6 @@ impl Post {
             .into_iter()
             .collect::<Vec<_>>();
 
-        (id_list, total_count).into_ok()
+        (id_list, total_count).wrap_ok()
     }
 }

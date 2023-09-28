@@ -2,7 +2,7 @@ use crate::api::fav::Fav;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use crate::infra::vec::VecExt;
 use crate::openapi;
 use anyhow::Result;
@@ -42,7 +42,7 @@ impl Fav {
 
                 json::deserialize::<Vec<FavEntry>>(&body)?
                     .pop()
-                    .into_ok::<anyhow::Error>()
+                    .wrap_ok::<anyhow::Error>()
             })
             .join_all()
             .await

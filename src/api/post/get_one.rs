@@ -2,7 +2,7 @@ use crate::api::post::Post;
 use crate::blog_backend;
 use crate::infra::http::{body_or_err, RequestBuilderExt};
 use crate::infra::json;
-use crate::infra::result::IntoResult;
+use crate::infra::result::WrapResult;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -53,6 +53,6 @@ impl Post {
             serde_json::from_value::<PostEntry>(json)?
         };
 
-        entry.into_ok()
+        entry.wrap_ok()
     }
 }
