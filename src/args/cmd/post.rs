@@ -47,14 +47,14 @@ pub struct Opt {
     pub delete: bool,
 
     #[arg(verbatim_doc_comment)]
-    /// Search post by keyword and output the post id list that matches
-    ///   Example: cnb post --search 'Hello world'
+    /// Search self post by keyword and output the post id list that matches
+    ///   Example: cnb post --search-self 'Hello world'
     ///     *
     #[arg(long)]
-    #[arg(short = 'f')]
-    #[arg(visible_alias = "find")]
+    #[arg(visible_alias = "f-self")]
+    #[arg(visible_alias = "find-self")]
     #[arg(value_name = "KEYWORD")]
-    pub search: Option<String>,
+    pub search_self: Option<String>,
 
     #[command(subcommand)]
     pub cmd: Option<Cmd>,

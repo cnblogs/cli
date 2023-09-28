@@ -152,13 +152,13 @@ async fn main() -> Result<()> {
             foe.then(|| panic_if_err(&id));
             display::delete_post(style, &id)
         }
-        _ if let Some((kw, skip, take)) = parser::post::search_post(&args) => {
+        _ if let Some((kw, skip, take)) = parser::post::search_self_post(&args) => {
             let result = Post::new(pat?)
-                .search(skip, take, kw)
+                .search_self(skip, take, kw)
                 .await
                 .map(|(vec, count)| (vec.into_iter().dyn_rev(rev), count));
             foe.then(|| panic_if_err(&result));
-            display::search_post(style, result)?
+            display::search_self_post(style, result)?
         }
         _ if let Some(create_cmd) = parser::post::create_post(&args) => {
             let CreateCmd { title, body, publish } = create_cmd;

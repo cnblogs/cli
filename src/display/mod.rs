@@ -118,14 +118,14 @@ pub fn delete_post(style: &Style, result: &Result<usize>) -> String {
     }
 }
 
-pub fn search_post(
+pub fn search_self_post(
     style: &Style,
     result: Result<(impl ExactSizeIterator<Item = usize>, usize)>,
 ) -> Result<String> {
     match style {
-        Style::Colorful => colorful::post::search_post(result),
-        Style::Normal => normal::post::search_post(result),
-        Style::Json => json::post::search_post(result).wrap_ok(),
+        Style::Colorful => colorful::post::search_self_post(result),
+        Style::Normal => normal::post::search_self_post(result),
+        Style::Json => json::post::search_self_post(result).wrap_ok(),
     }
 }
 

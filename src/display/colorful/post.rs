@@ -120,7 +120,7 @@ pub fn show_post_comment(
     })
 }
 
-pub fn search_post(
+pub fn search_self_post(
     result: Result<(impl ExactSizeIterator<Item = usize>, usize)>,
 ) -> Result<String> {
     let (mut id_iter, total_count) = match result {

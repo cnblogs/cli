@@ -45,7 +45,7 @@ pub fn show_post_comment(
     fmt_ok(comment_vec)
 }
 
-pub fn search_post(result: Result<(impl ExactSizeIterator<Item = usize>, usize)>) -> String {
+pub fn search_self_post(result: Result<(impl ExactSizeIterator<Item = usize>, usize)>) -> String {
     let (id_iter, total_count) = match result {
         Ok(o) => o,
         Err(e) => return fmt_err(&e),

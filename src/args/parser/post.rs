@@ -13,7 +13,7 @@ pub fn list_post(args: &Args) -> Option<(usize, usize)> {
                     show_comment: false,
                     list: true,
                     delete: false,
-                    search: None,
+                    search_self: None,
                     cmd: None,
                 })),
             id: None,
@@ -41,7 +41,7 @@ pub fn show_post(args: &Args) -> Option<usize> {
                     show_comment: false,
                     list: false,
                     delete: false,
-                    search: None,
+                    search_self: None,
                     cmd: None,
                 })),
             id: Some(id),
@@ -65,7 +65,7 @@ pub fn show_post_meta(args: &Args) -> Option<usize> {
                     show_comment: false,
                     list: false,
                     delete: false,
-                    search: None,
+                    search_self: None,
                     cmd: None,
                 })),
             id: Some(id),
@@ -89,7 +89,7 @@ pub fn show_post_comment(args: &Args) -> Option<usize> {
                     show_comment: true,
                     list: false,
                     delete: false,
-                    search: None,
+                    search_self: None,
                     cmd: None,
                 })),
             id: Some(id),
@@ -103,7 +103,7 @@ pub fn show_post_comment(args: &Args) -> Option<usize> {
     .wrap_some()
 }
 
-pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
+pub fn search_self_post(args: &Args) -> Option<(&String, usize, usize)> {
     match args {
         Args {
             cmd:
@@ -113,7 +113,7 @@ pub fn search_post(args: &Args) -> Option<(&String, usize, usize)> {
                     show_comment: false,
                     list: false,
                     delete: false,
-                    search: Some(keyword),
+                    search_self: Some(keyword),
                     cmd: None,
                 })),
             id: None,
@@ -141,7 +141,7 @@ pub fn delete_post(args: &Args) -> Option<usize> {
                     show_comment: false,
                     list: false,
                     delete: true,
-                    search: None,
+                    search_self: None,
                     cmd: None,
                 })),
             id: Some(id),
@@ -165,7 +165,7 @@ pub fn create_post(args: &Args) -> Option<&CreateCmd> {
                     show_comment: false,
                     list: false,
                     delete: false,
-                    search: None,
+                    search_self: None,
                     cmd: Some(cmd::post::Cmd::Create(cmd)),
                 })),
             id: None,
@@ -189,7 +189,7 @@ pub fn update_post(args: &Args) -> Option<(usize, &UpdateCmd)> {
                     show_comment: false,
                     list: false,
                     delete: false,
-                    search: None,
+                    search_self: None,
                     cmd: Some(cmd::post::Cmd::Update(cmd)),
                 })),
             id: Some(id),
