@@ -6,6 +6,7 @@ pub mod get_meta_list;
 pub mod get_one;
 pub mod get_one_raw;
 pub mod search_self;
+pub mod search_site;
 pub mod update;
 
 pub struct Post {
