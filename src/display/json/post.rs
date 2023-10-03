@@ -1,5 +1,6 @@
 use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
+use crate::api::post::search_site::SearchResultEntry;
 use crate::display::json::{fmt_err, fmt_ok, fmt_result};
 use anyhow::Result;
 use serde_json::json;
@@ -58,4 +59,16 @@ pub fn search_self_post(result: Result<(impl ExactSizeIterator<Item = usize>, us
        "id_list": id_list,
     });
     fmt_ok(json)
+}
+
+pub fn search_site_post(
+    entry_iter: Result<impl ExactSizeIterator<Item = SearchResultEntry>>,
+) -> String {
+    let entry_iter = match entry_iter {
+        Ok(o) => o,
+        Err(e) => return fmt_err(&e),
+    };
+
+    let entry_vec = entry_iter.collect::<Vec<SearchResultEntry>>();
+    fmt_ok(entry_vec)
 }

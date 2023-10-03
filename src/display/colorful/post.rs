@@ -1,5 +1,6 @@
 use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
+use crate::api::post::search_site::SearchResultEntry;
 use crate::args::TimeStyle;
 use crate::display::colorful::fmt_err;
 use crate::infra::result::WrapResult;
@@ -135,4 +136,35 @@ pub fn search_self_post(
             buf
         },
     )
+}
+
+pub fn search_site_post(
+    time_style: &TimeStyle,
+    entry_iter: Result<impl ExactSizeIterator<Item = SearchResultEntry>>,
+) -> Result<String> {
+    let entry_iter = match entry_iter {
+        Ok(o) => o,
+        Err(e) => return fmt_err(&e).wrap_ok(),
+    };
+
+    entry_iter
+        .map(|entry| try {
+            let mut buf = String::new();
+            {
+                let buf = &mut buf;
+                let create_time = display_cnb_time(&entry.create_time, time_style);
+                writeln!(buf, "{} {}", create_time.dimmed(), entry.url.dimmed())?;
+                writeln!(buf, "  {}", entry.title)?;
+                let view_vote_comment_count = format!(
+                    "View {} Vote {} Comment {}",
+                    entry.view_count, entry.vote_count, entry.comment_count
+                );
+                writeln!(buf, "    {}", view_vote_comment_count.dimmed())?;
+            }
+            buf
+        })
+        .try_fold(String::new(), |mut acc, buf: Result<String>| try {
+            writeln!(&mut acc, "{}", buf?)?;
+            acc
+        })
 }

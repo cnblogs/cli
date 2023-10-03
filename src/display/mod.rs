@@ -4,6 +4,7 @@ use crate::api::ing::get_list::IngEntry;
 use crate::api::news::get_list::NewsEntry;
 use crate::api::post::get_comment_list::PostCommentEntry;
 use crate::api::post::get_one::PostEntry;
+use crate::api::post::search_site::SearchResultEntry;
 use crate::api::user::info::UserInfo;
 use crate::args::{Style, TimeStyle};
 use crate::infra::result::WrapResult;
@@ -126,6 +127,18 @@ pub fn search_self_post(
         Style::Colorful => colorful::post::search_self_post(result),
         Style::Normal => normal::post::search_self_post(result),
         Style::Json => json::post::search_self_post(result).wrap_ok(),
+    }
+}
+
+pub fn search_site_post(
+    style: &Style,
+    time_style: &TimeStyle,
+    entry_iter: Result<impl ExactSizeIterator<Item = SearchResultEntry>>,
+) -> Result<String> {
+    match style {
+        Style::Colorful => colorful::post::search_site_post(time_style, entry_iter),
+        Style::Normal => normal::post::search_site_post(time_style, entry_iter),
+        Style::Json => json::post::search_site_post(entry_iter).wrap_ok(),
     }
 }
 

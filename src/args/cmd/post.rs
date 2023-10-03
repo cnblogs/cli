@@ -110,6 +110,14 @@ pub struct SearchCmd {
     #[arg(long = "self")]
     #[arg(value_name = "KEYWORD")]
     pub self_keyword: Option<String>,
+
+    #[arg(verbatim_doc_comment)]
+    /// Search site post
+    ///   Example: cnb post search --site 'Keyword'
+    #[arg(long)]
+    #[arg(long = "site")]
+    #[arg(value_name = "KEYWORD")]
+    pub site_keyword: Option<String>,
 }
 
 #[derive(Debug, Subcommand)]

@@ -160,6 +160,14 @@ async fn main() -> Result<()> {
             foe.then(|| panic_if_err(&result));
             display::search_self_post(style, result)?
         }
+        _ if let Some((kw, skip, take)) = parser::post::search_site_post(&args) => {
+            let result = Post::new(pat?)
+                .search_site(skip, take, kw)
+                .await
+                .map(|vec | vec.into_iter().dyn_rev(rev));
+            foe.then(|| panic_if_err(&result));
+            display::search_site_post(style, time_style, result)?
+        }
         _ if let Some(create_cmd) = parser::post::create_post(&args) => {
             let CreateCmd { title, body, publish } = create_cmd;
             let id = Post::new(pat?).create(title, body, *publish).await;

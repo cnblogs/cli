@@ -112,6 +112,38 @@ pub fn search_self_post(args: &Args) -> Option<(&String, usize, usize)> {
                     cmd:
                         Some(cmd::post::Cmd::Search(cmd::post::SearchCmd {
                             self_keyword: Some(keyword),
+                            site_keyword: None,
+                        })),
+                })),
+            id: None,
+            rev: _,
+            skip,
+            take,
+            global_opt: _,
+        } => {
+            let skip = get_skip(skip);
+            let take = get_take(take);
+            (keyword, skip, take)
+        }
+        _ => return None,
+    }
+    .wrap_some()
+}
+
+pub fn search_site_post(args: &Args) -> Option<(&String, usize, usize)> {
+    match args {
+        Args {
+            cmd:
+                Some(Cmd::Post(cmd::post::Opt {
+                    show: false,
+                    show_meta: false,
+                    show_comment: false,
+                    list: false,
+                    delete: false,
+                    cmd:
+                        Some(cmd::post::Cmd::Search(cmd::post::SearchCmd {
+                            self_keyword: None,
+                            site_keyword: Some(keyword),
                         })),
                 })),
             id: None,
