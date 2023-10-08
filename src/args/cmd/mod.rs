@@ -7,6 +7,7 @@ pub mod user;
 use clap::Subcommand;
 
 #[derive(Debug, Subcommand)]
+#[non_exhaustive]
 pub enum Cmd {
     /// User operations
     #[clap(visible_alias = "u")]

@@ -1,6 +1,7 @@
 use clap::Parser;
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct Opt {
     #[arg(verbatim_doc_comment)]
     /// Login with your personal access token (PAT)

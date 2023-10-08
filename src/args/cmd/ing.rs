@@ -2,6 +2,7 @@ use crate::api::ing::IngType;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct Opt {
     #[command(subcommand)]
     pub cmd: Option<Cmd>,
@@ -28,6 +29,7 @@ pub struct Opt {
 }
 
 #[derive(Debug, Subcommand)]
+#[non_exhaustive]
 pub enum Cmd {
     #[clap(verbatim_doc_comment)]
     /// Show ing list, order by time in DESC

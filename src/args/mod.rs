@@ -18,6 +18,7 @@ pub enum TimeStyle {
 }
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct GlobalOpt {
     #[arg(verbatim_doc_comment)]
     /// Execute with specific PAT
@@ -82,6 +83,7 @@ pub struct GlobalOpt {
 
 #[derive(Parser, Debug)]
 #[command(author, about, long_about = None, version)]
+#[non_exhaustive]
 pub struct Args {
     #[command(subcommand)]
     pub cmd: Option<Cmd>,

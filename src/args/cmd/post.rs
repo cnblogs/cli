@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct Opt {
     #[clap(verbatim_doc_comment)]
     /// Show title and content of a specific post
@@ -51,6 +52,7 @@ pub struct Opt {
 }
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct CreateCmd {
     #[arg(verbatim_doc_comment)]
     /// Set post title
@@ -76,6 +78,7 @@ pub struct CreateCmd {
 }
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct UpdateCmd {
     #[arg(verbatim_doc_comment)]
     /// Set post title
@@ -102,6 +105,7 @@ pub struct UpdateCmd {
 }
 
 #[derive(Parser, Debug)]
+#[non_exhaustive]
 pub struct SearchCmd {
     #[arg(verbatim_doc_comment)]
     /// Search self post
@@ -121,6 +125,7 @@ pub struct SearchCmd {
 }
 
 #[derive(Debug, Subcommand)]
+#[non_exhaustive]
 pub enum Cmd {
     #[clap(verbatim_doc_comment)]
     /// Create post
