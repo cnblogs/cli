@@ -8,8 +8,8 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct PostCommentEntry {
-    #[serde(rename = "Id")]
     pub id: usize,
     #[serde(rename = "Body")]
     pub content: String,
@@ -19,7 +19,6 @@ pub struct PostCommentEntry {
     pub user_home_url: String,
     #[serde(rename = "FaceUrl")]
     pub avatar_url: String,
-    #[serde(rename = "Floor")]
     pub floor: usize,
     #[serde(rename = "DateAdded")]
     pub create_time: String,

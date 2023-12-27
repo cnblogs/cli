@@ -7,24 +7,18 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct IngCommentEntry {
-    #[serde(rename = "Id")]
     pub id: usize,
-    #[serde(rename = "Content")]
     pub content: String,
     #[serde(rename = "DateAdded")]
     pub create_time: String,
-    #[serde(rename = "StatusId")]
     pub status_id: usize,
-    #[serde(rename = "UserAlias")]
     pub user_alias: String,
     #[serde(rename = "UserDisplayName")]
     pub user_name: String,
-    #[serde(rename = "UserIconUrl")]
     pub user_icon_url: String,
-    #[serde(rename = "UserId")]
     pub user_id: usize,
-    #[serde(rename = "UserGuid")]
     pub user_guid: String,
 }
 

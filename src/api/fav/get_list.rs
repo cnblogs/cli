@@ -10,14 +10,12 @@ use serde::{Deserialize, Serialize};
 use std::ops::ControlFlow;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct FavEntry {
-    #[serde(rename = "Title")]
     pub title: String,
     #[serde(rename = "LinkUrl")]
     pub url: String,
-    #[serde(rename = "Summary")]
     pub summary: String,
-    #[serde(rename = "Tags")]
     pub tags: Vec<String>,
     #[serde(rename = "DateAdded")]
     pub create_time: String,
