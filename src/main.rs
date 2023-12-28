@@ -1,6 +1,7 @@
 #![feature(try_blocks)]
 #![feature(if_let_guard)]
 #![feature(let_chains)]
+#![feature(type_name_of_val)]
 #![feature(iterator_try_collect)]
 #![feature(iterator_try_reduce)]
 #![warn(clippy::all, clippy::nursery, clippy::cargo_common_metadata)]
@@ -169,13 +170,13 @@ async fn main() -> Result<()> {
         }
         _ if let Some(create_cmd) = parser::post::create_post(&args) => {
             let CreateCmd { title, body, publish } = create_cmd;
-            let id = Post::new(pat?).create(title.as_str(), body.as_str(), *publish).await;
+            let id = Post::new(pat?).create(title, body, *publish).await;
             foe.then(|| panic_if_err(&id));
             display::create_post(style, &id)
         }
         _ if let Some((id, update_cmd)) = parser::post::update_post(&args) => {
             let UpdateCmd { title, body, publish } = update_cmd;
-            let id = Post::new(pat?).update(id, &title, &body, &publish).await;
+            let id = Post::new(pat?).update(id, title, body, publish).await;
             foe.then(|| panic_if_err(&id));
             display::update_post(style, &id)
         }
