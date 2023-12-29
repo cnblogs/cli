@@ -10,30 +10,21 @@ use serde::{Deserialize, Serialize};
 use std::ops::ControlFlow;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct IngEntry {
-    #[serde(rename = "Id")]
     pub id: usize,
-    #[serde(rename = "Content")]
     pub content: String,
-    #[serde(rename = "IsPrivate")]
     pub is_private: bool,
-    #[serde(rename = "IsLucky")]
     pub is_lucky: bool,
-    #[serde(rename = "CommentCount")]
     pub comment_count: usize,
     #[serde(rename = "DateAdded")]
     pub create_time: String,
-    #[serde(rename = "UserAlias")]
     pub user_alias: String,
     #[serde(rename = "UserDisplayName")]
     pub user_name: String,
-    #[serde(rename = "UserIconUrl")]
     pub user_icon_url: String,
-    #[serde(rename = "UserId")]
     pub user_id: usize,
-    #[serde(rename = "UserGuid")]
     pub user_guid: String,
-    #[serde(rename = "SendFrom")]
     pub send_from: IngSendFrom,
     #[serde(rename = "Icons")]
     pub icons: String,

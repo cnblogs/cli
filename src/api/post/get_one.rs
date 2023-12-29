@@ -9,6 +9,7 @@ use serde_json::Value;
 
 // TODO: not elegant
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct PostEntry {
     pub id: usize,
     pub title: String,
@@ -19,11 +20,8 @@ pub struct PostEntry {
     #[serde(rename = "dateUpdated")]
     pub modify_time: String,
 
-    #[serde(rename = "isDraft")]
     pub is_draft: bool,
-    #[serde(rename = "isPinned")]
     pub is_pinned: bool,
-    #[serde(rename = "isPublished")]
     pub is_published: bool,
 
     // WRN:

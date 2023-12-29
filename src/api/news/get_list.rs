@@ -8,22 +8,16 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct NewsEntry {
-    #[serde(rename = "Id")]
     pub id: usize,
-    #[serde(rename = "Title")]
     pub title: String,
-    #[serde(rename = "Summary")]
     pub summary: String,
-    #[serde(rename = "TopicId")]
     pub topic_id: usize,
     #[serde(rename = "TopicIcon")]
     pub topic_icon_url: Option<String>,
-    #[serde(rename = "ViewCount")]
     pub view_count: usize,
-    #[serde(rename = "CommentCount")]
     pub comment_count: usize,
-    #[serde(rename = "DiggCount")]
     pub digg_count: usize,
     #[serde(rename = "DateAdded")]
     pub create_time: String,

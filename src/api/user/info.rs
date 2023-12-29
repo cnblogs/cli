@@ -7,30 +7,21 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "PascalCase")]
 pub struct UserInfo {
-    #[serde(rename = "UserId")]
     pub user_id: String,
     #[serde(rename = "SpaceUserID")]
     pub space_user_id: usize,
-    #[serde(rename = "BlogId")]
     pub blog_id: usize,
-    #[serde(rename = "DisplayName")]
     pub display_name: String,
-    #[serde(rename = "Face")]
     pub face: String,
-    #[serde(rename = "Avatar")]
     pub avatar: String,
-    #[serde(rename = "Seniority")]
     pub seniority: String,
-    #[serde(rename = "BlogApp")]
     pub blog_app: String,
-    #[serde(rename = "FollowingCount")]
     pub following_count: usize,
     #[serde(rename = "FollowerCount")]
     pub followers_count: usize,
-    #[serde(rename = "IsVip")]
     pub is_vip: bool,
-    #[serde(rename = "Joined")]
     pub joined: String,
 }
 
