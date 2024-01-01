@@ -1,7 +1,6 @@
 #![feature(try_blocks)]
 #![feature(if_let_guard)]
 #![feature(let_chains)]
-#![feature(type_name_of_val)]
 #![feature(iterator_try_collect)]
 #![feature(iterator_try_reduce)]
 #![warn(clippy::all, clippy::nursery, clippy::cargo_common_metadata)]
@@ -45,6 +44,7 @@ fn show_non_printable_chars(text: String) -> String {
         .replace("\r\n", &make_red("␍␊\r\n"))
 }
 
+#[allow(clippy::missing_const_for_fn)]
 fn panic_if_err<T>(result: &Result<T>) {
     if let Err(e) = result {
         panic!("{}", e)
@@ -87,19 +87,23 @@ async fn main() -> Result<()> {
             display::user_info(style, &user_info)?
         }
         _ if let Some((skip, take, r#type, align)) = parser::ing::list_ing(&args) => {
-            let ing_with_comment_iter = infer::<Result<_, _>>(try {
-                let ing_api = Ing::new(pat?);
-                let ing_vec = ing_api.get_list(skip, take, &r#type).await?;
-                ing_vec.into_iter()
-                    .map(|ing| async {
-                        let result = ing_api.get_comment_list(ing.id).await;
-                        result.map(|comment_vec| (ing, comment_vec))
-                    })
-                    .join_all()
-                    .await
-                    .into_iter()
-                    .collect::<Result<Vec<_>>>()?
-            }).map(|vec| vec.into_iter().dyn_rev(rev));
+            let ing_with_comment_iter = infer::<Result<_, _>>(
+                try {
+                    let ing_api = Ing::new(pat?);
+                    let ing_vec = ing_api.get_list(skip, take, &r#type).await?;
+                    ing_vec
+                        .into_iter()
+                        .map(|ing| async {
+                            let result = ing_api.get_comment_list(ing.id).await;
+                            result.map(|comment_vec| (ing, comment_vec))
+                        })
+                        .join_all()
+                        .await
+                        .into_iter()
+                        .collect::<Result<Vec<_>>>()?
+                },
+            )
+            .map(|vec| vec.into_iter().dyn_rev(rev));
             foe.then(|| panic_if_err(&ing_with_comment_iter));
             display::list_ing(style, time_style, ing_with_comment_iter, align)?
         }
@@ -113,7 +117,9 @@ async fn main() -> Result<()> {
         }
         _ if let Some((content, id)) = parser::ing::comment_ing(&args) => {
             let content = try {
-                Ing::new(pat?).comment(id, content.clone(), None, None).await?;
+                Ing::new(pat?)
+                    .comment(id, content.clone(), None, None)
+                    .await?;
                 content
             };
             foe.then(|| panic_if_err(&content));
@@ -131,7 +137,8 @@ async fn main() -> Result<()> {
         }
         _ if let Some(id) = parser::post::show_post_comment(&args) => {
             let comment_iter = Post::new(pat?)
-                .get_comment_list(id).await
+                .get_comment_list(id)
+                .await
                 .map(|vec| vec.into_iter().dyn_rev(rev));
             foe.then(|| panic_if_err(&comment_iter));
             display::show_post_comment(style, time_style, comment_iter)?
@@ -164,18 +171,26 @@ async fn main() -> Result<()> {
             let result = Post::new(pat?)
                 .search_site(skip, take, kw)
                 .await
-                .map(|vec | vec.into_iter().dyn_rev(rev));
+                .map(|vec| vec.into_iter().dyn_rev(rev));
             foe.then(|| panic_if_err(&result));
             display::search_site_post(style, time_style, result)?
         }
         _ if let Some(create_cmd) = parser::post::create_post(&args) => {
-            let CreateCmd { title, body, publish } = create_cmd;
+            let CreateCmd {
+                title,
+                body,
+                publish,
+            } = create_cmd;
             let id = Post::new(pat?).create(title, body, *publish).await;
             foe.then(|| panic_if_err(&id));
             display::create_post(style, &id)
         }
         _ if let Some((id, update_cmd)) = parser::post::update_post(&args) => {
-            let UpdateCmd { title, body, publish } = update_cmd;
+            let UpdateCmd {
+                title,
+                body,
+                publish,
+            } = update_cmd;
             let id = Post::new(pat?).update(id, title, body, publish).await;
             foe.then(|| panic_if_err(&id));
             display::update_post(style, &id)
@@ -197,9 +212,8 @@ async fn main() -> Result<()> {
             display::list_fav(style, time_style, fav_iter)?
         }
 
-        _ if no_operation(&args) =>
-            infer::<Command>(Args::command()).render_help().to_string(),
-        _ => "Invalid usage, follow '--help' for more information".to_owned()
+        _ if no_operation(&args) => infer::<Command>(Args::command()).render_help().to_string(),
+        _ => "Invalid usage, follow '--help' for more information".to_owned(),
     };
 
     if global_opt.quiet {

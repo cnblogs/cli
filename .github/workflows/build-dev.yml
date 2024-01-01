@@ -39,12 +39,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          override: true
-          toolchain: nightly-2023-09-06
-          components: rustfmt, clippy
+        uses: dsherret/rust-toolchain-file@v1
 
       - name: Show Rust toolchain version
         shell: bash
