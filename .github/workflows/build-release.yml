@@ -30,15 +30,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.ref }}  # github.ref 变量将自动填充为触发事件的分支或标签名
 
       - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          override: true
-          toolchain: nightly-2023-09-06
-          components: rustfmt, clippy
+        uses: dsherret/rust-toolchain-file@v1
 
       - name: Setup musl-tools
         if: matrix.targets.target == 'x86_64-unknown-linux-musl'
@@ -99,4 +94,3 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ steps.gen-name.outputs.NAME }}.zip
-

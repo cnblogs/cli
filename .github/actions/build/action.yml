@@ -18,4 +18,4 @@ runs:
     - name: Build release
       if: ${{ inputs.release == 'true' }}
       shell: bash
-      run: cargo build --target ${{ inputs.target }} -r
+      run: cargo build --release --target ${{ inputs.target }} -r
