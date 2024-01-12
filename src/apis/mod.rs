@@ -11,4 +11,9 @@
 //! - token: 认证相关
 //! - marks: 收藏相关
 
-pub mod statuses;
+pub mod ing;
+pub mod token;
+
+pub const OAUTH_CLIENT: &str = "https://api.cnblogs.com/token";
+pub const OAUTH_TOKEN: &str = "https://oauth.cnblogs.com/connect/token";
+pub const OAUTHORIZE: &str = "https://oauth.cnblogs.com/connect/authorize";
