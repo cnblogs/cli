@@ -15,19 +15,32 @@
 pub mod comment;
 
 use anyhow::{Ok, Result};
+use clap::{ValueEnum, Parser};
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::{infra::http::RequestBuilderExt, openapi};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 #[serde(default)]
 pub struct IngContent {
     pub content: String,
     pub is_private: bool,
+    pub lucky: bool,
     pub client_type: IngSendFrom,
+}
+
+impl Default for IngContent {
+    fn default() -> Self {
+        IngContent {
+            content: "".to_string(),
+            is_private: true,
+            lucky: false,
+            client_type: IngSendFrom::default(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
@@ -56,7 +69,7 @@ impl Default for IngSendFrom {
 #[serde(default)]
 pub struct QeurySet {
     #[serde(skip)]
-    pub types: QueryIngType,
+    pub r#type: QueryIngType,
     pub page_index: u64,
     pub page_size: u64,
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -66,9 +79,9 @@ pub struct QeurySet {
 impl Default for QeurySet {
     fn default() -> Self {
         return Self {
-            types: QueryIngType::default(),
+            r#type: QueryIngType::default(),
             page_index: 1,
-            page_size: 30,
+            page_size: 10,
             tag: "".to_string(),
         };
     }
@@ -83,20 +96,30 @@ impl Default for QeurySet {
 /// Tag = 10,  tag 必填
 /// Comment = 13 回复我
 /// Mention = 14,
-#[derive(Debug)]
+#[derive(Debug, Clone, ValueEnum, Parser)]
 pub enum QueryIngType {
-    Following,
-    My,
-    MyComment,
-    RecentComment,
-    Mention,
-    Comment,
-    All,
+    Following = 1,
+    My = 4,
+    All = 5,
+    RecentComment = 6,
+    MyComment = 7,
+    Tag = 10,
+    Comment = 13,
+    Mention = 14,
 }
 
 impl Default for QueryIngType {
     fn default() -> Self {
         return Self::All;
+    }
+}
+
+impl From<u8> for QueryIngType {
+    fn from(value: u8) -> Self {
+        match value {
+            1 => Self::Following,
+            _ => Self::All,
+        }
     }
 }
 
@@ -108,6 +131,7 @@ impl QueryIngType {
             QueryIngType::All => 5,
             QueryIngType::RecentComment => 6,
             QueryIngType::MyComment => 7,
+            QueryIngType::Tag => 10,
             QueryIngType::Mention => 14,
             QueryIngType::Comment => 13,
         }
@@ -151,7 +175,7 @@ pub async fn lastest(token: &str) -> Result<Response> {
 /// 页数是从1开始的
 pub async fn query(token: &str, q: &QeurySet) -> Result<Vec<IngEntry>> {
     let r = Client::new()
-        .get(openapi!("/statuses/@{}", q.types.as_u8()))
+        .get(openapi!("/statuses/@{}", q.r#type.as_u8()))
         .pat_auth(token)
         .query(&q)
         .send()
@@ -163,7 +187,7 @@ pub async fn query(token: &str, q: &QeurySet) -> Result<Vec<IngEntry>> {
 }
 
 /// 根据ID查询
-pub async fn query_by_id(token: &str, id: &str) -> Result<IngEntry> {
+pub async fn query_by_id(token: &str, id: &u64) -> Result<IngEntry> {
     let r = Client::new()
         .get(openapi!("/statuses/{}", id))
         .pat_auth(token)

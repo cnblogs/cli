@@ -25,6 +25,7 @@ use cnblogs_lib::infra::infer::infer;
 use cnblogs_lib::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};
 use cnblogs_lib::infra::option::OptionExt;
 use cnblogs_lib::infra::result::WrapResult;
+use cnblogs_lib::logic::ing::get_ings_and_comments;
 use colored::Colorize;
 use std::env;
 
@@ -84,6 +85,13 @@ async fn main() -> Result<()> {
             foe.then(|| panic_if_err(&user_info));
             display::user_info(style, &user_info)?
         }
+
+        _ if let Some(q) = parser::ing::query(&args) => {
+
+            get_ings_and_comments(pat.unwrap().as_str(), &q).await;
+            "".to_string()
+        }
+
         _ if let Some((skip, take, r#type, align)) = parser::ing::list_ing(&args) => {
             let ing_with_comment_iter = infer::<Result<_, _>>(
                 try {

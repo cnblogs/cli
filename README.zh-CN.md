@@ -50,3 +50,16 @@ cnb user --info
 ```shell
 cnb posts [comment] [list,create,query,delete,update] --[id/file/quertset] --[pagesize,pagecount] 
 ```
+
+## 闪存cli
+
+闪存cli设计如下：
+
+```sh
+cnb ing query   # 默认10条
+cnb ing query --id 123456
+cnb ing query --page 1 --count 10
+cnb ing query --type All --page 1 --count 10 --tag Linux
+cnb ing create --conent hello --private false --lucky false
+cnb ing delete --id 123456
+```

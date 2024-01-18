@@ -8,6 +8,7 @@ license = "MIT"
 repository = "https://github.com/cnblogs/cli"
 keywords = ["cli", "cnblogs", "blog"]
 categories = ["command-line-utilities"]
+default-run = "cnb"
 
 [profile.dev]
 lto = true
