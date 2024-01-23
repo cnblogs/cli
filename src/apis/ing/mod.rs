@@ -15,12 +15,15 @@
 pub mod comment;
 
 use anyhow::{Ok, Result};
-use clap::{ValueEnum, Parser};
+use clap::{Parser, ValueEnum};
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
-use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::{infra::http::RequestBuilderExt, openapi};
+use crate::{
+    api::ing::{get_list::IngEntry, IngSendFrom},
+    infra::http::RequestBuilderExt,
+    openapi,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
@@ -41,20 +44,6 @@ impl Default for IngContent {
             client_type: IngSendFrom::default(),
         }
     }
-}
-
-#[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
-#[repr(u8)]
-pub enum IngSendFrom {
-    None = 0,
-    Ms = 1,
-    GTalk = 2,
-    Qq = 3,
-    Sms = 5,
-    CellPhone = 6,
-    Web = 8,
-    VsCode = 9,
-    Cli = 13,
 }
 
 impl Default for IngSendFrom {
@@ -90,12 +79,12 @@ impl Default for QeurySet {
 ///
 /// Follow = 1, 关注
 /// Myself = 4, 我的
-/// Public = 5,
-/// RecentComment = 6, //新回应
+/// Public = 5, 全站
+/// RecentComment = 6, 新回应
 /// MyComment = 7, 我回应
 /// Tag = 10,  tag 必填
 /// Comment = 13 回复我
-/// Mention = 14,
+/// Mention = 14, @我
 #[derive(Debug, Clone, ValueEnum, Parser)]
 pub enum QueryIngType {
     Following = 1,
@@ -118,6 +107,12 @@ impl From<u8> for QueryIngType {
     fn from(value: u8) -> Self {
         match value {
             1 => Self::Following,
+            4 => Self::My,
+            6 => Self::RecentComment,
+            7 => Self::MyComment,
+            10 => Self::Tag,
+            13 => Self::Comment,
+            14 => Self::Mention,
             _ => Self::All,
         }
     }
@@ -136,27 +131,6 @@ impl QueryIngType {
             QueryIngType::Comment => 13,
         }
     }
-}
-
-/// 闪存详细内容。
-///
-/// 用于根据ID查询闪存的结果解析。
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct IngEntry {
-    pub id: u64,
-    pub content: String,
-    pub is_private: bool,
-    pub is_lucky: bool,
-    pub comment_count: u64,
-    pub date_added: String,
-    pub user_alias: String,
-    pub user_display_name: String,
-    pub user_icon_url: String,
-    pub user_id: u64,
-    pub user_guid: String,
-    pub send_from: u8,
-    pub icons: String,
 }
 
 pub async fn lastest(token: &str) -> Result<Response> {
@@ -211,7 +185,7 @@ pub async fn post(token: &str, c: &IngContent) -> Result<Response> {
 }
 
 /// 删除一条闪存
-pub async fn delete(token: &str, id: String) -> Result<Response> {
+pub async fn delete(token: &str, id: u64) -> Result<Response> {
     let r = Client::new()
         .post(openapi!("/statuses/{}", id))
         .pat_auth(token)

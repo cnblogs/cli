@@ -5,7 +5,7 @@ use anyhow::{Ok, Result};
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
 
-use crate::{infra::http::RequestBuilderExt, openapi};
+use crate::{api::ing::get_comment_list::IngCommentEntry, infra::http::RequestBuilderExt, openapi};
 
 /// 闪存评论及评论回复
 ///
@@ -22,22 +22,6 @@ pub struct StatusComment {
     pub replay_to: u64,
     pub parent_comment_id: u64,
     pub content: String,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct IngCommentEntry {
-    pub id: usize,
-    pub content: String,
-    #[serde(rename = "DateAdded")]
-    pub create_time: String,
-    pub status_id: usize,
-    pub user_alias: String,
-    #[serde(rename = "UserDisplayName")]
-    pub user_name: String,
-    pub user_icon_url: String,
-    pub user_id: usize,
-    pub user_guid: String,
 }
 
 /// 根据闪存ID发表一个评论
