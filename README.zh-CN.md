@@ -56,10 +56,15 @@ cnb posts [comment] [list,create,query,delete,update] --[id/file/quertset] --[pa
 闪存cli设计如下：
 
 ```sh
-cnb ing query   # 默认10条
-cnb ing query --id 123456
-cnb ing query --page 1 --count 10
-cnb ing query --type All --page 1 --count 10 --tag Linux
-cnb ing create --conent hello --private false --lucky false
+cnb ing query   # 默认10条s
+cnb ing query --id 123456 --id 123
+cnb ing query -n 1 -s 10
+cnb ing query --type f -n 2 -s 10
+# 根据tag查找，-g为tag名称  -n 2 -s 10 分页
+cnb ing query -t t -g Linux
+cnb ing create hello --private --lucky
+cnb ing create hello --private --lucky --tag hello
 cnb ing delete --id 123456
 ```
+
+TODO： “提到我”存在解析问题。待完善。

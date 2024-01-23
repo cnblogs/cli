@@ -1,6 +1,9 @@
 use crate::{
-    api::ing::IngType,
-    apis::{self, ing::QeurySet},
+    api::ing::{IngType, IngSendFrom},
+    apis::{
+        self,
+        ing::{IngContent, QeurySet},
+    },
 };
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
@@ -59,49 +62,48 @@ pub enum Cmd {
     },
 
     /// 根据条件查询闪存。
+    /// 
     Query(QueryIng),
 
     /// 创建闪存
     Create(CreateIng),
 
     /// 根据ID删除闪存
-    Delete {
-        #[arg(long)]
-        id: Vec<u64>,
-    },
+    Delete { id: Vec<u64> },
 }
 
 #[derive(Debug, Args)]
 pub struct CreateIng {
     /// 闪存内容
-    // #[arg(short, long)]
-    content: Option<String>,
-    #[arg(short, long, default_value_t = true)]
-    private: bool,
-
-    #[arg(short, long, default_value_t = false)]
-    lucky: bool,
-
-    #[arg(short, long)]
-    tag: Option<String>,
-}
-
-#[derive(Args, Debug)]
-struct Create {
-    /// 闪存内容
-    content: String,
+    pub content: String,
 
     /// 是否私有，默认是全站
     #[arg(short, long, default_value_t = true)]
-    private: bool,
+    pub private: bool,
 
     /// 是否发布为幸运
     #[arg(short, long, default_value_t = false)]
-    lucky: bool,
+    pub lucky: bool,
 
     /// 是否发布在某个标签下，默认不发布标签。
     #[arg(short, long, default_value = "")]
-    tag: String,
+    pub tag: String,
+}
+
+impl From<CreateIng> for IngContent {
+    fn from(value: CreateIng) -> Self {
+        let mut cont = String::new();
+        if !value.tag.is_empty() {
+            cont.push_str(format!("[{}]", value.tag).as_str())
+        }
+        cont.push_str(value.content.as_str());
+        Self {
+            content: cont,
+            is_private: value.private,
+            lucky: value.lucky,
+            client_type: IngSendFrom::Cli
+        }
+    }
 }
 
 /// 查询参数
