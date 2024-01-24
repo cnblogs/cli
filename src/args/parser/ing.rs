@@ -93,8 +93,8 @@ pub fn query(args: &Args) -> Option<QueryIng> {
             global_opt: _,
         } => QueryIng {
             r#type: r#type.clone(),
-            page_index: page_index.clone(),
-            page_size: page_size.clone(),
+            page_index: *page_index,
+            page_size: *page_size,
             tag: tag.clone(),
             id: id.clone(),
         },
@@ -126,8 +126,8 @@ pub fn create_ing(args: &Args) -> Option<CreateIng> {
             global_opt: _,
         } => CreateIng {
             content: content.clone(),
-            private: private.clone(),
-            lucky: lucky.clone(),
+            private: *private,
+            lucky: *lucky,
             tag: tag.clone(),
         },
         _ => return None,

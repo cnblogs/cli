@@ -35,14 +35,13 @@ pub async fn get_ings_and_comments(
             .map(|x| x.unwrap())
             .collect::<Vec<IngEntry>>();
 
-        return get_ing_comments(t, a).await;
+        get_ing_comments(t, a).await
     } else {
         let a = iq(t, &q.into())
             .await?
             .into_iter()
-            .map(|x| x.into())
             .collect::<Vec<api::ing::get_list::IngEntry>>();
-        return get_ing_comments(t, a).await;
+        get_ing_comments(t, a).await
     }
 }
 

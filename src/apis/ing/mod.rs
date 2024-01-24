@@ -37,7 +37,7 @@ pub struct IngContent {
 
 impl Default for IngContent {
     fn default() -> Self {
-        IngContent {
+        Self {
             content: "".to_string(),
             is_private: true,
             lucky: false,
@@ -48,7 +48,7 @@ impl Default for IngContent {
 
 impl Default for IngSendFrom {
     fn default() -> Self {
-        return IngSendFrom::Cli;
+        Self::Cli
     }
 }
 
@@ -67,12 +67,12 @@ pub struct QeurySet {
 
 impl Default for QeurySet {
     fn default() -> Self {
-        return Self {
+        Self {
             r#type: QueryIngType::default(),
             page_index: 1,
             page_size: 10,
             tag: "".to_string(),
-        };
+        }
     }
 }
 
@@ -99,7 +99,7 @@ pub enum QueryIngType {
 
 impl Default for QueryIngType {
     fn default() -> Self {
-        return Self::All;
+        Self::All
     }
 }
 
@@ -119,16 +119,16 @@ impl From<u8> for QueryIngType {
 }
 
 impl QueryIngType {
-    fn as_u8(&self) -> u8 {
+    const fn as_u8(&self) -> u8 {
         match self {
-            QueryIngType::Following => 1,
-            QueryIngType::My => 4,
-            QueryIngType::All => 5,
-            QueryIngType::RecentComment => 6,
-            QueryIngType::MyComment => 7,
-            QueryIngType::Tag => 10,
-            QueryIngType::Mention => 14,
-            QueryIngType::Comment => 13,
+            Self::Following => 1,
+            Self::My => 4,
+            Self::All => 5,
+            Self::RecentComment => 6,
+            Self::MyComment => 7,
+            Self::Tag => 10,
+            Self::Mention => 14,
+            Self::Comment => 13,
         }
     }
 }
