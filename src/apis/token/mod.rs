@@ -69,7 +69,7 @@ pub struct OauthTokenReq {
 
 impl OauthTokenReq {
     pub fn new(client_id: String, client_secret: String, code: String) -> Self {
-        OauthTokenReq {
+        Self {
             cc: ClientCredentialsReq {
                 client_id,
                 client_secret,
@@ -107,14 +107,14 @@ pub struct RefreshTokenReq {
 
 impl RefreshTokenReq {
     pub fn new(client_id: String, client_secret: String, refresh_token: String) -> Self {
-        return RefreshTokenReq {
+        Self {
             cc: ClientCredentialsReq {
                 client_id,
                 client_secret,
                 grant_type: "refresh_token".to_string(),
             },
             refresh_token,
-        };
+        }
     }
 }
 
