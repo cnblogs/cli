@@ -8,8 +8,8 @@ use crate::{
         self,
         ing::{get_comment_list::IngCommentEntry, get_list::IngEntry},
     },
-    apis::ing::{comment, delete, query as iq, query_by_id, post},
-    args::cmd::ing::{QueryIng, CreateIng},
+    apis::ing::{comment, delete, post, query as iq, query_by_id},
+    args::cmd::ing::{CreateIng, QueryIng},
     infra::iter::IntoIteratorExt,
 };
 
@@ -80,11 +80,9 @@ pub async fn delete_by_ing_id(t: &str, ids: Vec<u64>) {
 }
 
 /// 创建闪存
-pub async fn create_ing_with_arg(t:&str, c: CreateIng) {
+pub async fn create_ing_with_arg(t: &str, c: CreateIng) {
     let cc = c.into();
-    let e = post(t, &cc)
-    .await
-    ;
+    let e = post(t, &cc).await;
 
     if e.is_err() {
         eprintln!("{:?}", e.as_ref().err().unwrap().to_string());

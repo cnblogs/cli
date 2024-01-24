@@ -1,5 +1,5 @@
 use crate::api::ing::IngType;
-use crate::args::cmd::ing::{QueryIng, CreateIng};
+use crate::args::cmd::ing::{CreateIng, QueryIng};
 use crate::args::parser::{get_skip, get_take};
 use crate::args::{cmd, Args, Cmd};
 use crate::infra::option::WrapOption;
@@ -103,7 +103,6 @@ pub fn query(args: &Args) -> Option<QueryIng> {
     .wrap_some()
 }
 
-
 #[allow(unused)]
 pub fn create_ing(args: &Args) -> Option<CreateIng> {
     match args {
@@ -127,7 +126,7 @@ pub fn create_ing(args: &Args) -> Option<CreateIng> {
             global_opt: _,
         } => CreateIng {
             content: content.clone(),
-            private:private.clone(),
+            private: private.clone(),
             lucky: lucky.clone(),
             tag: tag.clone(),
         },
@@ -136,15 +135,13 @@ pub fn create_ing(args: &Args) -> Option<CreateIng> {
     .wrap_some()
 }
 
-
 #[allow(unused)]
 pub fn delete(args: &Args) -> Option<Vec<u64>> {
     match args {
         Args {
             cmd:
                 Some(Cmd::Ing(cmd::ing::Opt {
-                    cmd:
-                        Some(cmd::ing::Cmd::Delete{id}),
+                    cmd: Some(cmd::ing::Cmd::Delete { id }),
                     publish: None,
                     comment: None,
                 })),
