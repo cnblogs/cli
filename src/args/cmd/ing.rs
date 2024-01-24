@@ -78,7 +78,7 @@ pub struct CreateIng {
     pub content: String,
 
     /// 是否私有，默认是全站
-    #[arg(short, long, default_value_t = true)]
+    #[arg(short, long, default_value_t = false)]
     pub private: bool,
 
     /// 是否发布为幸运
