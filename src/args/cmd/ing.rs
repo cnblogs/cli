@@ -1,5 +1,5 @@
 use crate::{
-    api::ing::{IngType, IngSendFrom},
+    api::ing::{IngSendFrom, IngType},
     apis::{
         self,
         ing::{IngContent, QeurySet},
@@ -62,7 +62,7 @@ pub enum Cmd {
     },
 
     /// 根据条件查询闪存。
-    /// 
+    ///
     Query(QueryIng),
 
     /// 创建闪存
@@ -101,7 +101,7 @@ impl From<CreateIng> for IngContent {
             content: cont,
             is_private: value.private,
             lucky: value.lucky,
-            client_type: IngSendFrom::Cli
+            client_type: IngSendFrom::Cli,
         }
     }
 }

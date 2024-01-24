@@ -19,12 +19,12 @@ use cnblogs_lib::api::user::User;
 use cnblogs_lib::args::cmd::post::{CreateCmd, UpdateCmd};
 use cnblogs_lib::args::parser::no_operation;
 use cnblogs_lib::args::{parser, Args};
-use cnblogs_lib::{display, logic};
 use cnblogs_lib::infra::fp::currying::eq;
 use cnblogs_lib::infra::infer::infer;
 use cnblogs_lib::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};
 use cnblogs_lib::infra::option::OptionExt;
 use cnblogs_lib::infra::result::WrapResult;
+use cnblogs_lib::{display, logic};
 use colored::Colorize;
 use std::env;
 
@@ -86,9 +86,10 @@ async fn main() -> Result<()> {
         }
 
         _ if let Some(q) = parser::ing::query(&args) => {
-            let ing_with_comment_iter = logic::ing::get_ings_and_comments(pat.unwrap().as_str(), &q)
-                .await
-                .map(|vec| vec.into_iter().dyn_rev(rev));
+            let ing_with_comment_iter =
+                logic::ing::get_ings_and_comments(pat.unwrap().as_str(), &q)
+                    .await
+                    .map(|vec| vec.into_iter().dyn_rev(rev));
 
             foe.then(|| panic_if_err(&ing_with_comment_iter));
             display::list_ing(style, time_style, ing_with_comment_iter, true)?
