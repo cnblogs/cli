@@ -1,5 +1,5 @@
 [package]
-name = "cnb"
+name = "cnblogs_lib"
 # WRN: Version will be updated by CI while create a tag, NERVER change this.
 version = "0.0.0-dev"
 edition = "2021"
@@ -8,6 +8,7 @@ license = "MIT"
 repository = "https://github.com/cnblogs/cli"
 keywords = ["cli", "cnblogs", "blog"]
 categories = ["command-line-utilities"]
+default-run = "cnb"
 
 [profile.dev]
 lto = true
@@ -47,3 +48,7 @@ colored = "2.0.4"
 terminal_size = "0.2.6"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "cnb"
+path = "src/bin/cnb.rs"

@@ -1,35 +1,32 @@
 #![feature(try_blocks)]
 #![feature(if_let_guard)]
 #![feature(let_chains)]
-#![feature(type_name_of_val)]
 #![feature(iterator_try_collect)]
 #![feature(iterator_try_reduce)]
 #![warn(clippy::all, clippy::nursery, clippy::cargo_common_metadata)]
 
-use crate::api::auth::session;
-use crate::api::fav::Fav;
-use crate::api::ing::Ing;
-use crate::api::news::News;
-use crate::api::post::Post;
-use crate::api::user::User;
-use crate::args::cmd::post::{CreateCmd, UpdateCmd};
-use crate::args::parser::no_operation;
-use crate::args::{parser, Args};
-use crate::infra::fp::currying::eq;
-use crate::infra::infer::infer;
-use crate::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};
-use crate::infra::option::OptionExt;
-use crate::infra::result::WrapResult;
+extern crate cnblogs_lib;
+
 use anyhow::Result;
 use clap::Parser;
 use clap::{Command, CommandFactory};
+use cnblogs_lib::api::auth::session;
+use cnblogs_lib::api::fav::Fav;
+use cnblogs_lib::api::ing::Ing;
+use cnblogs_lib::api::news::News;
+use cnblogs_lib::api::post::Post;
+use cnblogs_lib::api::user::User;
+use cnblogs_lib::args::cmd::post::{CreateCmd, UpdateCmd};
+use cnblogs_lib::args::parser::no_operation;
+use cnblogs_lib::args::{parser, Args};
+use cnblogs_lib::infra::fp::currying::eq;
+use cnblogs_lib::infra::infer::infer;
+use cnblogs_lib::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};
+use cnblogs_lib::infra::option::OptionExt;
+use cnblogs_lib::infra::result::WrapResult;
+use cnblogs_lib::{display, logic};
 use colored::Colorize;
 use std::env;
-
-pub mod api;
-pub mod args;
-pub mod display;
-pub mod infra;
 
 fn show_non_printable_chars(text: String) -> String {
     #[inline]
@@ -45,6 +42,7 @@ fn show_non_printable_chars(text: String) -> String {
         .replace("\r\n", &make_red("␍␊\r\n"))
 }
 
+#[allow(clippy::missing_const_for_fn)]
 fn panic_if_err<T>(result: &Result<T>) {
     if let Err(e) = result {
         panic!("{}", e)
@@ -86,20 +84,47 @@ async fn main() -> Result<()> {
             foe.then(|| panic_if_err(&user_info));
             display::user_info(style, &user_info)?
         }
-        _ if let Some((skip, take, r#type, align)) = parser::ing::list_ing(&args) => {
-            let ing_with_comment_iter = infer::<Result<_, _>>(try {
-                let ing_api = Ing::new(pat?);
-                let ing_vec = ing_api.get_list(skip, take, &r#type).await?;
-                ing_vec.into_iter()
-                    .map(|ing| async {
-                        let result = ing_api.get_comment_list(ing.id).await;
-                        result.map(|comment_vec| (ing, comment_vec))
-                    })
-                    .join_all()
+
+        _ if let Some(q) = parser::ing::query(&args) => {
+            let ing_with_comment_iter =
+                logic::ing::get_ings_and_comments(pat.unwrap().as_str(), &q)
                     .await
-                    .into_iter()
-                    .collect::<Result<Vec<_>>>()?
-            }).map(|vec| vec.into_iter().dyn_rev(rev));
+                    .map(|vec| vec.into_iter().dyn_rev(rev));
+
+            foe.then(|| panic_if_err(&ing_with_comment_iter));
+            display::list_ing(style, time_style, ing_with_comment_iter, true)?
+        }
+
+        _ if let Some(ids) = parser::ing::delete(&args) => {
+            let a = pat.as_ref().unwrap().as_str();
+            logic::ing::delete_by_ing_id(a, ids).await;
+            "".to_string()
+        }
+
+        _ if let Some(ci) = parser::ing::create_ing(&args) => {
+            let a = pat.as_ref().unwrap().as_str();
+            logic::ing::create_ing_with_arg(a, ci).await;
+            "".to_string()
+        }
+
+        _ if let Some((skip, take, r#type, align)) = parser::ing::list_ing(&args) => {
+            let ing_with_comment_iter = infer::<Result<_, _>>(
+                try {
+                    let ing_api = Ing::new(pat?);
+                    let ing_vec = ing_api.get_list(skip, take, &r#type).await?;
+                    ing_vec
+                        .into_iter()
+                        .map(|ing| async {
+                            let result = ing_api.get_comment_list(ing.id).await;
+                            result.map(|comment_vec| (ing, comment_vec))
+                        })
+                        .join_all()
+                        .await
+                        .into_iter()
+                        .collect::<Result<Vec<_>>>()?
+                },
+            )
+            .map(|vec| vec.into_iter().dyn_rev(rev));
             foe.then(|| panic_if_err(&ing_with_comment_iter));
             display::list_ing(style, time_style, ing_with_comment_iter, align)?
         }
@@ -113,7 +138,9 @@ async fn main() -> Result<()> {
         }
         _ if let Some((content, id)) = parser::ing::comment_ing(&args) => {
             let content = try {
-                Ing::new(pat?).comment(id, content.clone(), None, None).await?;
+                Ing::new(pat?)
+                    .comment(id, content.clone(), None, None)
+                    .await?;
                 content
             };
             foe.then(|| panic_if_err(&content));
@@ -131,7 +158,8 @@ async fn main() -> Result<()> {
         }
         _ if let Some(id) = parser::post::show_post_comment(&args) => {
             let comment_iter = Post::new(pat?)
-                .get_comment_list(id).await
+                .get_comment_list(id)
+                .await
                 .map(|vec| vec.into_iter().dyn_rev(rev));
             foe.then(|| panic_if_err(&comment_iter));
             display::show_post_comment(style, time_style, comment_iter)?
@@ -164,18 +192,28 @@ async fn main() -> Result<()> {
             let result = Post::new(pat?)
                 .search_site(skip, take, kw)
                 .await
-                .map(|vec | vec.into_iter().dyn_rev(rev));
+                .map(|vec| vec.into_iter().dyn_rev(rev));
             foe.then(|| panic_if_err(&result));
             display::search_site_post(style, time_style, result)?
         }
         _ if let Some(create_cmd) = parser::post::create_post(&args) => {
-            let CreateCmd { title, body, publish } = create_cmd;
+            let CreateCmd {
+                title,
+                body,
+                publish,
+                ..
+            } = create_cmd;
             let id = Post::new(pat?).create(title, body, *publish).await;
             foe.then(|| panic_if_err(&id));
             display::create_post(style, &id)
         }
         _ if let Some((id, update_cmd)) = parser::post::update_post(&args) => {
-            let UpdateCmd { title, body, publish } = update_cmd;
+            let UpdateCmd {
+                title,
+                body,
+                publish,
+                ..
+            } = update_cmd;
             let id = Post::new(pat?).update(id, title, body, publish).await;
             foe.then(|| panic_if_err(&id));
             display::update_post(style, &id)
@@ -197,9 +235,8 @@ async fn main() -> Result<()> {
             display::list_fav(style, time_style, fav_iter)?
         }
 
-        _ if no_operation(&args) =>
-            infer::<Command>(Args::command()).render_help().to_string(),
-        _ => "Invalid usage, follow '--help' for more information".to_owned()
+        _ if no_operation(&args) => infer::<Command>(Args::command()).render_help().to_string(),
+        _ => "Invalid usage, follow '--help' for more information".to_owned(),
     };
 
     if global_opt.quiet {
