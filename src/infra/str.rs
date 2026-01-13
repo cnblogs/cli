@@ -10,7 +10,7 @@ impl StrExt for str {
     fn width_split_head(&self, head_width: usize) -> (&str, &str) {
         let mut left_take = head_width;
         let mut take_bytes = 0;
-        self.chars().try_for_each(|c| {
+        let _ = self.chars().try_for_each(|c| {
             let current_width = c.width_cjk().unwrap_or(0);
             if left_take > 0 {
                 if left_take >= current_width {
