@@ -20,18 +20,16 @@ jobs:
       fail-fast: false
       matrix:
         targets:
-          # aarch64
-          - { os: macos-11    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-11    }
-          - { os: macos-12    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-12    }
-          - { os: macos-13    , target: aarch64-apple-darwin     , alias: aarch64-darwin-macos-13    }
-          # amd64
-          - { os: macos-12    , target: x86_64-apple-darwin      , alias: amd64-darwin-macos-unknown }
-          - { os: ubuntu-20.04, target: x86_64-unknown-linux-gnu , alias: amd64-gnu-ubuntu-20.04     }
-          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu , alias: amd64-gnu-ubuntu-22.04     }
-          - { os: ubuntu-22.04, target: x86_64-unknown-linux-musl, alias: amd64-musl-linux-unknown   }
-          - { os: windows-2019, target: x86_64-pc-windows-msvc   , alias: amd64-msvc-windows-2019    }
-          - { os: windows-2022, target: x86_64-pc-windows-msvc   , alias: amd64-msvc-windows-2022    }
-
+          # mac
+          - { os: macos       , target: aarch64-apple-darwin     , alias: aarch64-apple-darwin       }
+          - { os: macos       , target: x86_64-apple-darwin      , alias: x86_64-apple-darwin        }
+          # linux
+          - { os: linux       , target: x86_64-unknown-linux-gnu , alias: x86_64-unknown-linux-gnu   }
+          - { os: linux       , target: x86_64-unknown-linux-musl, alias: x86_64-unknown-linux-musl  }
+          # freebsd
+          - { os: freebsd     , target: x86_64-unknown-freebsd   , alias: x86_64-unknown-freebsd     }
+          # windows
+          - { os: windows     , target: x86_64-pc-windows-msvc   , alias: x86_64-pc-windows-msvc     }
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,20 +86,20 @@ jobs:
           target: ${{ matrix.targets.target }}
           release: false
 
-      - name: Generate artifacts name
-        id: gen-name
-        shell: bash
-        run: echo 'NAME=cnb-dev-${{ matrix.targets.alias }}' >> $GITHUB_OUTPUT
+      # - name: Generate artifacts name
+      #   id: gen-name
+      #   shell: bash
+      #   run: echo 'NAME=cnb-dev-${{ matrix.targets.alias }}' >> $GITHUB_OUTPUT
 
-      - name: Generate binary extension
-        id: gen-ext
-        if: runner.os == 'Windows'
-        shell: bash
-        run: echo 'EXT=.exe' >> $GITHUB_OUTPUT
+      # - name: Generate binary extension
+      #   id: gen-ext
+      #   if: runner.os == 'Windows'
+      #   shell: bash
+      #   run: echo 'EXT=.exe' >> $GITHUB_OUTPUT
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.gen-name.outputs.NAME }}
-          path: ./target/${{ matrix.targets.target }}/debug/cnb${{ steps.gen-ext.outputs.EXT }}
-          if-no-files-found: error
+      # - name: Upload artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ steps.gen-name.outputs.NAME }}
+      #     path: ./target/${{ matrix.targets.target }}/debug/cnb${{ steps.gen-ext.outputs.EXT }}
+      #     if-no-files-found: error
