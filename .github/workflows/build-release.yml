@@ -2,6 +2,8 @@ name: Build / Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - v*.*.*
 
@@ -28,9 +30,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}  # github.ref 变量将自动填充为触发事件的分支或标签名
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Rust toolchain
         uses: dsherret/rust-toolchain-file@v1
@@ -78,7 +82,7 @@ jobs:
         run: echo 'EXT=.exe' >> $GITHUB_OUTPUT
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.gen-name.outputs.NAME }}
           path: ./target/${{ matrix.targets.target }}/release/cnb${{ steps.gen-ext.outputs.EXT }}
@@ -91,6 +95,6 @@ jobs:
           out: ${{ steps.gen-name.outputs.NAME }}.zip
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.gen-name.outputs.NAME }}.zip
