@@ -46,12 +46,6 @@ impl Default for IngContent {
     }
 }
 
-impl Default for IngSendFrom {
-    fn default() -> Self {
-        Self::Cli
-    }
-}
-
 /// 查询条件，用于根据类别查询
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -85,22 +79,17 @@ impl Default for QeurySet {
 /// Tag = 10,  tag 必填
 /// Comment = 13 回复我
 /// Mention = 14, @我
-#[derive(Debug, Clone, ValueEnum, Parser)]
+#[derive(Debug, Default, Clone, ValueEnum, Parser)]
 pub enum QueryIngType {
     Following = 1,
     My = 4,
+    #[default]
     All = 5,
     RecentComment = 6,
     MyComment = 7,
     Tag = 10,
     Comment = 13,
     Mention = 14,
-}
-
-impl Default for QueryIngType {
-    fn default() -> Self {
-        Self::All
-    }
 }
 
 impl From<u8> for QueryIngType {

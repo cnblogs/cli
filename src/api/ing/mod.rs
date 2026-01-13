@@ -31,7 +31,7 @@ pub enum IngType {
     //Mention = 14,
 }
 
-#[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
+#[derive(Clone, Debug, Default, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum IngSendFrom {
     None = 0,
@@ -42,6 +42,7 @@ pub enum IngSendFrom {
     CellPhone = 6,
     Web = 8,
     VsCode = 9,
+    #[default]
     Cli = 13,
 }
 
