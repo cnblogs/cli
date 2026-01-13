@@ -24,8 +24,8 @@ pub fn list_news(
                 let buf = &mut buf;
                 let create_time = display_cnb_time(&news.create_time, time_style);
                 let url = format!("https://news.cnblogs.com/n/{}", news.id);
-                writeln!(buf, "{} {}", create_time, url)?;
-                writeln!(buf, "  {}", news.title)?;
+                writeln!(buf, "{} {}", create_time, url).map_err(|e| anyhow::anyhow!("{}", e))?;
+                writeln!(buf, "  {}", news.title).map_err(|e| anyhow::anyhow!("{}", e))?;
 
                 let summary = {
                     let summary = format!("{}...", news.summary);
@@ -39,12 +39,12 @@ pub fn list_news(
                         },
                     )
                 };
-                writeln!(buf, "{}", summary)?;
+                writeln!(buf, "{}", summary).map_err(|e| anyhow::anyhow!("{}", e))?;
             }
             buf
         })
-        .try_fold(String::new(), |mut acc, buf: Result<String>| try {
-            writeln!(&mut acc, "{}", buf?)?;
+        .try_fold(String::new(), |mut acc: String, buf: Result<String>| try {
+            writeln!(&mut acc, "{}", buf?).map_err(|e| anyhow::anyhow!("{}", e))?;
             acc
         })
 }

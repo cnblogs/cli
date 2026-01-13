@@ -30,7 +30,7 @@ pub fn list_ing(
         {
             let buf = &mut buf;
             let create_time = display_cnb_time(&ing.create_time, time_style);
-            write!(buf, "{}", create_time.dimmed())?;
+            write!(buf, "{}", create_time.dimmed()).map_err(|e| anyhow::anyhow!("{}", e))?;
 
             let send_from_mark = match ing.send_from {
                 IngSendFrom::Cli => Some("CLI"),
@@ -40,13 +40,14 @@ pub fn list_ing(
                 _ => None,
             };
             if let Some(mark) = send_from_mark {
-                write!(buf, " {}", mark.dimmed())?;
+                write!(buf, " {}", mark.dimmed()).map_err(|e| anyhow::anyhow!("{}", e))?;
             }
             if ing.is_lucky {
                 let star_text = ing_star_tag_to_text(&ing.icons);
-                write!(buf, " {}⭐", star_text.yellow())?;
+                write!(buf, " {}⭐", star_text.yellow()).map_err(|e| anyhow::anyhow!("{}", e))?;
             }
-            writeln!(buf, " {} {}", "#".dimmed(), ing.id.to_string().dimmed())?;
+            writeln!(buf, " {} {}", "#".dimmed(), ing.id.to_string().dimmed())
+                .map_err(|e| anyhow::anyhow!("{}", e))?;
             let content = if align {
                 let user_name_width = ing.user_name.width_cjk();
                 let left_width = get_term_width().saturating_sub(user_name_width + 3);
@@ -71,7 +72,8 @@ pub fn list_ing(
             } else {
                 fmt_content(&ing.content)
             };
-            writeln!(buf, "  {} {}", ing.user_name.cyan(), content)?;
+            writeln!(buf, "  {} {}", ing.user_name.cyan(), content)
+                .map_err(|e| anyhow::anyhow!("{}", e))?;
 
             let len = comment_list.len();
             if len != 0 {
@@ -82,27 +84,31 @@ pub fn list_ing(
                         {
                             let buf = &mut buf;
                             if i != max_i {
-                                write!(buf, "    │ {}", entry.user_name.blue())?;
+                                write!(buf, "    │ {}", entry.user_name.blue())
+                                    .map_err(|e| anyhow::anyhow!("{}", e))?;
                             } else {
-                                write!(buf, "    └ {}", entry.user_name.blue())?;
+                                write!(buf, "    └ {}", entry.user_name.blue())
+                                    .map_err(|e| anyhow::anyhow!("{}", e))?;
                             }
                             let at_user = get_ing_at_user_tag_text(&entry.content);
                             if at_user.is_empty().not() {
-                                write!(buf, " {}{}", "@".bright_black(), at_user.bright_black())?;
+                                write!(buf, " {}{}", "@".bright_black(), at_user.bright_black())
+                                    .map_err(|e| anyhow::anyhow!("{}", e))?;
                             }
                             let content = {
                                 let content = rm_ing_at_user_tag(&entry.content);
                                 fmt_content(&content)
                             };
-                            writeln!(buf, " {}", content.dimmed())?;
+                            writeln!(buf, " {}", content.dimmed())
+                                .map_err(|e| anyhow::anyhow!("{}", e))?;
                         }
                         buf
                     },
                 );
-                write!(buf, "{}", comment_list_buf?)?;
+                write!(buf, "{}", comment_list_buf?).map_err(|e| anyhow::anyhow!("{}", e))?;
             }
 
-            writeln!(buf)?;
+            writeln!(buf).map_err(|e| anyhow::anyhow!("{}", e))?;
         };
         buf
     })

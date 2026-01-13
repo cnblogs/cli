@@ -24,8 +24,9 @@ pub fn list_fav(
             {
                 let buf = &mut buf;
                 let create_time = display_cnb_time(&fav.create_time, time_style);
-                writeln!(buf, "{} {}", create_time, fav.url)?;
-                writeln!(buf, "  {}", fav.title)?;
+                writeln!(buf, "{} {}", create_time, fav.url)
+                    .map_err(|e| anyhow::anyhow!("{}", e))?;
+                writeln!(buf, "  {}", fav.title).map_err(|e| anyhow::anyhow!("{}", e))?;
 
                 let summary = {
                     fav.summary.width_split(get_term_width() - 4).map_or_else(
@@ -39,13 +40,13 @@ pub fn list_fav(
                     )
                 };
                 if summary.is_empty().not() {
-                    writeln!(buf, "{}", summary)?;
+                    writeln!(buf, "{}", summary).map_err(|e| anyhow::anyhow!("{}", e))?;
                 }
             }
             buf
         })
-        .try_fold(String::new(), |mut acc, buf: Result<String>| try {
-            writeln!(&mut acc, "{}", buf?)?;
+        .try_fold(String::new(), |mut acc: String, buf: Result<String>| try {
+            writeln!(&mut acc, "{}", buf?).map_err(|e| anyhow::anyhow!("{}", e))?;
             acc
         })
 }

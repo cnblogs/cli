@@ -21,17 +21,17 @@ pub fn list_post(
         |mut buf, entry| try {
             {
                 let buf = &mut buf;
-                write!(buf, "# {}", entry.id)?;
+                write!(buf, "# {}", entry.id).map_err(|e| anyhow::anyhow!("{}", e))?;
                 if entry.is_published {
-                    write!(buf, " Pub")?;
+                    write!(buf, " Pub").map_err(|e| anyhow::anyhow!("{}", e))?;
                 } else {
-                    write!(buf, " Dft")?;
+                    write!(buf, " Dft").map_err(|e| anyhow::anyhow!("{}", e))?;
                 }
                 if entry.is_pinned {
-                    write!(buf, " Pin")?;
+                    write!(buf, " Pin").map_err(|e| anyhow::anyhow!("{}", e))?;
                 }
-                write!(buf, " {}", entry.title)?;
-                writeln!(buf)?;
+                write!(buf, " {}", entry.title).map_err(|e| anyhow::anyhow!("{}", e))?;
+                writeln!(buf).map_err(|e| anyhow::anyhow!("{}", e))?;
             }
             buf
         },
@@ -112,8 +112,10 @@ pub fn show_post_comment(
         {
             let buf = &mut buf;
             let create_time = display_cnb_time(&comment.create_time, time_style);
-            writeln!(buf, "{} {}F", create_time, comment.floor)?;
-            writeln!(buf, "  {} {}", comment.user_name, comment.content)?;
+            writeln!(buf, "{} {}F", create_time, comment.floor)
+                .map_err(|e| anyhow::anyhow!("{}", e))?;
+            writeln!(buf, "  {} {}", comment.user_name, comment.content)
+                .map_err(|e| anyhow::anyhow!("{}", e))?;
         }
         buf
     })
@@ -130,7 +132,7 @@ pub fn search_self_post(
     id_iter.try_fold(
         format!("{}/{}\n", id_iter.len(), total_count),
         |mut buf, id| try {
-            writeln!(&mut buf, "# {}", id)?;
+            writeln!(&mut buf, "# {}", id).map_err(|e| anyhow::anyhow!("{}", e))?;
             buf
         },
     )
@@ -151,18 +153,20 @@ pub fn search_site_post(
             {
                 let buf = &mut buf;
                 let create_time = display_cnb_time(&entry.create_time, time_style);
-                writeln!(buf, "{} {}", create_time, entry.url)?;
-                writeln!(buf, "  {}", entry.title)?;
+                writeln!(buf, "{} {}", create_time, entry.url)
+                    .map_err(|e| anyhow::anyhow!("{}", e))?;
+                writeln!(buf, "  {}", entry.title).map_err(|e| anyhow::anyhow!("{}", e))?;
                 let view_vote_comment_count = format!(
                     "View {} Vote {} Comment {}",
                     entry.view_count, entry.vote_count, entry.comment_count
                 );
-                writeln!(buf, "    {}", view_vote_comment_count)?;
+                writeln!(buf, "    {}", view_vote_comment_count)
+                    .map_err(|e| anyhow::anyhow!("{}", e))?;
             }
             buf
         })
-        .try_fold(String::new(), |mut acc, buf: Result<String>| try {
-            writeln!(&mut acc, "{}", buf?)?;
+        .try_fold(String::new(), |mut acc: String, buf: Result<String>| try {
+            writeln!(&mut acc, "{}", buf?).map_err(|e| anyhow::anyhow!("{}", e))?;
             acc
         })
 }
