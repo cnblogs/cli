@@ -2,7 +2,7 @@
 name = "cnblogs_lib"
 # WRN: Version will be updated by CI while create a tag, NERVER change this.
 version = "0.0.0-dev"
-edition = "2021"
+edition = "2024"
 description = "Cnblogs' command line tool"
 license = "MIT"
 repository = "https://github.com/cnblogs/cli"
@@ -39,7 +39,7 @@ serde_repr = "0.1.20"
 home = "0.5.12"
 chrono = "0.4.42"
 mime = "0.3.17"
-reqwest = { version = "0.13.1", default-features = false, features = ["json", "query", "form"] }
+reqwest = { version = "0.13.1", features = ["json", "query", "form"] }
 tokio = { version = "1.49.0", features = ["full"] }
 futures = "0.3.31"
 
