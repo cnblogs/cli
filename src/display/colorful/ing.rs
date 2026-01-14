@@ -1,7 +1,7 @@
 use crate::api::ing::get_comment_list::IngCommentEntry;
 use crate::api::ing::get_list::IngEntry;
 use crate::api::ing::{
-    fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag, IngSendFrom,
+    IngSendFrom, fmt_content, get_ing_at_user_tag_text, ing_star_tag_to_text, rm_ing_at_user_tag,
 };
 use crate::args::TimeStyle;
 use crate::display::colorful::fmt_err;

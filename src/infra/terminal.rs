@@ -1,4 +1,4 @@
-use terminal_size::{terminal_size, Width};
+use terminal_size::{Width, terminal_size};
 
 pub fn get_term_width() -> usize {
     let (Width(width), _) = terminal_size().expect("Can not get terminal size");

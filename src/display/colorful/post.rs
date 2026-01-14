@@ -84,14 +84,13 @@ pub fn show_post_meta(time_style: &TimeStyle, entry: &Result<PostEntry>) -> Resu
             let words_count = words_count::count(body).words;
             writeln!(buf, "Words  {}", words_count)?;
         }
-        if let Some(tags) = &entry.tags {
-            if let Some(tags_text) = tags
+        if let Some(tags) = &entry.tags
+            && let Some(tags_text) = tags
                 .clone()
                 .into_iter()
                 .reduce(|acc, tag| format!("{}, {}", acc, tag))
-            {
-                writeln!(buf, "Tags   {}", tags_text)?;
-            }
+        {
+            writeln!(buf, "Tags   {}", tags_text)?;
         }
         let create_time = display_cnb_time(&entry.create_time, time_style);
         writeln!(buf, "Create {}", create_time)?;

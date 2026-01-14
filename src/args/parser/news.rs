@@ -1,5 +1,5 @@
 use crate::args::parser::{get_skip, get_take};
-use crate::args::{cmd, Args, Cmd};
+use crate::args::{Args, Cmd, cmd};
 use crate::infra::option::WrapOption;
 
 pub fn list_news(args: &Args) -> Option<(usize, usize)> {

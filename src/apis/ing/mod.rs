@@ -20,7 +20,7 @@ use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    api::ing::{get_list::IngEntry, IngSendFrom},
+    api::ing::{IngSendFrom, get_list::IngEntry},
     infra::http::RequestBuilderExt,
     openapi,
 };

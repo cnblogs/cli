@@ -1,6 +1,6 @@
 use crate::api::news::News;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, RequestBuilderExt};
+use crate::infra::http::{RequestBuilderExt, body_or_err};
 use anyhow::Result;
 
 impl News {

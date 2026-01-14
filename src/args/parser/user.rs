@@ -1,4 +1,4 @@
-use crate::args::{cmd, Args, Cmd, GlobalOpt};
+use crate::args::{Args, Cmd, GlobalOpt, cmd};
 use crate::infra::option::WrapOption;
 
 pub fn login(args: &Args) -> Option<&String> {

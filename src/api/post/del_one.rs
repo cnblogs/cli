@@ -1,6 +1,6 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{unit_or_err, RequestBuilderExt};
+use crate::infra::http::{RequestBuilderExt, unit_or_err};
 use anyhow::Result;
 
 impl Post {

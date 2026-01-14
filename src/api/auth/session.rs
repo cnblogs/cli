@@ -1,8 +1,8 @@
 use crate::infra::result::WrapResult;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use home::home_dir;
 use std::fs;
-use std::fs::{metadata, remove_file, File};
+use std::fs::{File, metadata, remove_file};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 

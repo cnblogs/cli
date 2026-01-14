@@ -1,6 +1,6 @@
 use crate::api::post::Post;
 use crate::api::user::User;
-use crate::infra::http::{body_or_err, RequestBuilderExt};
+use crate::infra::http::{RequestBuilderExt, body_or_err};
 use crate::infra::json;
 use crate::infra::result::WrapResult;
 use crate::openapi;

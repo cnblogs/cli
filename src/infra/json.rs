@@ -1,6 +1,6 @@
-use anyhow::{anyhow, Result};
-use serde::de::DeserializeOwned;
+use anyhow::{Result, anyhow};
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 pub fn serialize<T>(val: T) -> Result<String>

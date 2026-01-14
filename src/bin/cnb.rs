@@ -17,7 +17,7 @@ use cnblogs_lib::api::post::Post;
 use cnblogs_lib::api::user::User;
 use cnblogs_lib::args::cmd::post::{CreateCmd, UpdateCmd};
 use cnblogs_lib::args::parser::no_operation;
-use cnblogs_lib::args::{parser, Args};
+use cnblogs_lib::args::{Args, parser};
 use cnblogs_lib::infra::fp::currying::eq;
 use cnblogs_lib::infra::infer::infer;
 use cnblogs_lib::infra::iter::{ExactSizeIteratorExt, IntoIteratorExt};

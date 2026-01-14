@@ -1,6 +1,6 @@
 use crate::args::cmd::post::{CreateCmd, UpdateCmd};
 use crate::args::parser::{get_skip, get_take};
-use crate::args::{cmd, Args, Cmd};
+use crate::args::{Args, Cmd, cmd};
 use crate::infra::option::WrapOption;
 
 pub fn list_post(args: &Args) -> Option<(usize, usize)> {

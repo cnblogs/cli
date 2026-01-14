@@ -1,5 +1,5 @@
 use crate::api::ing::{Ing, IngSendFrom, IngType};
-use crate::infra::http::{body_or_err, RequestBuilderExt};
+use crate::infra::http::{RequestBuilderExt, body_or_err};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
 use crate::infra::result::WrapResult;

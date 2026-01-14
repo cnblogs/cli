@@ -1,6 +1,6 @@
 use crate::infra::result::WrapResult;
-use anyhow::bail;
 use anyhow::Result;
+use anyhow::bail;
 use reqwest::header::AUTHORIZATION;
 use reqwest::{RequestBuilder, Response};
 use std::ops::Not;
@@ -10,16 +10,12 @@ pub const PAT: &str = "pat";
 
 #[macro_export]
 macro_rules! bearer {
-    ($token:expr) => {{
-        format!("Bearer {}", $token)
-    }};
+    ($token:expr) => {{ format!("Bearer {}", $token) }};
 }
 
 #[macro_export]
 macro_rules! basic {
-    ($token:expr) => {{
-        format!("Basic {}", $token)
-    }};
+    ($token:expr) => {{ format!("Basic {}", $token) }};
 }
 
 pub trait RequestBuilderExt {

@@ -1,10 +1,10 @@
 use crate::api::post::Post;
 use crate::blog_backend;
-use crate::infra::http::{body_or_err, RequestBuilderExt};
+use crate::infra::http::{RequestBuilderExt, body_or_err};
 use crate::infra::json;
 use crate::infra::result::WrapResult;
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 impl Post {
     pub async fn create(&self, title: &str, body: &str, publish: bool) -> Result<usize> {

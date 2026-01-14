@@ -1,4 +1,4 @@
-use futures::future::{join_all, JoinAll};
+use futures::future::{JoinAll, join_all};
 use std::future::Future;
 
 pub trait IteratorExt<T>: Iterator<Item = T> {
