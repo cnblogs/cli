@@ -9,11 +9,18 @@ use crate::api_bak::user::info::UserInfo;
 use crate::args::{Style, TimeStyle};
 use crate::infra::result::WrapResult;
 use anyhow::Result;
+use serde::Serialize;
+use std::fmt::Display;
 use std::path::PathBuf;
 
 mod colorful;
+pub mod ing;
 mod json;
 mod normal;
+
+pub trait Format: Serialize + Display {
+    fn into_formats(self) -> String;
+}
 
 pub fn login(style: &Style, cfg_path: &Result<PathBuf>) -> String {
     match style {
