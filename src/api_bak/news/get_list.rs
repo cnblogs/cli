@@ -1,4 +1,4 @@
-use crate::api::news::News;
+use crate::api_bak::news::News;
 use crate::infra::http::{RequestBuilderExt, body_or_err};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;

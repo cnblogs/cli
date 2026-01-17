@@ -4,7 +4,7 @@
 use anyhow::{Ok, Result};
 
 use crate::{
-    api::{
+    api_bak::{
         self,
         ing::{get_comment_list::IngCommentEntry, get_list::IngEntry},
     },
@@ -18,7 +18,7 @@ use crate::{
 pub async fn get_ings_and_comments(
     t: &str,
     q: &QueryIng,
-) -> Result<Vec<(api::ing::get_list::IngEntry, Vec<IngCommentEntry>)>> {
+) -> Result<Vec<(api_bak::ing::get_list::IngEntry, Vec<IngCommentEntry>)>> {
     if let Some(ids) = &q.id {
         let a = ids
             .iter()
@@ -40,7 +40,7 @@ pub async fn get_ings_and_comments(
         let a = iq(t, &q.into())
             .await?
             .into_iter()
-            .collect::<Vec<api::ing::get_list::IngEntry>>();
+            .collect::<Vec<api_bak::ing::get_list::IngEntry>>();
         get_ing_comments(t, a).await
     }
 }

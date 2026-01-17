@@ -1,4 +1,4 @@
-use crate::api::fav::get_list::FavEntry;
+use crate::api_bak::fav::get_list::FavEntry;
 use crate::display::json::{fmt_err, fmt_ok};
 use anyhow::Result;
 

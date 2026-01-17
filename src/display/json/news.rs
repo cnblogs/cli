@@ -1,4 +1,4 @@
-use crate::api::news::get_list::NewsEntry;
+use crate::api_bak::news::get_list::NewsEntry;
 use crate::display::json::{fmt_err, fmt_ok};
 use anyhow::Result;
 

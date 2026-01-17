@@ -1,4 +1,4 @@
-use crate::api::fav::Fav;
+use crate::api_bak::ing::{Ing, IngSendFrom, IngType};
 use crate::infra::http::{RequestBuilderExt, body_or_err};
 use crate::infra::iter::IntoIteratorExt;
 use crate::infra::json;
@@ -11,25 +11,39 @@ use std::ops::ControlFlow;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct FavEntry {
-    pub title: String,
-    #[serde(rename = "LinkUrl")]
-    pub url: String,
-    pub summary: String,
-    pub tags: Vec<String>,
+pub struct IngEntry {
+    pub id: usize,
+    pub content: String,
+    pub is_private: bool,
+    pub is_lucky: bool,
+    pub comment_count: usize,
     #[serde(rename = "DateAdded")]
     pub create_time: String,
+    pub user_alias: String,
+    #[serde(rename = "UserDisplayName")]
+    pub user_name: String,
+    pub user_icon_url: String,
+    pub user_id: usize,
+    pub user_guid: String,
+    pub send_from: IngSendFrom,
+    #[serde(rename = "Icons")]
+    pub icons: String,
 }
 
-impl Fav {
-    pub async fn get_list(&self, skip: usize, take: usize) -> Result<Vec<FavEntry>> {
+impl Ing {
+    pub async fn get_list(
+        &self,
+        skip: usize,
+        take: usize,
+        ing_type: &IngType,
+    ) -> Result<Vec<IngEntry>> {
         let client = &reqwest::Client::new();
 
         let range = (skip + 1)..=(skip + take);
         let cf = range
             .map(|i| async move {
                 let req = {
-                    let url = openapi!("/bookmarks");
+                    let url = openapi!("/statuses/@{}", ing_type.clone() as usize);
                     let query = [("pageIndex", i), ("pageSize", 1)];
                     client.get(url).query(&query).pat_auth(&self.pat)
                 };
@@ -38,9 +52,7 @@ impl Fav {
 
                 let body = body_or_err(resp).await?;
 
-                json::deserialize::<Vec<FavEntry>>(&body)?
-                    .pop()
-                    .wrap_ok::<anyhow::Error>()
+                json::deserialize::<Vec<IngEntry>>(&body)?.pop().wrap_ok()
             })
             .join_all()
             .await

@@ -1,4 +1,4 @@
-use crate::api::news::get_list::NewsEntry;
+use crate::api_bak::news::get_list::NewsEntry;
 use crate::args::TimeStyle;
 use crate::display::normal::fmt_err;
 use crate::infra::result::WrapResult;
