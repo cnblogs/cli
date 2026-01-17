@@ -12,6 +12,7 @@ use serde_json::json;
 use crate::{
     api::urls::{COMMENTS_PATH, STATUS},
     models::ing::{IngComment, IngDetail, IngInfo},
+    tools::IntoAnyhowResult,
 };
 
 /// 创建闪存
@@ -36,11 +37,19 @@ pub async fn get_status_with_comment(c: &Client, status: IngInfo) -> Result<IngD
 }
 
 pub async fn get_status(c: &Client, id: u64) -> Result<IngInfo> {
-    Ok(raw_get_status(c, id).await?.json().await?)
+    raw_get_status(c, id)
+        .await?
+        .json()
+        .await
+        .into_anyhow_result()
 }
 
 pub async fn list_comments(c: &Client, id: u64) -> Result<Vec<IngComment>> {
-    Ok(raw_list_comments(c, id).await?.json().await?)
+    raw_list_comments(c, id)
+        .await?
+        .json()
+        .await
+        .into_anyhow_result()
 }
 
 pub async fn list_statuses(
@@ -49,12 +58,12 @@ pub async fn list_statuses(
     params: impl Serialize + Send + Sync,
 ) -> Result<Vec<IngInfo>> {
     let resp = raw_list_statuses(c, path, params).await?;
-    Ok(resp.error_for_status()?.json().await?)
+    resp.error_for_status()?.json().await.into_anyhow_result()
 }
 
 pub async fn raw_list_comments(c: &Client, id: u64) -> Result<Response> {
     let url = format!("{}{}/{}", STATUS, id, COMMENTS_PATH);
-    Ok(c.get(url).send().await?)
+    c.get(url).send().await.into_anyhow_result()
 }
 
 pub async fn raw_list_statuses(
@@ -63,7 +72,7 @@ pub async fn raw_list_statuses(
     params: impl Serialize + Send + Sync,
 ) -> Result<Response> {
     let url = format!("{}@{}", STATUS, path);
-    Ok(c.get(url).query(&params).send().await?)
+    c.get(url).query(&params).send().await.into_anyhow_result()
 }
 
 pub async fn raw_create_status(
@@ -71,18 +80,18 @@ pub async fn raw_create_status(
     content: impl Serialize + Send + Sync,
 ) -> Result<Response> {
     let url = STATUS.to_string();
-    Ok(c.post(url).json(&content).send().await?)
+    c.post(url).json(&content).send().await.into_anyhow_result()
 }
 
 pub async fn raw_create_comment(c: &Client, id: u64, content: String) -> Result<Response> {
     let url = format!("{}/{}/{}", STATUS, id, COMMENTS_PATH);
     let res = json!({"content": content});
-    Ok(c.post(url).json(&res).send().await?)
+    c.post(url).json(&res).send().await.into_anyhow_result()
 }
 
 pub async fn raw_delete_status(c: &Client, id: u64) -> Result<Response> {
     let url = format!("{}{}", STATUS, id);
-    Ok(c.delete(url).send().await?)
+    c.delete(url).send().await.into_anyhow_result()
 }
 
 pub async fn raw_delete_status_comment(
@@ -91,10 +100,10 @@ pub async fn raw_delete_status_comment(
     comment_id: u64,
 ) -> Result<Response> {
     let url = format!("{}{}/{}/{}", STATUS, status_id, COMMENTS_PATH, comment_id);
-    Ok(c.delete(url).send().await?)
+    c.delete(url).send().await.into_anyhow_result()
 }
 
 pub async fn raw_get_status(c: &Client, id: u64) -> Result<Response> {
     let url = format!("{}{}", STATUS, id);
-    Ok(c.get(url).send().await?)
+    c.get(url).send().await.into_anyhow_result()
 }
