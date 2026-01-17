@@ -3,11 +3,11 @@ pub mod output;
 use core::time;
 use std::{fmt, fs, io::Read, path::PathBuf};
 
-use anyhow::{anyhow, Ok, Result};
+use anyhow::{Ok, Result, anyhow};
 use owo_colors::OwoColorize;
 use reqwest::{
-    header::{self, HeaderMap}, Client,
-    ClientBuilder,
+    Client, ClientBuilder,
+    header::{self, HeaderMap},
 };
 
 use crate::context::output::Terminal;
@@ -26,11 +26,11 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new() -> anyhow::Result<Self> {
+    pub fn new() -> Result<Self> {
         Self::new_with_token("".to_string())
     }
 
-    pub fn new_with_token(token: String) -> anyhow::Result<Self> {
+    pub fn new_with_token(token: String) -> Result<Self> {
         let mut terminal = Terminal::new();
         let mut token = token;
         let home_dir = home::home_dir().ok_or_else(|| anyhow!("未获取到家目录，退出。"))?;
@@ -87,7 +87,7 @@ impl Context {
         self.json = json;
     }
 
-    pub fn update_auth_header(&mut self) -> anyhow::Result<()> {
+    pub fn update_auth_header(&mut self) -> Result<()> {
         let header_value = format!("Bearer {}", self.token);
         self.headers
             .insert(header::AUTHORIZATION, header_value.parse()?);
@@ -99,16 +99,20 @@ impl Context {
         Ok(())
     }
 
-    pub fn update_token(&mut self, token: String) -> anyhow::Result<()> {
-        if !token.is_empty() {
-            self.token = token;
-            self.update_auth_header()?;
-            self.update_cache_file()?;
-        }
-        Ok(())
+    pub fn update_token(&mut self, token: String) -> Result<()> {
+        // if !token.is_empty() {
+        self.token = token;
+        self.update_auth_header()?;
+        self.update_cache_file()
+        // }
+        // Ok(())
     }
 
     pub fn print_message<T: fmt::Display>(&mut self, msg: T) -> Result<()> {
         self.terminal.writeln(msg)
+    }
+
+    pub fn clean(&mut self) -> Result<()> {
+        self.update_token("".to_string())
     }
 }

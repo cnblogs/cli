@@ -5,7 +5,9 @@ use anyhow::{Ok, Result};
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize};
 
-use crate::{api_bak::ing::get_comment_list::IngCommentEntry, infra::http::RequestBuilderExt, openapi};
+use crate::{
+    api_bak::ing::get_comment_list::IngCommentEntry, infra::http::RequestBuilderExt, openapi,
+};
 
 /// 闪存评论及评论回复
 ///
