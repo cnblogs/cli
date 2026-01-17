@@ -4,7 +4,8 @@
 
 use anyhow::Result;
 use owo_colors::OwoColorize;
-use reqwest::{StatusCode, header};
+use reqwest::header::{AUTHORIZATION, HeaderMap};
+use reqwest::{ClientBuilder, StatusCode};
 
 use crate::commands::auth::{Authenticate, AuthenticateSubCommands};
 use crate::context::Context;
@@ -22,9 +23,11 @@ pub async fn endpoint(cmd: Authenticate, ctx: &mut Context) -> anyhow::Result<()
 
 async fn handle_login(token: String, ctx: &mut Context) -> Result<()> {
     let header_value = format!("Bearer {}", token);
-    ctx.headers
-        .insert(header::AUTHORIZATION, header_value.parse()?);
-    let resp = api::user::raw_user_info(&ctx.client).await?;
+    let mut header = HeaderMap::new();
+    header.insert(AUTHORIZATION, header_value.parse()?);
+
+    let client = ClientBuilder::new().default_headers(header).build()?;
+    let resp = api::user::raw_user_info(&client).await?;
 
     if resp.status().eq(&StatusCode::UNAUTHORIZED) {
         let _ = ctx
@@ -37,7 +40,7 @@ async fn handle_login(token: String, ctx: &mut Context) -> Result<()> {
         let p = resp.json::<models::user::UserInfo>().await?;
 
         ctx.terminal
-            .writeln(format!("🎉 欢迎，{}！", p.display_name))?;
+            .writeln(format!("🎉 欢迎，{}！", p.display_name.bright_green()))?;
     } else {
         let r = resp.into_no_parse_result().await?;
         ctx.terminal.writeln(r.into_format())?;

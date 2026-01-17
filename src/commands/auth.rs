@@ -2,7 +2,7 @@
 //! 认证子命令
 //!
 
-use clap::{Args, Subcommand};
+use clap::{Args, Subcommand, builder::NonEmptyStringValueParser};
 
 #[derive(Debug, Args)]
 pub struct Authenticate {
@@ -14,7 +14,10 @@ pub struct Authenticate {
 #[derive(Debug, Subcommand)]
 pub enum AuthenticateSubCommands {
     /// 用户登录，需提供access token。
-    Login { token: String },
+    Login {
+        #[clap(value_parser = NonEmptyStringValueParser::new())]
+        token: String,
+    },
     /// 用户退出
     Logout,
     /// 查看登录状态，登录后会显示用户信息

@@ -1,7 +1,12 @@
 pub mod output;
 
 use core::time;
-use std::{fmt, fs, io::Read, path::PathBuf};
+use std::{
+    fmt,
+    fs::{self, File},
+    io::{Read, Write},
+    path::PathBuf,
+};
 
 use anyhow::{Ok, Result, anyhow};
 use owo_colors::OwoColorize;
@@ -14,6 +19,7 @@ use crate::context::output::Terminal;
 
 const FILENAME: &str = ".cnblogs/token";
 
+#[derive(Debug)]
 pub struct Context {
     pub terminal: Terminal,
     pub token: String,
@@ -31,33 +37,19 @@ impl Context {
     }
 
     pub fn new_with_token(token: String) -> Result<Self> {
-        let mut terminal = Terminal::new();
+        let terminal = Terminal::new();
         let mut token = token;
-        let home_dir = home::home_dir().ok_or_else(|| anyhow!("未获取到家目录，退出。"))?;
+        let home_dir =
+            home::home_dir().ok_or_else(|| anyhow!("无法获取用户家目录，退出。".red()))?;
         let file = PathBuf::from(FILENAME);
         let full_path = home_dir.join(&file);
+        let mut cache = Self::ensure_file(full_path.clone())?;
         let mut headers = HeaderMap::new();
 
-        if !full_path.exists() {
-            let _ = terminal.writeln(format!("缓存文件 `{}` 不存在", FILENAME).red());
-            if !full_path
-                .parent()
-                .ok_or_else(|| anyhow!("检查`~/.cnblogs`文件夹失败"))?
-                .exists()
-            {
-                fs::create_dir_all(
-                    full_path
-                        .parent()
-                        .ok_or_else(|| anyhow!("创建`~/.cnblogs`文件夹失败"))?,
-                )?;
-            }
-            let _ = fs::File::create(full_path.clone())?;
-        }
-
         if token.is_empty() {
-            let _ = fs::File::open(full_path.clone())?.read_to_string(&mut token);
+            let _ = cache.read_to_string(&mut token);
         } else {
-            fs::write(full_path.clone(), token.as_bytes())?;
+            cache.write_all(token.as_bytes())?;
         }
 
         if !token.is_empty() {
@@ -81,6 +73,23 @@ impl Context {
             full_path,
             json: false,
         })
+    }
+
+    pub fn ensure_file(full_path: PathBuf) -> Result<File> {
+        let cnblogs = full_path
+            .parent()
+            .ok_or_else(|| anyhow!("获取`~/.cnblogs`文件夹失败， 退出。"))?;
+
+        if !full_path.exists() {
+            if !cnblogs.exists() {
+                fs::create_dir_all(cnblogs)?;
+            }
+            Ok(fs::File::create(full_path.clone())?)
+        } else if full_path.exists() {
+            Ok(fs::File::open(full_path)?)
+        } else {
+            Ok(fs::File::create(full_path.clone())?)
+        }
     }
 
     pub const fn set_json(&mut self, json: bool) {
