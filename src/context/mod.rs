@@ -1,127 +1,77 @@
+pub mod config;
 pub mod output;
 
 use core::time;
-use std::{
-    fmt,
-    fs::{self, File},
-    io::{Read, Write},
-    path::PathBuf,
-};
+use std::fmt;
 
-use anyhow::{Ok, Result, anyhow};
-use owo_colors::OwoColorize;
+use anyhow::{Ok, Result};
 use reqwest::{
     Client, ClientBuilder,
     header::{self, HeaderMap},
 };
 
-use crate::context::output::Terminal;
+use crate::context::{
+    config::{Cache, CacheDir},
+    output::Terminal,
+};
 
-const FILENAME: &str = ".cnblogs/token";
+// const FILENAME: &str = ".cnblogs/token";
 
 #[derive(Debug)]
 pub struct Context {
     pub terminal: Terminal,
-    pub token: String,
     pub client: Client,
-    pub headers: HeaderMap,
-    pub home_dir: PathBuf,
-    pub file: PathBuf,
-    pub full_path: PathBuf,
     pub json: bool,
+    pub cache: Cache,
+    pub path: CacheDir,
 }
 
 impl Context {
     pub fn new() -> Result<Self> {
-        Self::new_with_token("".to_string())
-    }
-
-    pub fn new_with_token(token: String) -> Result<Self> {
+        let path = CacheDir::new()?;
+        path.init()?;
+        let buf = path.read()?;
+        let cache = Cache::from_bytes(&buf)?;
         let terminal = Terminal::new();
-        let mut token = token;
-        let home_dir =
-            home::home_dir().ok_or_else(|| anyhow!("无法获取用户家目录，退出。".red()))?;
-        let file = PathBuf::from(FILENAME);
-        let full_path = home_dir.join(&file);
-        let mut cache = Self::ensure_file(full_path.clone())?;
         let mut headers = HeaderMap::new();
 
-        if token.is_empty() {
-            let _ = cache.read_to_string(&mut token);
-        } else {
-            cache.write_all(token.as_bytes())?;
-        }
-
-        if !token.is_empty() {
-            let header_value = format!("Bearer {token}");
+        if !cache.token.is_empty() {
+            let header_value = format!("Bearer {}", cache.token);
             headers.append(header::AUTHORIZATION, header_value.parse()?);
         }
 
         let client = ClientBuilder::new()
-            .default_headers(headers.clone())
+            .default_headers(headers)
             .connect_timeout(time::Duration::from_secs(10))
             .https_only(true)
             .build()?;
 
         Ok(Self {
             terminal,
-            token,
             client,
-            headers,
-            home_dir,
-            file,
-            full_path,
             json: false,
+            cache,
+            path,
         })
-    }
-
-    pub fn ensure_file(full_path: PathBuf) -> Result<File> {
-        let cnblogs = full_path
-            .parent()
-            .ok_or_else(|| anyhow!("获取`~/.cnblogs`文件夹失败， 退出。"))?;
-
-        if !full_path.exists() {
-            if !cnblogs.exists() {
-                fs::create_dir_all(cnblogs)?;
-            }
-            Ok(fs::File::create(full_path.clone())?)
-        } else if full_path.exists() {
-            Ok(fs::File::open(full_path)?)
-        } else {
-            Ok(fs::File::create(full_path.clone())?)
-        }
     }
 
     pub const fn set_json(&mut self, json: bool) {
         self.json = json;
     }
 
-    pub fn update_auth_header(&mut self) -> Result<()> {
-        let header_value = format!("Bearer {}", self.token);
-        self.headers
-            .insert(header::AUTHORIZATION, header_value.parse()?);
-        Ok(())
-    }
-
-    pub fn update_cache_file(&self) -> Result<()> {
-        fs::write(&self.full_path, self.token.as_bytes())?;
-        Ok(())
-    }
-
-    pub fn update_token(&mut self, token: String) -> Result<()> {
-        // if !token.is_empty() {
-        self.token = token;
-        self.update_auth_header()?;
-        self.update_cache_file()
-        // }
-        // Ok(())
-    }
-
     pub fn print_message<T: fmt::Display>(&mut self, msg: T) -> Result<()> {
         self.terminal.writeln(msg)
     }
 
-    pub fn clean(&mut self) -> Result<()> {
-        self.update_token("".to_string())
+    /// 清空缓存信息
+    pub fn clean(&self) -> Result<()> {
+        let c = Cache::default();
+        let buf = c.to_bytes()?;
+        self.path.write(&buf)
+    }
+
+    /// 保存之缓存文件
+    pub fn save_cache(&self, cache: Cache) -> Result<()> {
+        self.path.write(&cache.to_bytes()?)
     }
 }

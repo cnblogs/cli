@@ -9,6 +9,7 @@ use reqwest::{ClientBuilder, StatusCode};
 
 use crate::commands::auth::{Authenticate, AuthenticateSubCommands};
 use crate::context::Context;
+use crate::context::config::Cache;
 use crate::tools::http::IntoNoParseResult;
 use crate::{api, models};
 
@@ -36,11 +37,14 @@ async fn handle_login(token: String, ctx: &mut Context) -> Result<()> {
     }
 
     if resp.status().is_success() {
-        ctx.update_token(token)?;
         let p = resp.json::<models::user::UserInfo>().await?;
+        let name = p.display_name.clone();
+
+        let c: Cache = p.into();
+        ctx.save_cache(c)?;
 
         ctx.terminal
-            .writeln(format!("🎉 欢迎，{}！", p.display_name.bright_green()))?;
+            .writeln(format!("🎉 欢迎，{}！", name.bright_green()))?;
     } else {
         let r = resp.into_no_parse_result().await?;
         ctx.terminal.writeln(r.into_format())?;
@@ -50,7 +54,7 @@ async fn handle_login(token: String, ctx: &mut Context) -> Result<()> {
 
 fn handle_print_token(ctx: &mut Context) -> Result<()> {
     ctx.terminal
-        .writeln(format!("[Token]: {}", ctx.token.bright_green()))
+        .writeln(format!("[Token]: {}", ctx.cache.token.bright_green()))
 }
 
 async fn user_info(ctx: &mut Context) -> Result<()> {
@@ -58,6 +62,6 @@ async fn user_info(ctx: &mut Context) -> Result<()> {
     ctx.terminal.writeln(user.format_user_info())
 }
 
-fn handle_logout(ctx: &mut Context) -> Result<()> {
+fn handle_logout(ctx: &Context) -> Result<()> {
     ctx.clean()
 }
