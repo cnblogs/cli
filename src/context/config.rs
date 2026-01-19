@@ -15,6 +15,7 @@ const CACHE_DIR: &str = ".cnblogs";
 const CACHE: &str = "token";
 
 #[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(default)]
 pub struct Cache {
     pub id: u64,
     pub blog_id: u64,
@@ -110,18 +111,9 @@ impl CacheDir {
         Ok(())
     }
 
-    /// 打开文件
-    pub fn open_file(&self) -> Result<File> {
-        Ok(
-            // Arc::new(
-            // RwLock::new(
-            fs::File::open(self.full_cache_file())?, // ), // )
-        )
-    }
-
     /// 写入缓存文件
     pub fn write(&self, buf: &[u8]) -> Result<()> {
-        let mut f = self.open_file()?;
+        let mut f = File::create(self.full_cache_file())?;
         f.write_all(buf)?;
         Ok(())
     }
@@ -129,7 +121,7 @@ impl CacheDir {
     /// 读取缓存文件
     pub fn read(&self) -> Result<Vec<u8>> {
         let mut buf = vec![];
-        let mut f = self.open_file()?;
+        let mut f = File::open(self.full_cache_file())?;
         f.read_to_end(&mut buf)?;
         Ok(buf)
     }

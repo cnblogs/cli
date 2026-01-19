@@ -31,13 +31,14 @@ impl Context {
         let path = CacheDir::new()?;
         path.init()?;
         let buf = path.read()?;
-        let cache = Cache::from_bytes(&buf)?;
+        let cache = Cache::from_bytes(&buf).unwrap_or_default();
         let terminal = Terminal::new();
         let mut headers = HeaderMap::new();
 
         if !cache.token.is_empty() {
             let header_value = format!("Bearer {}", cache.token);
             headers.append(header::AUTHORIZATION, header_value.parse()?);
+            headers.append("authorization-type", "pat".parse()?);
         }
 
         let client = ClientBuilder::new()

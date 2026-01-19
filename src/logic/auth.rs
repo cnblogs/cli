@@ -40,7 +40,8 @@ async fn handle_login(token: String, ctx: &mut Context) -> Result<()> {
         let p = resp.json::<models::user::UserInfo>().await?;
         let name = p.display_name.clone();
 
-        let c: Cache = p.into();
+        let mut c: Cache = p.into();
+        c.token = token;
         ctx.save_cache(c)?;
 
         ctx.terminal
@@ -59,6 +60,8 @@ fn handle_print_token(ctx: &mut Context) -> Result<()> {
 
 async fn user_info(ctx: &mut Context) -> Result<()> {
     let user = api::user::user_info(&ctx.client).await?;
+    let c: Cache = user.clone().into();
+    ctx.save_cache(c)?;
     ctx.terminal.writeln(user.format_user_info())
 }
 
