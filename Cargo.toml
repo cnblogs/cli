@@ -50,6 +50,8 @@ anstream = "0.6.21"
 anstyle = "1.0.13"
 owo-colors = "4.2.3"
 const_format = "0.2.35"
+html2md = "0.2.15"
+termimad = "0.34.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

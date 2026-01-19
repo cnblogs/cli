@@ -1,8 +1,9 @@
+pub mod ing;
+pub mod post;
+pub mod user;
+
 use owo_colors::OwoColorize;
 use serde::Deserialize;
-
-pub mod ing;
-pub mod user;
 
 #[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "PascalCase")]

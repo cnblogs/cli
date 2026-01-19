@@ -16,7 +16,7 @@ pub struct IngInfo {
     pub is_private: bool,
     pub is_lucky: bool,
     pub comment_count: u64,
-    pub date_added: chrono::NaiveDateTime,
+    pub date_added: NaiveDateTime,
     pub user_alias: String,
     pub user_display_name: String,
     pub user_icon_url: String,
