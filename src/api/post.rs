@@ -50,3 +50,48 @@ pub async fn raw_show_post(c: &Client, id: u64) -> Result<Response> {
     let url = format!("{}/{}/body", BLOG_POST_PREFIX, id);
     c.get(url).send().await.into_anyhow_result()
 }
+
+/// 获取指定id的随笔评论
+///
+/// ## 参数
+///
+/// - `c`: 已初始化的HTTP客户端实例
+/// - `blog_app`: 博客园的博客名称
+/// - `id`: 随笔ID
+pub async fn raw_list_comments(
+    c: &Client,
+    blog_app: &String,
+    id: u64,
+    params: impl Serialize + Send + Sync,
+) -> Result<Response> {
+    c.get(gen_comments_url(blog_app, id))
+        .query(&params)
+        .send()
+        .await
+        .into_anyhow_result()
+}
+
+pub async fn raw_create_comment(
+    c: &Client,
+    blog_app: &String,
+    id: u64,
+    params: impl Serialize + Send + Sync,
+) -> Result<Response> {
+    c.post(gen_comments_url(blog_app, id))
+        .json(&params)
+        .send()
+        .await
+        .into_anyhow_result()
+}
+
+// pub async fn raw_post_detail(c: &Client, id: u64) -> Result<Response> {
+//     let url = format!("{}/{}", BLOG_BACKEND_POST, id);
+//     c.get(url).send().await.into_anyhow_result()
+// }
+
+fn gen_comments_url(blog_app: &String, id: u64) -> String {
+    format!(
+        "{}/{}/{}/{}/{}",
+        POST_PREFIX, blog_app, "posts", id, "comments"
+    )
+}
