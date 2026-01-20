@@ -4,9 +4,9 @@
 //! 此模块暂定封装操作逻辑，比如是闪存的curd，闪存评论的curd。
 //!
 
-pub mod auth;
 pub mod ing;
 pub mod post;
+pub mod user;
 
 use anyhow::Result;
 
@@ -15,8 +15,8 @@ use crate::context::Context;
 
 pub async fn run(cli: Cli, ctx: &mut Context) -> Result<()> {
     match cli.commands {
-        Commands::Auth(action) => {
-            auth::endpoint(action, ctx).await?;
+        Commands::User(action) => {
+            user::endpoint(action, ctx).await?;
         }
         Commands::Fav => {}
         Commands::Ing { action } => ing::endpoint(action, ctx).await?,

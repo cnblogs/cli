@@ -1,8 +1,8 @@
-pub mod auth;
 pub mod fav;
 pub mod ing;
 pub mod news;
 pub mod post;
+pub mod user;
 
 use std::fmt;
 
@@ -22,7 +22,7 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    Auth(auth::Authenticate),
+    User(user::UserCommand),
     Ing {
         #[command(subcommand)]
         action: ing::IngAction,

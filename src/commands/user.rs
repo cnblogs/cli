@@ -5,14 +5,14 @@
 use clap::{Args, Subcommand, builder::NonEmptyStringValueParser};
 
 #[derive(Debug, Args)]
-pub struct Authenticate {
+pub struct UserCommand {
     #[clap(subcommand)]
-    pub commands: AuthenticateSubCommands,
+    pub commands: UserAction,
 }
 
 /// 提供通过access token登录，状态查询，退出，显示当前token功能
 #[derive(Debug, Subcommand)]
-pub enum AuthenticateSubCommands {
+pub enum UserAction {
     /// 用户登录，需提供access token。
     Login {
         #[clap(value_parser = NonEmptyStringValueParser::new())]

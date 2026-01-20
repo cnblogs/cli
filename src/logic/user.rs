@@ -7,18 +7,18 @@ use owo_colors::OwoColorize;
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{ClientBuilder, StatusCode};
 
-use crate::commands::auth::{Authenticate, AuthenticateSubCommands};
+use crate::commands::user::{UserAction, UserCommand};
 use crate::context::Context;
 use crate::context::config::Cache;
 use crate::tools::http::IntoNoParseResult;
 use crate::{api, models};
 
-pub async fn endpoint(cmd: Authenticate, ctx: &mut Context) -> anyhow::Result<()> {
+pub async fn endpoint(cmd: UserCommand, ctx: &mut Context) -> anyhow::Result<()> {
     match cmd.commands {
-        AuthenticateSubCommands::Login { token } => handle_login(token, ctx).await,
-        AuthenticateSubCommands::Logout => handle_logout(ctx),
-        AuthenticateSubCommands::Status => user_info(ctx).await,
-        AuthenticateSubCommands::Token => handle_print_token(ctx),
+        UserAction::Login { token } => handle_login(token, ctx).await,
+        UserAction::Logout => handle_logout(ctx),
+        UserAction::Status => user_info(ctx).await,
+        UserAction::Token => handle_print_token(ctx),
     }
 }
 
