@@ -10,6 +10,30 @@ keywords = ["cli", "cnblogs", "blog"]
 categories = ["command-line-utilities"]
 default-run = "cnb"
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "cnb"
+path = "src/bin/cnb.rs"
+
+[dependencies]
+anstream = "0.6.21"
+anstyle = "1.0.13"
+anyhow = "1.0.100"
+chrono = { version = "0.4.42", features = ["serde"] }
+clap = { version = "4.5.54", features = ["derive", "wrap_help"] }
+const_format = "0.2.35"
+home = "0.5.12"
+html2md = "0.2.15"
+lazy_static = "1.5.0"
+owo-colors = "4.2.3"
+regex = "1.12.2"
+reqwest = { version = "0.13.1", features = ["json", "query", "form"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+termimad = "0.34.1"
+tokio = { version = "1.49.0", features = ["full"] }
+
 [profile.dev]
 lto = true
 strip = true
@@ -18,43 +42,3 @@ strip = true
 lto = true
 strip = true
 codegen-units = 1
-
-[dependencies]
-anyhow = "1.0.100"
-lazy_static = "1.5.0"
-base64 = "0.22.1"
-base64url = "0.1.0"
-getrandom = "0.3.4"
-rand = { version = "0.9.2" }
-regex = "1.12.2"
-words-count = "0.1.6"
-unicode-width = "0.2.2"
-
-serde = { version = "1.0.228", features = ["derive"] }
-serde_qs = "0.15.0"
-serde_json = "1.0.149"
-serde_with = "3.16.1"
-serde_repr = "0.1.20"
-
-home = "0.5.12"
-chrono = { version = "0.4.42", features = ["serde"] }
-mime = "0.3.17"
-reqwest = { version = "0.13.1", features = ["json", "query", "form"] }
-tokio = { version = "1.49.0", features = ["full"] }
-futures = "0.3.31"
-
-clap = { version = "4.5.54", features = ["derive", "wrap_help"] }
-colored = "3.0.0"
-terminal_size = "0.4.3"
-anstream = "0.6.21"
-anstyle = "1.0.13"
-owo-colors = "4.2.3"
-const_format = "0.2.35"
-html2md = "0.2.15"
-termimad = "0.34.1"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[[bin]]
-name = "cnb"
-path = "src/bin/cnb.rs"
