@@ -10,4 +10,3 @@ pub const COMMENTS_PATH: &str = "comments";
 
 pub const POST_PREFIX: &str = formatcp!("{}/blogs", OPENAPI);
 pub const BLOG_POST_PREFIX: &str = formatcp!("{}/blogposts", OPENAPI);
-

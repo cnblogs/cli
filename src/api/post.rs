@@ -11,7 +11,7 @@ use crate::{
 pub async fn list_someone_post(
     c: &Client,
     blog_app: &String,
-    params: &impl Serialize,
+    params: impl Serialize + Send + Sync,
 ) -> Result<Vec<PostInfo>> {
     // let a = raw_list_someone_post(c, blog_app).await?;
     // a.json().await.into_anyhow_result()
@@ -40,10 +40,10 @@ pub async fn show_post_detail() {}
 pub async fn raw_list_someone_post(
     c: &Client,
     blog_app: &String,
-    params: &impl Serialize,
+    params: impl Serialize + Send + Sync,
 ) -> Result<Response> {
     let url = format!("{}/{}/{}", POST_PREFIX, blog_app, "posts");
-    c.get(url).query(params).send().await.into_anyhow_result()
+    c.get(url).query(&params).send().await.into_anyhow_result()
 }
 
 pub async fn raw_show_post(c: &Client, id: u64) -> Result<Response> {

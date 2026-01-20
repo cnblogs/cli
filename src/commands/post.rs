@@ -44,7 +44,7 @@ pub struct ListArgs {
 pub struct ShowArgs {
     #[clap(value_parser = validate_non_zero_id)]
     pub id: u64,
-    
-    #[arg(long, defalut_value_t = false)]
+
+    #[arg(long, default_value_t = false)]
     pub comment: bool,
 }
