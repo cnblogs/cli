@@ -1,7 +1,6 @@
 use chrono::NaiveDateTime;
 use owo_colors::OwoColorize;
-use serde::{Deserialize, Serialize};
-use termimad::crossterm::style::Stylize;
+use serde::Deserialize;
 
 use crate::tools::timer::DateFormatExt;
 
@@ -17,7 +16,7 @@ use crate::tools::timer::DateFormatExt;
 //     "DateAdded": "2026-01-20T15:31:00+08:00"
 // }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "PascalCase")]
 #[serde(default)]
 pub struct NewsInfo {

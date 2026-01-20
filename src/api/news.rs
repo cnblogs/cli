@@ -14,6 +14,5 @@ pub async fn list_news(c: &Client, page: impl Serialize + Send + Sync) -> Result
 
 pub async fn raw_list_news(c: &Client, page: impl Serialize + Send + Sync) -> Result<Response> {
     let url = format!("{}/{}", OPENAPI, "NewsItems");
-    println!("{}", url);
     c.get(url).query(&page).send().await.into_anyhow_result()
 }
