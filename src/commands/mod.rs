@@ -28,7 +28,7 @@ pub enum Commands {
         action: ing::IngAction,
     },
     Post(post::PostCommand),
-    News,
+    News(news::NewsCommand),
     Fav,
 }
 

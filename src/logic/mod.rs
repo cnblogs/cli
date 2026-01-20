@@ -5,6 +5,7 @@
 //!
 
 pub mod ing;
+pub mod news;
 pub mod post;
 pub mod user;
 
@@ -20,7 +21,7 @@ pub async fn run(cli: Cli, ctx: &mut Context) -> Result<()> {
         }
         Commands::Fav => {}
         Commands::Ing { action } => ing::endpoint(action, ctx).await?,
-        Commands::News => {}
+        Commands::News(action) => news::endpoint(action, ctx).await?,
         Commands::Post(action) => post::endpoint(action, ctx).await?,
     }
 

@@ -5,6 +5,7 @@
 //!
 
 pub mod ing;
+pub mod news;
 pub mod post;
 pub mod urls;
 pub mod user;
