@@ -4,6 +4,7 @@
 //! 此模块暂定封装操作逻辑，比如是闪存的curd，闪存评论的curd。
 //!
 
+pub mod fav;
 pub mod ing;
 pub mod news;
 pub mod post;
@@ -19,7 +20,7 @@ pub async fn run(cli: Cli, ctx: &mut Context) -> Result<()> {
         Commands::User(action) => {
             user::endpoint(action, ctx).await?;
         }
-        Commands::Fav => {}
+        Commands::Fav(action) => fav::endpoint(action, ctx).await?,
         Commands::Ing { action } => ing::endpoint(action, ctx).await?,
         Commands::News(action) => news::endpoint(action, ctx).await?,
         Commands::Post(action) => post::endpoint(action, ctx).await?,

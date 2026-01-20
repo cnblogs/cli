@@ -29,7 +29,7 @@ pub enum Commands {
     },
     Post(post::PostCommand),
     News(news::NewsCommand),
-    Fav,
+    Fav(fav::FaverateCommand),
 }
 
 #[derive(Clone, Debug, ValueEnum, PartialEq, Eq)]
