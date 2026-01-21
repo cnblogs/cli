@@ -84,7 +84,7 @@ pub async fn raw_create_status(
 }
 
 pub async fn raw_create_comment(c: &Client, id: u64, content: String) -> Result<Response> {
-    let url = format!("{}/{}/{}", STATUS, id, COMMENTS_PATH);
+    let url = format!("{}{}/{}", STATUS, id, COMMENTS_PATH);
     let res = json!({"content": content});
     c.post(url).json(&res).send().await.into_anyhow_result()
 }
