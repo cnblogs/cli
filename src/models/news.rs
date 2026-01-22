@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use owo_colors::OwoColorize;
 use serde::Deserialize;
 
@@ -24,11 +24,12 @@ pub struct NewsInfo {
     pub title: String,
     pub summary: String,
     pub topic_id: u64,
-    pub topic_icon: String,
+    pub topic_icon: Option<String>,
     pub view_count: u64,
     pub comment_count: u64,
     pub digg_count: u64,
-    pub date_added: NaiveDateTime,
+    #[serde(with = "crate::tools::timer::rfc3339_or_naive")]
+    pub date_added: DateTime<Utc>,
 }
 
 impl NewsInfo {
