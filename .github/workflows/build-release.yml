@@ -17,15 +17,15 @@ jobs:
       matrix:
         targets:
           # mac
-          - { os: macos       , target: aarch64-apple-darwin     , alias: aarch64-apple-darwin       }
-          - { os: macos       , target: x86_64-apple-darwin      , alias: x86_64-apple-darwin        }
+          - { os: macos-latest       , target: aarch64-apple-darwin     , alias: aarch64-apple-darwin       }
+          - { os: macos-latest       , target: x86_64-apple-darwin      , alias: x86_64-apple-darwin        }
           # linux
-          - { os: linux       , target: x86_64-unknown-linux-gnu , alias: x86_64-unknown-linux-gnu   }
-          - { os: linux       , target: x86_64-unknown-linux-musl, alias: x86_64-unknown-linux-musl  }
+          - { os: ubuntu-latest      , target: x86_64-unknown-linux-gnu , alias: x86_64-unknown-linux-gnu   }
+          - { os: ubuntu-latest      , target: x86_64-unknown-linux-musl, alias: x86_64-unknown-linux-musl  }
           # freebsd
-          - { os: freebsd     , target: x86_64-unknown-freebsd   , alias: x86_64-unknown-freebsd     }
+          - { os: ubuntu-latest      , target: x86_64-unknown-freebsd   , alias: x86_64-unknown-freebsd     }
           # windows
-          - { os: windows     , target: x86_64-pc-windows-msvc   , alias: x86_64-pc-windows-msvc     }
+          - { os: windows-latest     , target: x86_64-pc-windows-msvc   , alias: x86_64-pc-windows-msvc     }
 
     steps:
       - name: Checkout
