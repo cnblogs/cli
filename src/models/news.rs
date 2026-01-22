@@ -50,7 +50,7 @@ mod tests {
                 "CommentCount": 0,
                 "DiggCount": 2,
                 "DateAdded": "2026-01-20T15:40:00+08:00"
-            },"#;
+            }"#;
 
         let aa: NewsInfo = serde_json::from_str(a).unwrap();
         assert_eq!(aa.id, 813264);
