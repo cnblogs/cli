@@ -27,7 +27,7 @@ jobs:
           - { os: ubuntu-latest      , target: x86_64-unknown-linux-gnu , alias: x86_64-unknown-linux-gnu   }
           - { os: ubuntu-latest      , target: x86_64-unknown-linux-musl, alias: x86_64-unknown-linux-musl  }
           # freebsd
-          - { os: ubuntu-latest      , target: x86_64-unknown-freebsd   , alias: x86_64-unknown-freebsd     }
+          # - { os: ubuntu-latest      , target: x86_64-unknown-freebsd   , alias: x86_64-unknown-freebsd     }
           # windows
           - { os: windows-latest     , target: x86_64-pc-windows-msvc   , alias: x86_64-pc-windows-msvc     }
     steps:
