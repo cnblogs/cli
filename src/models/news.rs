@@ -4,21 +4,8 @@ use serde::Deserialize;
 
 use crate::tools::timer::DateFormatExt;
 
-// {
-//     "Id": 813263,
-//     "Title": "OpenAI偷袭，谷歌掀桌！2026开年第一场AI大战太精彩",
-//     "Summary": "新智元报道 编辑：KingHZ 谷歌强势回应 OpenAI：开源 TranslateGemma 模型，支持 55 种语言，效率惊人！12B 参数超越 27B 基线，手机端轻松运行，真正速通「巴别塔」。 语言的边界，正被 AI 一一抹平。 OpenAI 悄悄发布了翻译产品 ChatGPT Transl",
-//     "TopicId": 1,
-//     "TopicIcon": "https://img2023.cnblogs.com/news_topic/20230322145212853-1130832439.png",
-//     "ViewCount": 31,
-//     "CommentCount": 0,
-//     "DiggCount": 0,
-//     "DateAdded": "2026-01-20T15:31:00+08:00"
-// }
-
 #[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "PascalCase")]
-#[serde(default)]
 pub struct NewsInfo {
     pub id: u64,
     pub title: String,

@@ -49,7 +49,10 @@ impl DateFormatExt for DateTime<Utc> {
 
 /// 自定义反序列化模块
 pub mod rfc3339_or_naive {
+    use std::time::Duration;
+
     use super::*;
+
     use serde::{Deserialize, Deserializer, Serializer, de};
 
     pub fn serialize<S>(dt: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
@@ -70,14 +73,16 @@ pub mod rfc3339_or_naive {
             return Ok(dt.with_timezone(&Utc));
         }
 
-        // 然后尝试解析不带时区的ISO8601格式
-        if let Ok(ndt) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S") {
+        // 2026-01-22T18:35:49.593
+        if let Ok(ndt) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S%.3f") {
+            let ndt = ndt - Duration::from_hours(8);
             return Ok(Utc.from_utc_datetime(&ndt));
         }
 
-        // 还可以尝试其他格式
-        if let Ok(ndt) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S") {
-            return Ok(Utc.from_utc_datetime(&ndt));
+        // 2026-01-22T18:35:49
+        if let Ok(ndt) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S") {
+            let ndt = ndt - Duration::from_hours(8);
+            return Ok(Utc.from_local_datetime(&ndt).unwrap());
         }
 
         Err(de::Error::custom(format!("无效的时间格式: {}", s)))
