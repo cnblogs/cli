@@ -20,4 +20,4 @@ runs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        Compress-Archive ${{ inputs.files }} ${{ inputs.out }}
+        Compress-Archive -Path "${{ inputs.files }}" -DestinationPath "${{ inputs.out }}"

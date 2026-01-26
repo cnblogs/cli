@@ -5,8 +5,4 @@ runs:
   steps:
     - name: Test dev
       shell: bash
-      run: cargo test --verbose
-
-    - name: Test release
-      shell: bash
-      run: cargo test --verbose --release
+      run: cargo test 

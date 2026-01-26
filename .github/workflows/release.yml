@@ -1,0 +1,102 @@
+name: Build / Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  
+
+jobs:
+
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_release: ${{ steps.check.outputs.should_release }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from Cargo.toml
+        id: version
+        run: |
+          VERSION=$(grep '^version' Cargo.toml | sed 's/.*= "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if release exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check.outputs.should_release == 'true'
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+  build-release:
+    needs: prepare
+    if: needs.prepare.outputs.should_release == 'true'
+    name: ${{ matrix.targets.alias }}
+    runs-on: ${{ matrix.targets.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        targets:
+          - { os: macos-latest,   target: aarch64-apple-darwin,     alias: aarch64-apple-darwin     }
+          - { os: macos-latest,   target: x86_64-apple-darwin,      alias: x86_64-apple-darwin      }
+          - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu, alias: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest,  target: x86_64-unknown-linux-musl,alias: x86_64-unknown-linux-musl}
+          - { os: windows-latest, target: x86_64-pc-windows-msvc,   alias: x86_64-pc-windows-msvc   }
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dsherret/rust-toolchain-file@v1
+
+      - name: Setup musl-tools
+        if: matrix.targets.target == 'x86_64-unknown-linux-musl'
+        shell: bash
+        run: sudo apt -y install musl-tools
+
+      - name: Add target
+        uses: ./.github/actions/add-target
+        with:
+          target: ${{ matrix.targets.target }}
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ matrix.targets.alias }}
+
+      - name: Run build
+        uses: ./.github/actions/build
+        with:
+          target: ${{ matrix.targets.target }}
+          release: true
+
+      - name: Archive binary
+        uses: ./.github/actions/make-archive
+        with:
+          files: ./target/${{ matrix.targets.target }}/release/cnb${{ matrix.targets.target == 'x86_64-pc-windows-msvc' && '.exe' || '' }}
+          out: cnb-${{ needs.prepare.outputs.version }}-${{ matrix.targets.target }}.zip
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.prepare.outputs.version }}
+          files: cnb-${{ needs.prepare.outputs.version }}-${{ matrix.targets.target }}.zip

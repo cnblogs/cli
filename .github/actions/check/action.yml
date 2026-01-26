@@ -6,7 +6,9 @@ runs:
     - name: Audit
       shell: bash
       run: |
-        cargo install cargo-audit
+        if ! command -v cargo-audit &> /dev/null; then
+          cargo install cargo-audit
+        fi
         cargo audit
 
     - name: Fmt
