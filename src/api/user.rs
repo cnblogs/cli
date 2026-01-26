@@ -29,11 +29,15 @@ pub async fn raw_user_followers(
 }
 
 /// 获取用户粉丝列表
-/// 
+///
 /// page - 分页参数，包含 pageIndex 和 pageSize
 pub async fn user_followers(
     c: &Client,
     page: impl serde::Serialize + Send + Sync,
 ) -> Result<UserFollowers> {
-    raw_user_followers(c, page).await?.json().await.into_anyhow_result()
+    raw_user_followers(c, page)
+        .await?
+        .json()
+        .await
+        .into_anyhow_result()
 }

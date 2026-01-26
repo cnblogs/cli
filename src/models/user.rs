@@ -44,7 +44,6 @@ impl UserInfo {
     }
 }
 
-
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct FollowerInfo {
