@@ -13,8 +13,10 @@ pub struct UserCommand {
 /// 提供通过access token登录，状态查询，退出，显示当前token功能
 #[derive(Debug, Subcommand)]
 pub enum UserAction {
-    Follower(FollowerArg),
-
+    /// 查看用户粉丝列表
+    Follower(FollowArg),
+    /// 查看用户关注列表
+    Following(FollowArg),
     /// 用户登录，需提供access token。
     Login {
         #[clap(value_parser = NonEmptyStringValueParser::new())]
@@ -29,7 +31,7 @@ pub enum UserAction {
 }
 
 #[derive(serde::Serialize, Debug, Args)]
-pub struct FollowerArg {
+pub struct FollowArg {
     /// 分页页码（从1开始）
     #[arg(long = "page-index", default_value_t = 1)]
     #[serde(rename = "pageIndex")]

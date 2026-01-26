@@ -6,6 +6,7 @@ pub const OAUTH: &str = "https://oauth.cnblogs.com";
 
 pub const USER: &str = formatcp!("{}/users", OPENAPI);
 pub const USER_FOLLOWERS: &str = formatcp!("{}/followers", USER);
+pub const USER_FOLLOWING: &str = formatcp!("{}/following", USER);
 pub const STATUS: &str = formatcp!("{}/statuses/", OPENAPI);
 pub const COMMENTS_PATH: &str = "comments";
 

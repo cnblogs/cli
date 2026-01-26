@@ -46,14 +46,14 @@ impl UserInfo {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct FollowerInfo {
+pub struct FollowInfo {
     pub alias: String,
     pub space_user_id: u64,
     pub display_name: String,
     pub blog_app: Option<String>,
 }
 
-impl FollowerInfo {
+impl FollowInfo {
     pub fn as_format(&self) -> String {
         format!(
             "{name}   [#{id}]   [{blog}]",
@@ -74,7 +74,7 @@ impl FollowerInfo {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct UserFollowers {
-    pub items: Vec<FollowerInfo>,
+pub struct UserFollow {
+    pub items: Vec<FollowInfo>,
     pub total_count: u64,
 }

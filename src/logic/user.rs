@@ -7,7 +7,7 @@ use owo_colors::OwoColorize;
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{ClientBuilder, StatusCode};
 
-use crate::commands::user::{FollowerArg, UserAction, UserCommand};
+use crate::commands::user::{FollowArg, UserAction, UserCommand};
 use crate::context::Context;
 use crate::context::config::Cache;
 use crate::tools::http::IntoNoParseResult;
@@ -16,6 +16,7 @@ use crate::{api, models};
 pub async fn endpoint(cmd: UserCommand, ctx: &mut Context) -> anyhow::Result<()> {
     match cmd.commands {
         UserAction::Follower(arg) => handle_followers(ctx, arg).await,
+        UserAction::Following(arg) => handle_following(ctx, arg).await,
         UserAction::Login { token } => handle_login(token, ctx).await,
         UserAction::Logout => handle_logout(ctx),
         UserAction::Status => user_info(ctx).await,
@@ -70,10 +71,34 @@ fn handle_logout(ctx: &Context) -> Result<()> {
     ctx.clean()
 }
 
-async fn handle_followers(ctx: &mut Context, arg: FollowerArg) -> Result<()> {
-    let followers = api::user::user_followers(&ctx.client, arg).await?;
+async fn handle_followers(ctx: &mut Context, arg: FollowArg) -> Result<()> {
+    let followers = api::user::user_followers(&ctx.client, &arg).await?;
+
+    ctx.terminal.writeln(
+        format!(
+            "{} 人关注了您, 当前{}页，每页数量{}",
+            followers.total_count, arg.page_index, arg.page_size
+        )
+        .bright_green(),
+    )?;
 
     followers
+        .items
+        .iter()
+        .for_each(|f| ctx.terminal.writeln(f.as_format()).unwrap());
+    Ok(())
+}
+
+async fn handle_following(ctx: &mut Context, arg: FollowArg) -> Result<()> {
+    let following = api::user::user_following(&ctx.client, &arg).await?;
+    ctx.terminal.writeln(
+        format!(
+            "您关注了 {} 人, 当前{}页，每页数量{}",
+            following.total_count, arg.page_index, arg.page_size
+        )
+        .bright_green(),
+    )?;
+    following
         .items
         .iter()
         .for_each(|f| ctx.terminal.writeln(f.as_format()).unwrap());
