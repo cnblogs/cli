@@ -43,3 +43,39 @@ impl UserInfo {
         info.join("\n")
     }
 }
+
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct FollowerInfo {
+    pub alias: String,
+    pub space_user_id: u64,
+    pub display_name: String,
+    pub blog_app: Option<String>,
+}
+
+impl FollowerInfo {
+    pub fn as_format(&self) -> String {
+        format!(
+            "{name}   [#{id}]   [{blog}]",
+            name = self.display_name.bright_blue(),
+            id = self.space_user_id.bright_green(),
+            blog = self
+                .blog_app
+                .as_ref()
+                .map_or("无博客".red().to_string(), |app| format!(
+                    "https://www.cnblogs.com/{}",
+                    app
+                )
+                .blue()
+                .to_string())
+        )
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserFollowers {
+    pub items: Vec<FollowerInfo>,
+    pub total_count: u64,
+}

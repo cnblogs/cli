@@ -7,7 +7,7 @@ use owo_colors::OwoColorize;
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{ClientBuilder, StatusCode};
 
-use crate::commands::user::{UserAction, UserCommand};
+use crate::commands::user::{FollowerArg, UserAction, UserCommand};
 use crate::context::Context;
 use crate::context::config::Cache;
 use crate::tools::http::IntoNoParseResult;
@@ -15,6 +15,7 @@ use crate::{api, models};
 
 pub async fn endpoint(cmd: UserCommand, ctx: &mut Context) -> anyhow::Result<()> {
     match cmd.commands {
+        UserAction::Follower(arg) => handle_followers(ctx, arg).await,
         UserAction::Login { token } => handle_login(token, ctx).await,
         UserAction::Logout => handle_logout(ctx),
         UserAction::Status => user_info(ctx).await,
@@ -67,4 +68,14 @@ async fn user_info(ctx: &mut Context) -> Result<()> {
 
 fn handle_logout(ctx: &Context) -> Result<()> {
     ctx.clean()
+}
+
+async fn handle_followers(ctx: &mut Context, arg: FollowerArg) -> Result<()> {
+    let followers = api::user::user_followers(&ctx.client, arg).await?;
+
+    followers
+        .items
+        .iter()
+        .for_each(|f| ctx.terminal.writeln(f.as_format()).unwrap());
+    Ok(())
 }
