@@ -73,11 +73,8 @@ pub mod rfc3339_or_naive {
             return Ok(dt.with_timezone(&Utc));
         }
 
-        // 2026-01-22T18:35:49.593
-        if let Ok(ndt) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S%.3f") {
-            let ndt = ndt - Duration::from_hours(8);
-            return Ok(Utc.from_utc_datetime(&ndt));
-        }
+        let s = s.split('.').collect::<Vec<_>>();
+        let s = s[0]; // 去掉小数部分
 
         // 2026-01-22T18:35:49
         if let Ok(ndt) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S") {
@@ -86,5 +83,58 @@ pub mod rfc3339_or_naive {
         }
 
         Err(de::Error::custom(format!("无效的时间格式: {}", s)))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde::Deserialize;
+
+    use super::*;
+
+    // 包装结构体
+    #[derive(Debug, Deserialize)]
+    struct DateTimeWrapper {
+        #[serde(with = "rfc3339_or_naive")]
+        timestamp: DateTime<Utc>,
+    }
+
+    #[test]
+    fn test_1 () {
+        let dt_str = "2026-01-20T15:40:00+08:00";
+        let json_str = format!(r#"{{"timestamp": "{}"}}"#, dt_str);
+        let wrapper: DateTimeWrapper = serde_json::from_str(&json_str).unwrap();
+        let ndt = wrapper.timestamp;
+    
+        assert_eq!(ndt.to_rfc3339(), "2026-01-20T07:40:00+00:00");
+    }
+    #[test]
+    fn test_2 () {
+        let dt_str = "2026-01-22T18:35:49";
+        let json_str = format!(r#"{{"timestamp": "{}"}}"#, dt_str);
+        let wrapper: DateTimeWrapper = serde_json::from_str(&json_str).unwrap();
+        let ndt = wrapper.timestamp;
+    
+        assert_eq!(ndt.to_rfc3339(), "2026-01-22T10:35:49+00:00");  
+    }
+
+    #[test]
+    fn test_3() {
+        let dt_str = "2026-01-22T18:35:49.77";
+        let json_str = format!(r#"{{"timestamp": "{}"}}"#, dt_str);
+        let wrapper: DateTimeWrapper = serde_json::from_str(&json_str).unwrap();
+        let ndt = wrapper.timestamp;
+    
+        assert_eq!(ndt.to_rfc3339(), "2026-01-22T10:35:49+00:00");
+    }
+
+    #[test]
+    fn test_4() {
+        let dt_str = "2026-01-22T18:35:49.777";
+        let json_str = format!(r#"{{"timestamp": "{}"}}"#, dt_str);
+        let wrapper: DateTimeWrapper = serde_json::from_str(&json_str).unwrap();
+        let ndt = wrapper.timestamp;
+    
+        assert_eq!(ndt.to_rfc3339(), "2026-01-22T10:35:49+00:00");
     }
 }
