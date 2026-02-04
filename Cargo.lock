@@ -230,7 +230,7 @@ dependencies = [
 
 [[package]]
 name = "cnblogs_lib"
-version = "0.0.0-dev"
+version = "0.3.0"
 dependencies = [
  "anstream",
  "anstyle",
