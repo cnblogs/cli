@@ -62,7 +62,8 @@ fn handle_print_token(ctx: &mut Context) -> Result<()> {
 
 async fn user_info(ctx: &mut Context) -> Result<()> {
     let user = api::user::user_info(&ctx.client).await?;
-    let c: Cache = user.clone().into();
+    let mut c: Cache = user.clone().into();
+    c.token = ctx.cache.token.clone();
     ctx.save_cache(c)?;
     ctx.terminal.writeln(user.format_user_info())
 }
